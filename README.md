@@ -17,6 +17,8 @@
 
 ### DB 설계
 <img width="534" alt="image" src="https://user-images.githubusercontent.com/68368633/193413230-b0c15e84-1512-43a1-994d-3deb28c2d6f2.png">
+- todo의 color나 diary의 emoji는 개발하게 된다면 프론트 측과 합의해서 결정해야 할 것 같다.
+- follower/following의 설계가 저런 식이 아닐 것 같다.
 
 
 models.py 작성 끝나면 migration!
@@ -30,7 +32,7 @@ python manage.py migrate
 2. 삽입한 객체들을 쿼리셋으로 조회해보기 (단, 객체들이 객체의 특성을 나타내는 구분가능한 이름으로 보여야 함)
 ![image](https://user-images.githubusercontent.com/68368633/193413193-25847923-d905-49bc-8027-b88335d7fbe9.png)
 3. filter 함수 사용해보기
-<img width="389" alt="image" src="https://user-images.githubusercontent.com/68368633/193413185-a8e01994-388f-493d-abad-e23647456df4.png">
+  <img width="389" alt="image" src="https://user-images.githubusercontent.com/68368633/193413185-a8e01994-388f-493d-abad-e23647456df4.png">
 
 
 ### 에러 해결
@@ -76,4 +78,4 @@ python manage.py migrate
 
 ### 느낀 점
 DB 설계를 너무 오랜만에 해봐서 감이 잘 안잡혔다. create/update 시간도 필드로 추가했어야 했는데 잊었다. 그리고 following/follower를 구조 상 어떻게 표현해야 할지 모르겠어서 내 생각대로 해봤는데 아마 틀린 것 같다. 🥲
-책 좀 읽고 공부해야겠다!
+책 좀 읽고 공부해야겠다! 그리고 좋아요 기능이 있다는걸 나중에 알아서 추가를 못했는데 후에 수정해야 한다.
