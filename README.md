@@ -4,7 +4,7 @@
 ## TODOMATE란?
 > TodoMate (투두메이트)는 일상을 기록하며, 지인과 일정을 공유할 수 있도록 만든 앱이다.
 
-##ERD 작성 과정
+##1. ERD 작성
 ###최종
 ![img_3.png](img_3.png)
 
@@ -39,3 +39,16 @@
     - emoji는 선택하여 char로 저장된다.
     - is_secret은 integer로 정의하여 0일때는 나만보기, 1일때는 내가 정한 지인들만 보기, 2일때는 모두에게 공개의 형태로 저장하려 했는데...이래도 괜찮은 것인지 잘 모르겠다 ㅠ
     - created_at, updated_at, deleted_at은 투두와 같다.
+  
+##2. DB에 코드 반영
+1. migrate 명령어를 통해 DB에 코드를 반영해보았다. 그림 ERD로 구성한 테이블들을 실제 코드에 반영해볼 수 있었다. (이전에 INSERT INTO~ 이렇게 네이티브 쿼리?로 짠 적이 있는데 그때보다는 훨씬 편했다..ㅎ)
+2. migration 명령어를 통해 FK를 지정하는 방식이 신기했다.
+```
+migrations.AddField(
+            model_name='{모델명}',
+            name='{FK로 지정할 원소 이름}',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name={FK가 존재하는 테이블 이름}, to='api.{연결된 key가 존재하는 본래 table}'),
+        ),
+```
+
+### 처음에 엄청 헤매다가 늦게서야 감을 잡아서 모든 사항을 데이터화시키지 못했는데, 추후에 업데이트 하도록 하겠습니다..! 과제를 제대로 한건지 모르겠어서 리뷰 많이 달아주시면 감사하겠습니다 ㅠㅠ 다시 한번 감사드립니다.
