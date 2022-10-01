@@ -17,6 +17,8 @@ class Category(models.Model):
     category_name = models.CharField(max_length=50, null=False)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.category_name
 
 class Todo(models.Model):
     DISCLOSURE_CHOICES = {
@@ -28,8 +30,10 @@ class Todo(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    public = models.CharField(default='public', max_length=30, choices=DISCLOSURE_CHOICES)
-    date = models.DateTimeField(default=now, null=False)
+    disclosure_choice = models.CharField(default='public', max_length=30, choices=DISCLOSURE_CHOICES)
+    date = models.DateTimeField(default=now)
+    def __str__(self):
+        return self.todo_name
 
 class Communication(models.Model):
     todo = models.ForeignKey(Todo, on_delete=models.CASCADE)

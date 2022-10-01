@@ -37,6 +37,13 @@ default는 public(전체공개)
 - comment: 서로 댓글을 달 수도 있다.
 
 ## ORM 이용해보기
+1번  
+![img.png](img.png)
+2번  
+![img_1.png](img_1.png)
+3번  
+![img_2.png](img_2.png)
+
 
 ## 이번 과제를 하며..
 
