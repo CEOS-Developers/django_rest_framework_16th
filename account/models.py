@@ -16,3 +16,4 @@ class Profile(models.Model):
     description = models.CharField(max_length=50)
     social_id = models.CharField(max_length=100, null=True, unique=True, validators=[MinLengthValidator(4)])
     image = models.ImageField(null=True)
+    following = models.ManyToManyField('User', related_name='follower')
