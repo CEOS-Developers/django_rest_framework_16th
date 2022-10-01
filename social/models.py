@@ -12,8 +12,14 @@ class TodoCheer(models.Model):
     todo = models.ForeignKey(Todo, on_delete=models.CASCADE, related_name='cheer')
     imoji = models.ImageField()
 
+    def __str__(self):
+        return "todo cheer: " + self.user.email
+
 
 class DiaryCheer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     diary = models.ForeignKey(Diary, on_delete=models.CASCADE, related_name='cheer')
     imoji = models.ImageField()
+
+    def __str__(self):
+        return "diary cheer: " + self.user.email
