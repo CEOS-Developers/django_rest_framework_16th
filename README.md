@@ -26,7 +26,7 @@ django에서 기본 제공하는 user 모델 상속  - AbstractUser를 상속받
 - todo_name: to do item을 작성했을 때 그것의 이름
 - user: 작성한 사용자
 - category: 카테고리
-- public: 친구들에게 공개할 것인지 여부, private(비공개), only friends(친구 공개), public(전체 공개) 중 선택할 수 있도록 한다.  
+- disclosure_choice: 친구들에게 공개할 것인지 여부, private(비공개), only friends(친구 공개), public(전체 공개) 중 선택할 수 있도록 한다.  
 default는 public(전체공개)
 - date: 일정별 to do list를 볼 수 있도록
 
