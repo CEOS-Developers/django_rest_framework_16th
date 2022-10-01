@@ -40,7 +40,6 @@
 - ORM 쿼리셋 조회
 ![Query](https://user-images.githubusercontent.com/74910760/193414652-dc645b55-795b-4176-9768-3ad51047411b.png)
 - filter 사용
-
 ![filter](https://user-images.githubusercontent.com/74910760/193414662-d57c519c-dc48-4916-98ea-12ef935a1a0c.png)
 
 
