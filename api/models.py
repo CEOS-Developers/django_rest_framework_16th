@@ -13,10 +13,18 @@ class Profile(models.Model):
     search = models.BooleanField(default=False)
 
 
+# User를 onetoone 방식으로 하면 나머지 클래스에서 foreignkey로 user id를 쓰고 싶을 때 어떻게 해야 하는지 궁금함
+class Follower(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE())
+
+
+class Following(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE())
+
+
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE())
-    # User를 onetoone 방식으로 하면 나머지 클래스에서 foreignkey로 user id를 쓰고 싶을 때 어떻게 해야 하는지 궁금함
     title = models.TextField(max_length=50)
     color = models.IntegerField(default=0)
     is_public = models.BooleanField(default=False)
