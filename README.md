@@ -16,6 +16,7 @@
 - 친구 계정 팔로잉
 
 ### DB 설계
+<img width="534" alt="image" src="https://user-images.githubusercontent.com/68368633/193413230-b0c15e84-1512-43a1-994d-3deb28c2d6f2.png">
 
 
 models.py 작성 끝나면 migration!
@@ -25,8 +26,12 @@ python manage.py migrate
 ```
 ### ORM 이용해보기
 1. 데이터베이스에 해당 모델 객체 3개 넣기
+![image](https://user-images.githubusercontent.com/68368633/193413199-df894bcb-ec59-43fd-afe4-76d3b4659050.png)
 2. 삽입한 객체들을 쿼리셋으로 조회해보기 (단, 객체들이 객체의 특성을 나타내는 구분가능한 이름으로 보여야 함)
+![image](https://user-images.githubusercontent.com/68368633/193413193-25847923-d905-49bc-8027-b88335d7fbe9.png)
 3. filter 함수 사용해보기
+<img width="389" alt="image" src="https://user-images.githubusercontent.com/68368633/193413185-a8e01994-388f-493d-abad-e23647456df4.png">
+
 
 ### 에러 해결
 - ModuleNotFoundError: No module named 'environ'
