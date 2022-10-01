@@ -32,7 +32,7 @@ default는 public(전체공개)
 
 ### Communication
 - todo: Todo를 참조하는 foreign key, 어떤 to do item에 대한 활동인지 보여줌
-- author: Profile을 참조하는 foreign key, 작성자
+- author: Profile을 참조하는 foreign key, 이모티콘이나 댓글을 다는 작성자
 - emoji: 한 글자짜리 이모티콘으로 반응
 - comment: 서로 댓글을 달 수도 있다.
 
