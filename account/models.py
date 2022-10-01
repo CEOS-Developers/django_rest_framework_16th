@@ -12,8 +12,8 @@ class User(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField('User', on_delete=models.CASCADE)
-    nickname = models.CharField(max_length=20)
-    description = models.CharField(max_length=50)
-    social_id = models.CharField(max_length=100, null=True, unique=True, validators=[MinLengthValidator(4)])
-    image = models.ImageField(null=True)
+    nickname = models.CharField(max_length=100, default="me")
+    description = models.CharField(max_length=50, blank=True)
+    social_id = models.CharField(max_length=100, blank=True, unique=True, validators=[MinLengthValidator(4)])
+    image = models.ImageField(null=True, blank=True)
     following = models.ManyToManyField('User', related_name='follower')
