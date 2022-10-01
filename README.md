@@ -17,6 +17,7 @@
 
 ### DB 설계
 <img width="534" alt="image" src="https://user-images.githubusercontent.com/68368633/193413230-b0c15e84-1512-43a1-994d-3deb28c2d6f2.png">
+
 - todo의 color나 diary의 emoji는 개발하게 된다면 프론트 측과 합의해서 결정해야 할 것 같다.
 
 - follower/following의 설계가 저런 식이 아닐 것 같다.
