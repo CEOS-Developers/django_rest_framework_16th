@@ -20,16 +20,16 @@ class User(models.Model):
 
 # User를 onetoone 방식으로 선언하면 나머지 클래스에서 foreignkey로 user id를 쓰고 싶을 때 어떻게 해야 하는지 궁금함
 class Follower(models.Model):
-    profile = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Following(models.Model):
-    profile = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
-    profile = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     color = models.IntegerField(default=0)
     is_public = models.BooleanField(default=False)
@@ -41,7 +41,7 @@ class Category(models.Model):
 
 class Todo(models.Model):
     todo_id = models.AutoField(primary_key=True)
-    profile = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)  # 여기를 CASCADE로 설정하는 것이 맞는지 모르겠다.
     is_success = models.BooleanField(default=False)
     is_valid = models.BooleanField(default=False)
@@ -56,7 +56,7 @@ class Todo(models.Model):
 
 class Diary(models.Model):
     diary_id = models.AutoField(primary_key=True)
-    profile = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.CharField(max_length=400)
     emoji = models.CharField(max_length=100)
     public = models.IntegerField(default=0)
