@@ -30,10 +30,26 @@
 
 ### ORM 이용해보기
 
+- 파이썬 쉘 들어가기
+```shell
+python manage.py shell
+```
+
 1. **데이터베이스에 해당 모델 객체 3개 넣기**
 ```shell
+>>> from api.models import *
+>>> from auth.models import *
+>>> user = User.objects.create()
+>>> user.save()
+>>> user = Profile.objects.create(nickname='ori', bio='hello', user_id=1) 
+>>> user.save()
+>>> category = Category.objects.create(user_id=1, name='homework')
+>>> category.save()
+>>> todo = ToDo.objects.create(user_id=1, category_id=1, content='coding', is_done=False, is_repeat=False)
+>>> todo.save()
 
 ```
+![img.png](src/img/orm_1.png)
 2. **삽입한 객체들을 쿼리셋으로 조회해보기 (단, 객체들이 객체의 특성을 나타내는 구분가능한 이름으로 보여야 함)**
 ```shell
 
