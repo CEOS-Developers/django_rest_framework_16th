@@ -20,13 +20,13 @@ class BaseModel(models.Model):
         self.save()
 
 
-class User(BaseModel):
-    email = models.EmailField(unique=True, verbose_name='사용자 이메일')
+class User(AbstractUser, BaseModel):
+    email = models.EmailField(max_length=254, unique=True, verbose_name='사용자 이메일')
     password = models.CharField(null=False, verbose_name='사용자 비밀 번호')
-    nickname = models.CharField(max_length=10, unique=True, verbose_name='별명')
+    followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
 
     def __str__(self):
-        return self.nickname
+        return self.username
 
 
 class Goal(BaseModel):
@@ -45,13 +45,16 @@ class Todo(BaseModel):
     goal = models.ForeignKey(Goal, related_name='todo', on_delete=models.CASCADE)
     content = models.CharField(max_length=100)
     # 시간 입력 어떻게?
-    date = models.DateTimeField()
+    date = models.DateTimeField(default=datetime.now())
     state = models.BooleanField(default=False)
 
-
-class Following(BaseModel):
-    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followerUser')
-    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followingUser')
-
     def __str__(self):
-        return '{} : {}'.format(self.follower.nickname, self.following.nickname)
+        return '{} : {} : {}'.format(self.user, self.goal, self.content)
+
+
+# class Following(BaseModel):
+#     follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followerUser')
+#     following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followingUser')
+#
+#     def __str__(self):
+#         return '{} : {}'.format(self.follower.nickname, self.following.nickname)
