@@ -14,5 +14,5 @@ class Profile(models.Model):
     user = models.OneToOneField('User', on_delete=models.CASCADE)
     nickname = models.CharField(max_length=20)
     description = models.CharField(max_length=50)
-    user_id = models.CharField(max_length=100, null=True, unique=True, validators=[MinLengthValidator(4)])
+    social_id = models.CharField(max_length=100, null=True, unique=True, validators=[MinLengthValidator(4)])
     image = models.ImageField(null=True)
