@@ -32,6 +32,7 @@ python manage.py migrate
 2. 삽입한 객체들을 쿼리셋으로 조회해보기 (단, 객체들이 객체의 특성을 나타내는 구분가능한 이름으로 보여야 함)
 ![image](https://user-images.githubusercontent.com/68368633/193413193-25847923-d905-49bc-8027-b88335d7fbe9.png)
 3. filter 함수 사용해보기
+
 ![image](https://user-images.githubusercontent.com/68368633/193413421-85045bee-7289-46f7-88f5-1bada10195b6.png)
 
 
