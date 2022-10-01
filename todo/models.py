@@ -25,7 +25,7 @@ class Todo(models.Model):
     is_active = models.BooleanField(default=True)
     time = models.TimeField(null=True)
     image = models.ImageField(null=True)
-    easy_input = models.ForeignKey('EasyInput', null=True, on_delete=models.SET_NULL, related_name='todo')
+    easy_input = models.ForeignKey('EasyInput', null=True, on_delete=models.CASCADE, related_name='todo')
 
 
 class Keep(models.Model):
