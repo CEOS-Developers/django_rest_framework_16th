@@ -53,7 +53,7 @@ python manage.py shell
 2. **삽입한 객체들을 쿼리셋으로 조회해보기 (단, 객체들이 객체의 특성을 나타내는 구분가능한 이름으로 보여야 함)**
 ![img.png](src/img/orm_2.png)
 3. **filter 함수 사용해보기**
-
+![img.png](src/img/orm_3.png)
 
 <br></br>
 
