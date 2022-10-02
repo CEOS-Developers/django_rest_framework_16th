@@ -5,7 +5,7 @@
 
 ### 투두메이트 서비스 설명
 
-![img.png](src/img/todo_mate.png)
+![todo_mate](https://user-images.githubusercontent.com/68186101/193458056-025adc6e-1a80-4024-8829-8353b08ef34f.png)
 #### 오늘 해야 할 일을 기록하고, 친구들과 공유함으로써 더욱 동기를 부여하는 서비스
 - 해야 할 일을 **자신의 분류(목표)별**로 나눠서 기록할 수 있음
 - **분류(목표)별로 색**을 지정할 수 있음. 할 일을 완료하면 분류에 맞는 색이 채워져서 **채우는 재미**가 있음
@@ -16,11 +16,11 @@
 <br></br>
 
 ### 투두메이트 모델링 결과
-![img.png](src/img/db_erd.png)
+![db_erd](https://user-images.githubusercontent.com/68186101/193458050-3a930229-6e60-4452-847a-ce5c80592d7f.png)
 1. 유저는 목표를 여러 개 세울 수 있다. (1 : N)
 2. 유저는 할 일을 여러 개 만들 수 있다. (1 : N)
 3. 목표는 할 일을 여러 개 가질 수 있다. 하나의 할 일은 한 목표에 대응된다. (1 : N)
-4. 친구 관계 (1 : N)
+4. 친구 관계 (N : M)
 
 
 
@@ -49,15 +49,15 @@ python manage.py shell
 >>> todo.save()
 
 ```
-![img.png](src/img/orm_1.png)
+![orm_1](https://user-images.githubusercontent.com/68186101/193458053-485653b1-2824-4bfa-9b3d-5a16940471fc.png)
 
 2. **삽입한 객체들을 쿼리셋으로 조회해보기 (단, 객체들이 객체의 특성을 나타내는 구분가능한 이름으로 보여야 함)**
 
-![img.png](src/img/orm_2.png)
+![orm_2](https://user-images.githubusercontent.com/68186101/193458054-cc617145-7745-4d3c-bdb4-3f685cb818c0.png)
 
 3. **filter 함수 사용해보기**
 
-![img.png](src/img/orm_3.png)
+![orm_3](https://user-images.githubusercontent.com/68186101/193458055-6c073b82-d5f3-4f92-aaa9-ac3915ca1d56.png)
 
 <br></br>
 
@@ -84,6 +84,6 @@ python manage.py shell
 ### 더 알아보고 싶은 것
 
 - migrate 했을 시 생기는 장고 관련 테이블에 대해 <br></br>
-![img.png](src/img/db_init_table.png)
+![db_init_table](https://user-images.githubusercontent.com/68186101/193458052-d6127c0d-dabc-437f-b52b-d6220f61e8e7.png)
 
 - 기본 키 자동으로 만드는 거 커스텀 할 수 있는지에 대해
