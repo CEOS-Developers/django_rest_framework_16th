@@ -1,4 +1,5 @@
 import base64
+import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -21,8 +22,8 @@ class Profile(models.Model):
 
 
 class Friend(models.Model):
-    person = models.ForeignKey(User, on_delete=models.CASCADE, related_name='person')
-    friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friend')
+    followed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followed', default = '')
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following', default = '')
 
 
 class Category(models.Model):
@@ -34,7 +35,8 @@ class ToDo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     content = models.TextField(blank=True)
-    range = models.IntegerField(default=0)
-    is_done = models.BooleanField()
-    is_repeat = models.BooleanField()
-    cycle = models.IntegerField(default=0)
+    date = models.DateField(default=datetime.date.today)
+    range = models.PositiveIntegerField(default=0)
+    is_done = models.BooleanField(default=False)
+    is_repeat = models.BooleanField(default=False)
+    cycle = models.PositiveIntegerField(default=0)
