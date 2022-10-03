@@ -28,7 +28,7 @@ LikedList : 하트를 누른 할 일 목록들을 저장
 Diary : 작성한 일기에 대한 정보 저장
 Relation : 팔로잉/팔로워에 대한 정보 저장 
 </code></pre>
-
+<img src="./model.jpg"/>
 ## ORM 이용해보기
 1. 데이터베이스에 해당 모델 객체 3개 넣기
 <pre><code>from api.models import *
