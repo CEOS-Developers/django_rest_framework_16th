@@ -4,7 +4,21 @@
 ## 2주차 미션: DB 모델링 및 Django ORM
 
 ### 투두메이트 모델링 ERD
-<img width="100%" src="https://user-images.githubusercontent.com/69039161/193408814-d2dc72c3-29e5-4c98-ab4a-a96cd574ce73.png"/>
+<img width="100%" src="https://user-images.githubusercontent.com/69039161/193408814-d2dc72c3-29e5-4c98-ab4a-a96cd574ce73.png"/>  
+사용자 : 프로필 = 1 : 1
+사용자 : 팔로잉 = N : M
+사용자 : 목표 = 1 : N
+사용자 : 일기 = 1 : N
+사용자 : 시간 알림 = 1 : N
+사용자 : 팔로잉 = N : M
+목표 : 할 일 = 1 : N
+목표 : 간편입력 = 1 : N
+목표 : 보관함 = 1 : N
+간편입력 : 요일 = N : M
+간편입력 : 할 일 = 1 : N
+할 일 : 할 일 응원 : 사용자 = 1 : 1 : 1
+일기 : 일기 응원 : 사용자 = 1 : 1 : 1
+
 
 <img width="70%" src="https://user-images.githubusercontent.com/69039161/193409903-e5bf1a4d-c8c1-4f78-9b5e-07da2b214dea.png"/>
 
