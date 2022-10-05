@@ -14,9 +14,9 @@
 django에서 기본 제공하는 user 모델 상속  - AbstractUser를 상속받아 custom함
 - email을 유저네임으로 사용하도록 custom
 
-### Friends
-- user: User를 참조하는 foreign key
-- subscription: user가 팔로우하는 친구들의 이메일이 저장됨.
+### Follower
+- follower: User를 참조하는 foreign key
+- following: User를 참조하는 foreign key
 
 ### Category
 - category_name: 카테고리명
@@ -30,7 +30,7 @@ django에서 기본 제공하는 user 모델 상속  - AbstractUser를 상속받
 default는 public(전체공개)
 - date: 일정별 to do list를 볼 수 있도록
 
-### Communication
+### Comment
 - todo: Todo를 참조하는 foreign key, 어떤 to do item에 대한 활동인지 보여줌
 - author: User를 참조하는 foreign key, 이모티콘이나 댓글을 다는 작성자
 - emoji: 한 글자짜리 이모티콘으로 반응
