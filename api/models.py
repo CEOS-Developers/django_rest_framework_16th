@@ -1,13 +1,18 @@
 from django.db import models
 
-# Create your models here.
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
 class User(models.Model):
     name = models.CharField(max_length=10)
     email = models.CharField(max_length=25, unique=True)
-    webId = models.CharField(max_length=15, null=True)
-    webPw = models.CharField(max_length=25)
+    web_id = models.CharField(max_length=15, null=True)
+    web_pw = models.CharField(max_length=25)
     intro_text = models.TextField(null=True)
-    createdAt = models.DateTimeField()
 
     def __str__(self):
         return self.name
@@ -16,7 +21,7 @@ class User(models.Model):
 class Todo(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, verbose_name='user info')
     contents = models.TextField()
-    date = models.DateField(input_formats=['%Y/%m/%d'])
+    date = models.DateField()
     is_checked = models.BooleanField(default=False)
 
     def __str__(self):
@@ -26,7 +31,7 @@ class Diary(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, verbose_name='user info')
     emoji = models.CharField(max_length=15)
     mood_temperature = models.IntegerField(default=25)
-    date = models.DateField(input_formats=['%Y/%m/%d'])
+    date = models.DateField()
     contents = models.TextField()
     background_color = models.CharField(max_length=15)
     private = models.BooleanField(default=False)
