@@ -10,7 +10,6 @@ class BaseModel(models.Model):
     # 시간 설정
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    deleted_at = models.DateTimeField(null=True)
 
     class Meta:
         abstract = True
@@ -24,7 +23,7 @@ class BaseModel(models.Model):
 class User(AbstractUser, BaseModel):
     email = models.EmailField(max_length=254, unique=True, verbose_name='사용자 이메일')
     password = models.CharField(max_length=128, null=False, verbose_name='사용자 비밀 번호')
-    followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
+    # followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
 
     def __str__(self):
         return self.username
@@ -54,15 +53,15 @@ class Todo(BaseModel):
 
 
 class Like(BaseModel):
-    user = models.ForeignKey(User, related_name='like_by', on_delete=models.DO_NOTHING)
-    todo = models.ForeignKey(Todo, related_name='like_content', on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, related_name='like', on_delete=models.DO_NOTHING)
+    todo = models.ForeignKey(Todo, related_name='like_todo', on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return '{} : {}'.format(self.user, self.todo.content)
 
-# class Following(BaseModel):
-#     follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followerUser')
-#     following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followingUser')
-#
-#     def __str__(self):
-#         return '{} : {}'.format(self.follower.nickname, self.following.nickname)
+class Following(BaseModel):
+    follower = models.ForeignKey(User, related_name='follower', on_delete=models.DO_NOTHING)
+    following = models.ForeignKey(User, related_name='following', on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return '{} : {}'.format(self.follower.username, self.following.username)
