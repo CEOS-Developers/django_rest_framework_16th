@@ -1,5 +1,6 @@
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
+## 2주차 : 2주차 미션: DB 모델링 및 Django ORM
 ## Todomate
 ### Todomate란?
 일정 관리 + 타인과 일정 공유
@@ -9,7 +10,7 @@
 3. 팔로워와 자신의 일정을 공유하고, 일기와 할 일에 관해 좋아요(이모지)를 남길 수 있음
 
 ## ERD
-![CEOS - TODO](https://user-images.githubusercontent.com/67852689/193405189-b74861af-5b2b-4a47-ada6-b8e8a37a730c.png)
+![erd](https://user-images.githubusercontent.com/67852689/194323547-a46512ce-d500-45fd-9a0e-f727be3859e8.jpeg)
 * Profile : Django의 유저모델과 OneToOne 확장 이용, 유저의 정보를 저장
 * Goal : 목표에 대한 정보를 저장
   * 1(User) : N(Goal) : 유저가 여러 개의 목표를 생성할 수 있다.
@@ -54,3 +55,4 @@ Profile 인스턴스를 만들면 User가 자동으로 생성되는 줄 알았�
 디비를 초기화하고 migration 파일을 모두 삭제해서, 문제를 해결할 수 있었다.
 3. 어렵다<br>
 그래도 프론트보단 좋다ㅋ
+

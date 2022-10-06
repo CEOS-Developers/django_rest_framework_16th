@@ -16,8 +16,6 @@ class BaseModel(models.Model):
 
 class Profile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # OneToOne 방식 이용
-    user_name = models.CharField(max_length=20)
-    email = models.EmailField()  # default max : 254
     profile_description = models.CharField(max_length=200, blank=True, null=True)
     profile_image = models.URLField(blank=True, null=True)  # default max : 200
     is_premium = models.BooleanField(default=False)
