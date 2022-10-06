@@ -6,16 +6,14 @@ from django.contrib.auth.models import AbstractUser
 
 # primary key 자동 생성
 class BaseModel(models.Model):
-    is_deleted = models.BooleanField(default=False)
-    # 시간 설정
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField(null=True)
 
     class Meta:
         abstract = True
 
     def delete(self, using=None, keep_parents=False):
-        self.is_deleted = True
         self.deleted_at = datetime.now()
         self.save()
 
