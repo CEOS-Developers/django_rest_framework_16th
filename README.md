@@ -56,3 +56,24 @@ mysql 사용부터 migration을 하는 과정에서 에러가 많이 떠서 해�
 
 등이 있었다. erd를 완성하고 나서 실제 서비스를 구현하려면 더 세분화해서 모델을 작성했어야겠다는 생각이 들었다. 다음 스터디에서 피드백을 통해 erd를 더 발전시킬 수 있길...
 
+
+## 3주차 미션
+
+### Todo 모델
+
+<pre><code>
+    class Todo(BaseModel):
+        user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='todo')
+        contents = models.TextField(max_length=30)
+        date = models.DateField()
+        is_checked = models.BooleanField(default=False)
+</code></pre>
+### 데이터 삽입
+- User 모델 데이터
+![User objects](https://user-images.githubusercontent.com/74910760/194283471-8420c0e0-2933-4bfc-8aa3-bff071737a01.png)
+
+- Todo 모델 데이터
+![Todo ORM](https://user-images.githubusercontent.com/74910760/194282940-3d459d19-ed42-45ee-a0a3-350ada169371.png)
+![Todo objects](https://user-images.githubusercontent.com/74910760/194283231-6ec6ef1e-807d-4f44-8e29-5886bdfea0d6.png)
+
+### 모든 데이터를 가져오는 API

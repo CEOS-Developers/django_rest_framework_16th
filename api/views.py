@@ -1,25 +1,45 @@
 # views.py
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
-from snippets.models import Snippet
-from snippets.serializers import SnippetSerializer
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework.utils import json
 
-@csrf_exempt
-def snippet_list(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    if request.method == 'GET':
-        snippets = Snippet.objects.all()
-        serializer = SnippetSerializer(snippets, many=True)
-        return JsonResponse(serializer.data)
+from .models import User, Todo, Diary, Likes, Follows
+from .serializers import TodoSerializer
 
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = SnippetSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+
+# 모든 데이터(TodoList)를 가져오는 API
+@api_view(['GET'])
+def getAllTodoList(request):
+    items = TodoSerializer(Todo.objects.all(), many=True)
+    return Response(items.data)
+
+
+# 특정 데이터(TodoList)를 가져오는 API
+@api_view(['GET'])
+def getTodoList(request, pk):
+    item = TodoSerializer(Todo.objects.filter(id=pk))
+    return Response(item.data)
+
+
+# 새로운 데이터(TodoList)를 create하도록 요청하는 API
+@api_view(['POST'])
+def createTodoList(request):
+    req_data = json.loads(request.body)
+    result = TodoSerializer.create(TodoSerializer, req_data)
+    return Response(result)
+
+
+# 특정 데이터(TodoList)를 삭제하는 API
+@api_view(['DELETE'])
+def deleteTodoList(request, pk):
+    result = TodoSerializer.delete(TodoSerializer, pk)
+    return Response(result)
+
+
+# 특정 데이터(TodoList)를 업데이트 하는 API
+@api_view(['PUT'])
+def updateTodoList(request, pk):
+    req_data = json.loads(request.body)
+    result = TodoSerializer.update(TodoSerializer, pk, req_data)
+    return Response(result)
