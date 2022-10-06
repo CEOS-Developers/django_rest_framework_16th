@@ -32,7 +32,7 @@ class Diary(BaseModel):
     emoji = models.CharField(max_length=15)
     mood_temperature = models.IntegerField(default=25)
     date = models.DateField()
-    contents = models.TextField()
+    contents = models.TextField(max_length=200)
     background_color = models.CharField(max_length=15)
     private = models.BooleanField(default=False)
     image = models.URLField(blank=True, null=True)
