@@ -76,7 +76,7 @@ class LikeSerializer(serializers.ModelSerializer):
         return obj.user.username
 
 
-class FollowingSerializer(serializers.ModelSerializer):
+class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = ['follower', 'following']
