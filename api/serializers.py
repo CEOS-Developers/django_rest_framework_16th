@@ -19,7 +19,7 @@ class TodoSerializer(serializers.ModelSerializer):
         return obj.goal.name
 
     def get_todo_like(self, obj):
-        return list(Like.objects.filter(todo_id=obj.id).prefetch_related('todo').values())
+        return list(Like.objects.filter(todo_id=obj.id).prefetch_related('like_todo').values())
 
 
 class GoalSerializer(serializers.ModelSerializer):
@@ -34,12 +34,12 @@ class GoalSerializer(serializers.ModelSerializer):
         return obj.user.username
 
     def get_goal_todos(self, obj):
-        return list(Todo.objects.filter(goal_id=obj.id).prefetch_related('goal').values())
+        return list(Todo.objects.filter(goal_id=obj.id).prefetch_related('todo_goal').values())
 
 
 class UserSerializer(serializers.ModelSerializer):
     user_goals = serializers.SerializerMethodField()
-    user_todos= serializers.SerializerMethodField()
+    user_todos = serializers.SerializerMethodField()
     user_follower = serializers.SerializerMethodField()
     user_following = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
@@ -50,16 +50,16 @@ class UserSerializer(serializers.ModelSerializer):
                   'user_follower', 'user_following', 'created_at'}
 
     def get_user_goals(self, obj):
-        return list(Goal.objects.filter(user_id=obj.id).prefetch_related('user').values())
+        return list(Goal.objects.filter(user_id=obj.id).prefetch_related('goal_user').values())
 
-    def get_user_todos(self,obj):
-        return list(Todo.objects.filter(user_id=obj.id).prefetch_related('user').values())
+    def get_user_todos(self, obj):
+        return list(Todo.objects.filter(user_id=obj.id).prefetch_related('todo_user').values())
 
     def get_user_follower(self, obj):
-        return list(Following.objects.filter(follower_id=obj.id).prefetch_related('user').values())
+        return list(Follow.objects.filter(follower_id=obj.id).prefetch_related('follower').values())
 
     def get_user_following(self, obj):
-        return list(Following.objects.filter(following_id=obj.id).prefetch_related('user').values())
+        return list(Follow.objects.filter(following_id=obj.id).prefetch_related('following').values())
 
     def get_created_at(self, obj):
         return obj.created_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -78,5 +78,5 @@ class LikeSerializer(serializers.ModelSerializer):
 
 class FollowingSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Following
+        model = Follow
         fields = ['follower', 'following']
