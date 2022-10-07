@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 
 class User(models.Model):
+    id = models.AutoField(primary_key=True)
     nickname = models.CharField(max_length=20)
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=30)
@@ -19,6 +20,7 @@ class User(models.Model):
         return self.nickname
 
 class TodoClass(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     class_name = models.CharField(max_length=30)
     class_color = models.CharField(max_length=10)
@@ -32,6 +34,7 @@ class TodoClass(models.Model):
 
 
 class Todo(models.Model):
+    id = models.AutoField(primary_key=True)
     todo_class = models.ForeignKey(TodoClass, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     image = models.TextField()
@@ -46,6 +49,7 @@ class Todo(models.Model):
 
 
 class TodoLike(models.Model):
+    id = models.AutoField(primary_key=True)
     user_from = models.ForeignKey(User, related_name="TodoLike_From", on_delete=models.CASCADE, default='')
     todo = models.ForeignKey(Todo, on_delete=models.CASCADE)
     emoji = models.CharField(max_length=10)
@@ -58,6 +62,7 @@ class TodoLike(models.Model):
 
 
 class Diary(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     background_color = models.CharField(max_length=10)
@@ -73,6 +78,7 @@ class Diary(models.Model):
 
 
 class DiaryLike(models.Model):
+    id = models.AutoField(primary_key=True)
     user_from = models.ForeignKey(User, related_name="DiaryLike_From", on_delete=models.CASCADE, default='')
     diary = models.ForeignKey(Diary, on_delete=models.CASCADE)
     emoji = models.CharField(max_length=10)

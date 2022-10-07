@@ -1,13 +1,10 @@
-from django.shortcuts import render
-
 # Create your views here.
-from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from api.models import Todo, TodoClass
 from api.serializers import *
 
 @csrf_exempt
@@ -26,6 +23,16 @@ def TodoClassesAPI(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+@csrf_exempt
+@api_view(['GET'])
+def TodoClassAPI(request, id):
+    if request.method == 'GET':
+        todo_class = get_object_or_404(TodoClass, id=id)
+        serializer = TodoClassSerializer(todo_class)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 
 @csrf_exempt
 @api_view(['GET','POST'])
@@ -42,4 +49,10 @@ def TodosAPI(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
+@csrf_exempt
+@api_view(['GET'])
+def TodoAPI(request, id):
+    if request.method == 'GET':
+        todo = get_object_or_404(Todo, id=id)
+        serializer = TodoSerializer(todo)
+        return Response(serializer.data, status=status.HTTP_200_OK)
