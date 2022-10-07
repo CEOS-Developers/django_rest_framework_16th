@@ -3,26 +3,26 @@
 
 ## 2주차 미션: DB 모델링 및 Django ORM
 
-## 투두메이트
+### 투두메이트
 일정 관리(투두리스트) 서비스.  
 다른 사용자들에게 자신의 투두리스트를 공유할 수 있다는 차별점이 있다.  
 서로 좋아요 등을 남길 수도 있고, 그래서 더 동기부여가 된다!
 
-## 모델 설계
+### 모델 설계
 
-### User
+#### User
 django에서 기본 제공하는 user 모델 상속  - AbstractUser를 상속받아 custom함
 - email을 유저네임으로 사용하도록 custom
 
-### Follower
+#### Follower
 - follower: User를 참조하는 foreign key
 - following: User를 참조하는 foreign key
 
-### Category
+#### Category
 - category_name: 카테고리명
 - user : User를 참조하는 foreign key, 어떤 사용자의 카테고리인지 보여줌
 
-### Todo
+#### Todo
 - todo_name: to do item을 작성했을 때 그것의 이름
 - user: 작성한 사용자
 - category: 카테고리
@@ -30,13 +30,13 @@ django에서 기본 제공하는 user 모델 상속  - AbstractUser를 상속받
 default는 public(전체공개)
 - date: 일정별 to do list를 볼 수 있도록
 
-### Comment
+#### Comment
 - todo: Todo를 참조하는 foreign key, 어떤 to do item에 대한 활동인지 보여줌
 - author: User를 참조하는 foreign key, 이모티콘이나 댓글을 다는 작성자
 - emoji: 한 글자짜리 이모티콘으로 반응
 - comment: 서로 댓글을 달 수도 있다.
 
-## ORM 이용해보기
+### ORM 이용해보기
 1번  
 ![img.png](images/img.png)
 2번  
@@ -45,7 +45,7 @@ default는 public(전체공개)
 ![img_2.png](images/img_2.png)
 
 
-## 이번 과제를 하며..
+### 이번 과제를 하며...
 내 컴퓨터 환경에서는 pip install mysqlclient로 mysqlclient가 설치되지 않는다..  
 그래서 지난번 프로젝트 때는 파이썬 버젼에 맞는 whl 파일을 인터넷에서 다운로드 받는 형식으로 이용을 했는데
 다른 방법이 없나 알아봤지만 결국 이번에도 수동설치를 하게 되었다.  
@@ -64,3 +64,9 @@ python manage.py migrate를 하면 다음 에러가 뜬다.
 그리고 Django에서 기본적으로 제공하는 user 모델에 대해서 잘 몰랐는데, 엄청 편리한 기능 같아서
 더 알아보고 싶다.
 
+
+## 3주차 미션: Django Serializer & Django View
+
+### API 만들기
+
+### 이번 과제를 하며...
