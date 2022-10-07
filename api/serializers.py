@@ -43,11 +43,12 @@ class UserSerializer(serializers.ModelSerializer):
     user_follower = serializers.SerializerMethodField()
     user_following = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
+    deleted_at = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'is_active', 'user_goals', 'user_todos',
-                  'user_follower', 'user_following', 'created_at']
+                  'user_follower', 'user_following', 'created_at', 'deleted_at']
 
     def get_user_goals(self, obj):
         return list(Goal.objects.filter(user_id=obj.id).prefetch_related('goal_user').values())
@@ -63,6 +64,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_created_at(self, obj):
         return obj.created_at.strftime("%Y-%m-%d %H:%M:%S")
+
+    def get_deleted_at(self, obj):
+        if obj.deleted_at is None:
+            return None
+        else: return obj.deleted_at.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class LikeSerializer(serializers.ModelSerializer):
