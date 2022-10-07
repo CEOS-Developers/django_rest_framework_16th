@@ -13,10 +13,7 @@
          like_count=models.PositiveIntegerField(default=0)
 
 
-
-Python shell 출력
-
-<img width="731" alt="스크린샷 2022-10-07 오후 7 07 10" src="https://user-images.githubusercontent.com/62806067/194529478-73ade7ff-458e-4591-a114-3f82acef122e.png">
+<img width="452" alt="스크린샷 2022-10-07 오후 7 40 51" src="https://user-images.githubusercontent.com/62806067/194535327-928b0b57-3026-409d-9750-717d28b21d9c.png">
 
 #### - 모든 데이터 조회 api
 
