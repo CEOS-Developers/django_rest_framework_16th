@@ -46,8 +46,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = {'nickname', 'email', 'password', 'is_active', 'user_goals', 'user_todos',
-                  'user_follower', 'user_following', 'created_at'}
+        fields = ['username', 'email', 'password', 'is_active', 'user_goals', 'user_todos',
+                  'user_follower', 'user_following', 'created_at']
 
     def get_user_goals(self, obj):
         return list(Goal.objects.filter(user_id=obj.id).prefetch_related('goal_user').values())
