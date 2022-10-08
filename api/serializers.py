@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -18,10 +19,12 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ('category_name', 'user')
 
+
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ('todo_name', 'user', 'category', 'disclosure_choice', 'date')
+
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
