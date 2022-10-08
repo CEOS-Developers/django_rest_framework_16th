@@ -38,6 +38,7 @@
 - URL: `api/todo/<int:pk>/`
 - METHOD: `GET`
 
+![image](https://user-images.githubusercontent.com/68186101/194712688-56d3995d-60d7-4fbd-925f-e201e751acdc.png)
 
 
 ### 새로운 데이터 create 하는 API
@@ -58,6 +59,8 @@
 - URL: `api/todo/<int:pk>`
 - METHOD: `DELETE`
 
+
+
 ### 데이터 업데이트하는 API
 - URL: `api/todo/<int:pk>`
 - METHOD: `PUT`
@@ -66,6 +69,8 @@
      ...
   } 
   ```
+  
+
   
   
 ### Issue
@@ -79,7 +84,12 @@
   ```py
   return JsonResponse(serializer.data, safe=False)
   ```
-
+- 특정 데이터 얻는 GET 요청에서 아래 에러가 났었다
+  - 에러 메시지
+  ```py
+  TypeError: 'ToDo' object is not iterable
+  ```
+  -> 알고보니, 객체가 하나인데, serializer를 해줄 때, `many=True` 속성을 넣어서 에러가 났던 거 같다! 이걸 빼니까 해결되었다. list가 아닌데 list인척 하려니 당연히 에러가 나지..! 난 바보다..
 
 ## 2주차 미션: DB 모델링 및 Django ORM
 
