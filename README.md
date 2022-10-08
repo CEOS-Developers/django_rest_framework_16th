@@ -38,7 +38,7 @@
 - URL: `api/todo/<int:pk>/`
 - METHOD: `GET`
 
-![image](https://user-images.githubusercontent.com/68186101/194712688-56d3995d-60d7-4fbd-925f-e201e751acdc.png)
+![image](https://user-images.githubusercontent.com/68186101/194712790-472e0e3b-044c-40bf-9030-b730c57d4902.png)
 
 
 ### 새로운 데이터 create 하는 API
@@ -59,6 +59,10 @@
 - URL: `api/todo/<int:pk>`
 - METHOD: `DELETE`
 
+- 에러
+```
+TypeError: __init__() missing 1 required positional argument: 'data'
+```
 
 
 ### 데이터 업데이트하는 API
@@ -70,7 +74,7 @@
   } 
   ```
   
-
+![image](https://user-images.githubusercontent.com/68186101/194713453-c7faa5e5-c0fd-4ffb-99b4-33e2df020a22.png)
   
   
 ### Issue
@@ -90,6 +94,23 @@
   TypeError: 'ToDo' object is not iterable
   ```
   -> 알고보니, 객체가 하나인데, serializer를 해줄 때, `many=True` 속성을 넣어서 에러가 났던 거 같다! 이걸 빼니까 해결되었다. list가 아닌데 list인척 하려니 당연히 에러가 나지..! 난 바보다..
+  
+- Forbidden (CSRF cookie not set.) 오류
+[해결 블로그](https://velog.io/@langssi/django-Forbidden-CSRF-cookie-not-set.-%EC%98%A4%EB%A5%98-%ED%95%B4%EA%B2%B0
+)
+
+- 데이터 Update하는 PUT 요청 시 아래 에러 났었음
+  - 에러 메시지
+  ```
+  TypeError: __init__() missing 1 required positional argument: 'data'
+  ```
+  -> 필드 값을 다 안채워줘서 그런 거 같다. 필드 값 다 채워주니 에러는 해결. 
+  ❗ 그런데 그럼 매번 update마다 모든 필드를 채운 다음에 변경값만 변경해서 보내줘야 하는건가..? -> 알아볼 필요 !!
+
+
+### 후기 💪
+api설계의 난이도는 어렵지 않았지만, 역시 늘 다른 언어를 배우고 새로운 프레임워크를 배우고 응용하는 건 어려운 일인 것 같다!!!! 장고로 api를 직접 구현하며 에러도 많이 보고,,해결하고,,!! 이번 기회를 통해 장고랑 더 많이 친해진 거 같아서 기분이 좋다 💘😎
+
 
 ## 2주차 미션: DB 모델링 및 Django ORM
 
