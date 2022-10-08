@@ -1,3 +1,4 @@
+# 2022.09.30
 ## TODOMATE FEATURES 
     1. 할 일 정리
     - 목표라는 큰 그룹 안에 할 일 목록들이 존재 
@@ -84,3 +85,131 @@ import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)</code></pre>
 
 ## 회고...
 장고 모델 생성과 ORM에 대해서 어느 정도 알고 있다고 생각했었는데 아니었다. FK를 설정하며 나온 수많은 에러를 해결하며 모델 및 데이터베이스 설계에 대해 많이 배운 것 같다.
+
+# 2022.10.08
+## 과제
+1. 모델 선택 및 데이터 삽입
+<pre><code> # models.py
+
+class TodoList(models.Model):
+    user = models.ForeignKey(Profile, db_column='user', on_delete=models.CASCADE)
+    group = models.ForeignKey(TodoGroup, related_name='list', db_column='group', on_delete=models.CASCADE)
+    start_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(default=timezone.now)
+    repeated_day = models.IntegerField(default=1111111)
+    alarm_time = models.DateTimeField(null=True)
+    todo = models.TextField()
+    image = models.TextField(null=True)
+    status = models.CharField(max_length=10, default='not done')</code></pre>
+    
+<img src="data.png">
+
+2. 모든 데이터를 가져오는 API
+   - URL : api/todolists
+   - Method : GET
+<pre><code>[
+    {
+        "user": 1,
+        "group": 1,
+        "start_date": "2022-10-01",
+        "end_date": "2022-10-01",
+        "repeated_day": 1111111,
+        "alarm_time": null,
+        "todo": "스쿼트 3세트",
+        "status": "not done"
+    },
+    {
+        "user": 1,
+        "group": 1,
+        "start_date": "2022-10-01",
+        "end_date": "2022-10-01",
+        "repeated_day": 1111111,
+        "alarm_time": null,
+        "todo": "런지 3세트",
+        "status": "not done"
+    },
+    {
+        "user": 1,
+        "group": 1,
+        "start_date": "2022-10-01",
+        "end_date": "2022-10-01",
+        "repeated_day": 1111111,
+        "alarm_time": null,
+        "todo": "레그프레스 3세트",
+        "status": "not done"
+    },
+    {
+        "user": 1,
+        "group": 3,
+        "start_date": "2022-10-01",
+        "end_date": "2022-10-01",
+        "repeated_day": 1111111,
+        "alarm_time": null,
+        "todo": "퀴즈 응시",
+        "status": "not done"
+    },
+    {
+        "user": 1,
+        "group": 3,
+        "start_date": "2022-10-07",
+        "end_date": "2022-10-07",
+        "repeated_day": 1111111,
+        "alarm_time": null,
+        "todo": "소공 공부",
+        "status": "not done"
+    }
+]</code></pre>
+
+3. 특정 데이터를 가져오는 API
+   - URL : api/todolist/4
+   - Method : GET
+<pre><code>{
+    "user": 1,
+    "group": 1,
+    "start_date": "2022-10-01",
+    "end_date": "2022-10-01",
+    "repeated_day": 1111111,
+    "alarm_time": null,
+    "todo": "스쿼트 3세트",
+    "status": "not done"
+}</code></pre>
+
+4. 새로운 데이터를 create하도록 요청하는 API
+   - URL : api/todolist
+   - Method : POST
+   - body
+<pre><code>{
+    "user":1,
+    "group":3,
+    "start_date": "2022-10-08",
+    "end_date": "2022-10-10",
+    "todo": "소프트웨어공학 pdf 요약"
+}</code></pre>
+
+<pre><code>{
+    "user": 1,
+    "group": 3,
+    "start_date": "2022-10-08",
+    "end_date": "2022-10-10",
+    "repeated_day": 1111111,
+    "alarm_time": null,
+    "todo": "소프트웨어공학 pdf 요약",
+    "status": "not done"
+}</code></pre>
+
+## !NEW!
+1. serializer : query object를 Json 형태로 리턴해주기 위해서 사용
+OnetoOneField로 연결된 User 모델은 import 후에 UserSerializer 작성함
+<pre><code>from django.contrib.auth.models import User</code></pre>
+2. 한글 깨짐 : 리턴한 값이 Web에서는 이상한 문자로 표현됨. JsonResponse의 인자로 json_dumps_params={'ensure_ascii': False}를 추가해서 해결
+
+## !WONDER!
+1. 이전 클래스형 뷰에서 POST method를 사용했을 때는 request.data로 데이터를 받아왔는데 이번 과제를 할 때는 저 코드를 인식하지를 못했다. 클래스형 뷰와 함수형 뷰의 작동 방식의 차이 때문에 그런 것 같은데 자세한건 시험이 끝난 후 찾아볼 예정....
+2. status : 200, 201, 409, 500... 어떨 때 어떤 status를 사용하는지 다 외워야되나..? 
+3. serializer가 여러개의 객체를 반환할 때는 Dictinary 타입이 아니라 List 타입으로 반환해준다. 이것 때문에 계속 오류가 나서 JsonResponse에 safe=False 인자를 추가하는 것으로 해결하기는 했는데 뭔가 찝찝하다... 다른 방법이 있는지 더 알아볼 예정
+4. created_at, deleted_at, updated_at 필드의 필요성 : created_at은 date가 역할을 대신해주고 있고 updated_at은 필요성을 느끼지 못했다. deleted_at은 DB에서 데이터를 직접 삭제하는 것보다는 남겨두는 것이 낫다라는 말을 듣기는 했지만, 그럼 삭제되지 않은 리스트를 불러올 때마다 deleted_at=false 조건을 확인할 생각을 하니 너무 귀찮을 것 같아서 넣지 않았는데... 관련해서 더 찾아볼 예정
+5. api/items vs api/items/ : url 끝에 /가 없는 편이 더 깔끔하다고 생각하기는 했는데 역할에 차이가 있는지 더 알아볼 예정....
+
+## 회고...
+이전에는 직접 json 형태로 반환해주는 form을 만들어서 쫌쫌따리 반환했는데 serializer를 알게되었다... 
+클래스형 뷰로 코드를 리팩토링 하면서 URL에 알맞게 GET, POST 함수들의 위치를 조정할 예정이다.
