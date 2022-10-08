@@ -134,7 +134,8 @@ class Todo(models.Model):
 모델들에 대해 ModelSerializer을 이용해 serializer를 만들었고,
 가장 핵심 모델이라고 생각한 todo 모델에 대해 view 만들기 연습을 해봤다.
 
-그리고 views.py에서 JsonResponse 대신 그냥 Response를 사용해야 drf를 테스트 할 수 있는 브라우저 화면을 볼 수 있다는 사실을 알게 되었고,  
-@api_view도 달아주어야 작동이 된다는 사실을 알게 되었다!
+views.py를 작성할 때 처음에 과제 예시로 나온 코드를 그대로 따라했더니 오류가 났는데 해결 과정에서
+JsonResponse 대신 그냥 Response를 사용해야 drf를 테스트 할 수 있는 브라우저 화면을 볼 수 있다는 사실을 알게 되었고,  
+함수형 뷰를 작성할 때는 @api_view를 꼭 달아야한다는 사실도 알게 되었다.
 
-나중에 서비스에 필요한 나머지 api들도 만들어봐야겠다!
+나중에 서비스에 필요한 나머지 api들도 만들어보고 Postman도 한번 사용해 봐야겠다!
