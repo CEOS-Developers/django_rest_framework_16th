@@ -11,12 +11,12 @@ def snippet_list(request):
     """
     List all code snippets, or create a new snippet.
     """
-    if request.method == 'GET':
-        snippets = ToDo.objects.all()
-        serializer = ToDoSerializer(snippets, many=True)
+    if request.method == 'GET': # 모든 데이터 얻기
+        todo = ToDo.objects.all()
+        serializer = ToDoSerializer(todo, many=True)
         return JsonResponse(serializer.data)
 
-    elif request.method == 'POST':
+    elif request.method == 'POST': # 새로운 데이터 등록
         data = JSONParser().parse(request)
         serializer = ToDoSerializer(data=data)
         if serializer.is_valid():
