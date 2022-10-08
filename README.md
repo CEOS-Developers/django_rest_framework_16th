@@ -38,11 +38,11 @@ default는 public(전체공개)
 
 ### ORM 이용해보기
 1번  
-![img.png](images/img.png)
+![img](https://user-images.githubusercontent.com/86969518/194710346-239846d9-ff7a-4101-b47d-d40bc5b2a6e7.png)  
 2번  
-![img_1.png](images/img_1.png)
+![img_1](https://user-images.githubusercontent.com/86969518/194710347-05da1fba-e2de-4d77-89c3-4c9775e5f404.png)  
 3번  
-![img_2.png](images/img_2.png)
+![img_2](https://user-images.githubusercontent.com/86969518/194710348-60bedf6a-3168-4566-80d0-c4bb2588e6aa.png)  
 
 
 ### 이번 과제를 하며...
@@ -52,7 +52,7 @@ default는 public(전체공개)
 
 또, mysql 데이터베이스를 그대로 이용할 수 없다.  
 python manage.py migrate를 하면 다음 에러가 뜬다.  
-![img_3.png](images/img_3.png)
+![img_3](https://user-images.githubusercontent.com/86969518/194710349-3090c3dd-dae1-4c0e-bb7b-3675343417d1.png)
 이 에러를 해결하려고 시간을 엄청나게 많이 썼는데..! 답은 pip install PyMySQL을 하는 것이었다.  
 다음에는 잊지 말아야지..
 
@@ -80,7 +80,7 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 ```
-![img_4.png](images/img_4.png)
+![img_4](https://user-images.githubusercontent.com/86969518/194710350-f3221c17-77b9-48f9-8fae-b0a8851ce411.png)
 
 Category 데이터 삽입
 ```python
@@ -90,7 +90,7 @@ class Category(models.Model):
     def __str__(self):
         return self.category_name
 ```
-![img_5.png](images/img_5.png)
+![img_5](https://user-images.githubusercontent.com/86969518/194710352-3eba33fa-06fc-4c9f-bd6c-9698975b96fa.png)
 
 Todo 데이터 삽입
 ```python
@@ -109,25 +109,25 @@ class Todo(models.Model):
     def __str__(self):
         return self.todo_name
 ```
-![img_6.png](images/img_6.png)
+![img_6](https://user-images.githubusercontent.com/86969518/194710353-f8e9d88d-6c31-47e1-98c5-600ec1e5a9c3.png)
 
 ### API 만들기
 모든 데이터를 가져오는 api
-![img_7.png](images/img_7.png)
+![img_7](https://user-images.githubusercontent.com/86969518/194710354-bc8bfc8c-48b2-4a71-b9b2-39ea3b91f971.png)
 
 특정 과제를 가져오는 api
-![img_8.png](images/img_8.png)
+![img_8](https://user-images.githubusercontent.com/86969518/194710355-cace0bfb-55ab-4586-83d0-77456f36958a.png)
 
 새로운 데이터를 create하도록 요청하는 api
-![img_9.png](images/img_9.png)
+![img_9](https://user-images.githubusercontent.com/86969518/194710357-454fea29-7679-4404-b5e8-06ca453d4e4e.png)
 
 특정 데이터를 삭제하는 api
-![img_10.png](images/img_10.png)
-![img_11.png](images/img_11.png)
+![img_10](https://user-images.githubusercontent.com/86969518/194710323-09048a9e-78f4-4416-9338-341a1bef1d74.png)
+![img_11](https://user-images.githubusercontent.com/86969518/194710301-62ec507c-7ed0-4b05-8224-458d7e51551b.png)
 
 특정 데이터를 업데이트하는 api
-![img_12.png](images/img_12.png)
-![img_13.png](images/img_13.png)
+![img_12](https://user-images.githubusercontent.com/86969518/194710255-74b188f5-0d7e-4d02-8849-ed2c8fc5f375.png)
+![img_13](https://user-images.githubusercontent.com/86969518/194710183-c6f6fcf8-a487-45a5-90d7-8d40a661612d.png)
 
 
 ### 이번 과제를 하며...
