@@ -5,6 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from api.models import ToDo
 from api.serializers import ToDoSerializer
+from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 
 @csrf_exempt
@@ -26,19 +29,23 @@ def todo_list(request):
         return JsonResponse(serializer.errors, status=400)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 def todo_one(request, id):
     if request.method == 'GET':  # 특정 데이터 얻기
-        todo = ToDo.objects.get(id=id)
-        serializer = ToDoSerializer(todo, many=True)
+        todo = get_object_or_404(ToDo, id=id)
+        serializer = ToDoSerializer(todo)
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'DELETE':  # 특정 데이터 삭제
-        todo = ToDo.objects.get(id=id)
+        todo = get_object_or_404(ToDo, id=id)
         todo.delete()
-        return JsonResponse(status=202)
+        return JsonResponse(status=204)
 
     elif request.method == 'PUT':  # 특정 데이터 업데이트
+        todo = get_object_or_404(ToDo, id=id)
         data = JSONParser().parse(request)
-        todo = ToDo.objects.get(id=id)
-        todo.update(**data)
-        return JsonResponse(status=200)
+        serializer = ToDoSerializer(todo, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(status=400)
