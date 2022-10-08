@@ -20,3 +20,10 @@ def goal_list(request):
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+
+
+def goal_detail(request, pk):
+    if request.method == 'GET':
+        goal = Goal.objects.get(pk=pk)
+        serializer = GoalSerializer(goal)
+        return JsonResponse(serializer.data, safe=False)
