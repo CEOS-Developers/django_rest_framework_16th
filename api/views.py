@@ -43,11 +43,12 @@ class GoalView(APIView):
 
         data = JSONParser().parse(request)
         new_data = {**data, "user": user.id}
+        # ** : spread operator
         serializer = serializers.GoalSerializer(data=new_data)
         if not serializer.is_valid():
             return JsonResponse(customResponse(400, serializer.errors), status=400)
         serializer.save()
-        return JsonResponse(customResponse(201, serializer.data), status=201)
+        return JsonResponse(customResponse(200, serializer.data), status=200)
 
 
 class GoalDetailView(APIView):
@@ -82,9 +83,9 @@ class GoalDetailView(APIView):
             return JsonResponse(customResponse(400), status=400)
 
         data = JSONParser().parse(request)
-        serializer = serializers.GoalSerializer(goal, data=data)
+        new_data = {**data, "user": goal.user.id}
+        serializer = serializers.GoalSerializer(goal, data=new_data)
         if not serializer.is_valid():
-            return JsonResponse(serializer.errors, status=400, safe=False)
+            return JsonResponse(customResponse(400, serializer.errors), status=400)
         serializer.save()
-
-        return JsonResponse(serializer.data, status=201, safe=False)
+        return JsonResponse(customResponse(200, serializer.data), status=200)
