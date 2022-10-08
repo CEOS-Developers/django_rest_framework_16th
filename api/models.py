@@ -5,30 +5,30 @@ from django.db import models
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(blank=True)
 
     class Meta:
         abstract = True
 
 class User(BaseModel):
     username = models.CharField(max_length=30)
-    password = models.CharField(max_length=32)
-    email = models.TextField()
-    profile_image = models.ImageField()
-    can_search_by_email = models.TextField()
-    is_shown = models.TextField()
+    password = models.CharField(max_length=30)
+    email = models.CharField(max_length=50)
+    profile_image = models.URLField(blank=True)
+    can_search_by_email = models.BooleanField(default=False)
+    is_shown = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
 
 class Goal(BaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    class_name = models.CharField(max_length=100, default="")
-    is_public = models.BooleanField(default=False)
-    color = models.CharField(max_length=10, blank=True, default="")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    goal_name = models.CharField(max_length=100, null=False)
+    is_public = models.IntegerField(default=0, null=False)
+    color = models.CharField(max_length=10, blank=True, null=False)
 
     def __str__(self):
-        return self.class_name
+        return self.goal_name
 
 class Todo(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -43,7 +43,7 @@ class Todo(BaseModel):
 
 class Diary(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, null=False)
     content = models.TextField()
     bg_color = models.TextField()
     feeling_temp = models.IntegerField()
@@ -51,4 +51,4 @@ class Diary(BaseModel):
     is_secret = models.IntegerField()
 
     def __str__(self):
-        return '{}의 일기'.format(self.user.username)
+        return self.content
