@@ -38,7 +38,7 @@
 - URL: `api/todo/`
 - METHOD: `POST`
 - BODY
-  ```
+  ```json
   { "user_id" : "유저번호", 
     "category_id" : "카테고리 번호", 
     "content" : "todo 내용", 
@@ -52,7 +52,7 @@
 ### 데이터 업데이트하는 API
 - URL: `api/todo/<int:pk>`
 - METHOD: `PUT`
-  ```
+  ```json
   { "필드명" : "업데이트할 필드값", 
      ...
   } 
