@@ -30,20 +30,29 @@
 - URL: `api/todo/` 
 - METHOD: `GET`
 
+![image](https://user-images.githubusercontent.com/68186101/194711986-bd70146f-ef73-47f7-a84f-9752b0fed747.png)
+![image](https://user-images.githubusercontent.com/68186101/194712063-5ea9c06a-9974-4214-9dae-468d34d76d12.png)
+
+
 ### 특정 데이터 가져오는 API
 - URL: `api/todo/<int:pk>/`
 - METHOD: `GET`
 
-### 새로운 데이터 create 하는 API]
+
+
+### 새로운 데이터 create 하는 API
 - URL: `api/todo/`
 - METHOD: `POST`
 - BODY
   ```json
-  { "user_id" : "유저번호", 
-    "category_id" : "카테고리 번호", 
+  { "user" : "유저번호", 
+    "category" : "카테고리 번호", 
     "content" : "todo 내용", 
   } 
   ```
+![image](https://user-images.githubusercontent.com/68186101/194712199-0f38d706-2b16-4d5d-8116-6c94aa1c0ac1.png)
+
+  
 
 ### 데이터 삭제하는 API
 - URL: `api/todo/<int:pk>`
@@ -56,6 +65,19 @@
   { "필드명" : "업데이트할 필드값", 
      ...
   } 
+  ```
+  
+  
+### Issue
+- 모든 데이터 얻는 GET 요청에서 아래 에러가 났었다 😥
+  - 에러 메시지
+  ```py
+  TypeError: In order to allow non-dict objects to be serialized set the safe parameter to False.
+  ```
+  -> 구글링 해서 해결책을 찾은 결과..
+  기존에 views.py에서 JSON 전달하는 부분에 safe=False를 추가해주니 해결되었다
+  ```py
+  return JsonResponse(serializer.data, safe=False)
   ```
 
 
