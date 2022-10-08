@@ -11,6 +11,13 @@ def create_profile(**kwargs):
         Profile.objects.create(user=user)
 '''
 
+'''
+class BaseModel(models.Model):
+    created_at = models.DateTimeField()
+    deleted_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+'''
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, db_column='user', on_delete=models.CASCADE)
