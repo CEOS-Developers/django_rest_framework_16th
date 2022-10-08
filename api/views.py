@@ -13,7 +13,7 @@ def TodoListsAPI(request):
         return Response(items.data)
 
     elif request.method == 'POST':
-        req_data = JSONParser(request.body)
+        req_data = JSONParser().parse(request)
         result = TodoSerializer.create(TodoSerializer, req_data)
         return Response(result)
 
@@ -22,15 +22,15 @@ def TodoListsAPI(request):
 @api_view(['GET','DELETE', 'PUT'])
 def TodoListAPI(request, pk):
     if request.method == 'GET':
-        result = TodoSerializer.findOne(TodoSerializer, pk)
-        return Response(result)
+        item = TodoSerializer(Todo.objects.get(id=pk))
+        return Response(item.data)
 
     elif request.method == 'DELETE':
         result = TodoSerializer.delete(TodoSerializer, pk)
         return Response(result)
 
     elif request.method == 'PUT':
-        req_data = JSONParser(request.body)
+        req_data = JSONParser().parse(request)
         result = TodoSerializer.update(TodoSerializer, pk, req_data)
         return Response(result)
 
