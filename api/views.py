@@ -24,7 +24,7 @@ def todo_list(request):
 
 
 @csrf_exempt
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def todo_item(request, pk):
 
     if request.method == 'GET':
@@ -33,7 +33,7 @@ def todo_item(request, pk):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        todo_instance = Todo.objects.filter(id=pk)
+        todo_instance = Todo.objects.get(id=pk)
         serializer = TodoSerializer(instance=todo_instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
