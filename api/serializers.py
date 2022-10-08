@@ -37,7 +37,6 @@ class TodoSerializer(serializers.ModelSerializer):
         else:
             ret_object = {"message": "삭제 성공"}
             todo.delete()
-            todo.save()
             return ret_object
 
 
