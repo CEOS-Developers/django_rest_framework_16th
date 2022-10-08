@@ -5,4 +5,4 @@ from rest_framework import serializers
 class GoalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Goal
-        fields = ['user', 'title', 'privacy', 'color']
+        fields = ['id', 'user', 'title', 'privacy', 'color']
