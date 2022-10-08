@@ -1,5 +1,32 @@
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
+## 3주차 미션 : DRF1 - Serializer 및 API 설계
+
+### 모델 선택 및 데이터 삽입
+```shell
+>>> from api.models import *
+>>> category = Category.objects.create(user_id=1, name='playing')
+>>> category.save()
+>>> todo = ToDo.objects.create(user_id=1, category_id=1, content='math', is_done=False, is_repeat=False)
+>>> todo = ToDo.objects.create(user_id=1, category_id=2, content='practice drum', is_done=False, is_repeat=False)
+>>> todo.save()
+>>> todo = ToDo.objects.create(user_id=1, category_id=1, content='math', is_done=False, is_repeat=False)
+>>> todo.save()
+>>> todo = ToDo.objects.get(id=4)
+>>> todo.content
+'math'
+>>> todo.content = 'english'
+>>> todo.save()
+```
+- 카테고리 (category)
+
+![image](https://user-images.githubusercontent.com/68186101/194684633-5fd1cc44-a1a3-4291-b054-7266cd018572.png)
+
+- 해야할 일 (todo)
+
+![image](https://user-images.githubusercontent.com/68186101/194684607-14210892-95d6-49e0-83f7-bfc2e2702a20.png)
+
+
 
 ## 2주차 미션: DB 모델링 및 Django ORM
 
