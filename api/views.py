@@ -25,10 +25,7 @@ def todo_list(request, pk):
     if request.method == 'GET':
         todolist = TodoList.objects.get(id=pk)
         serializer = TodoListSerializer(todolist)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+        return JsonResponse(serializer.data, status=201)
 
     elif request.method == 'DELETE':
         todolist = TodoList.objects.get(id=pk)
