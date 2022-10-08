@@ -59,7 +59,7 @@ Profile 인스턴스를 만들면 User가 자동으로 생성되는 줄 알았�
 ---
 
 ## 3주차 : DRF1 : Serializer
-## 데이터 삽삭
+## 데이터 삽입
 ![image](https://user-images.githubusercontent.com/67852689/194706621-b1a21901-663b-4eb2-942e-9feff43498a8.png)
 > Profile
 ![image](https://user-images.githubusercontent.com/67852689/194706738-8fac3407-6408-41bd-a4d4-f6dac33a2de7.png)
