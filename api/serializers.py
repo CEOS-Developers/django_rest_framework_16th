@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from rest_framework.utils import json
 
-from .models import Todo, User
+from .models import *
 
 
 class TodoSerializer(serializers.ModelSerializer):
@@ -11,13 +10,6 @@ class TodoSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'user']
 
-    def findOne(self, pk):
-        try:
-            todo = Todo.objects.get(id=pk)
-        except Todo.DoesNotExist:
-            return {"message": "해당 기록을 찾을 수 없습니다."}
-        else:
-            return json.loads(todo)
 
     def create(self, validated_data):
         try:
@@ -33,12 +25,7 @@ class TodoSerializer(serializers.ModelSerializer):
             todo.save()
             ret_object = {
                 "message": "할 일을 생성하였습니다.",
-                "data": {
-                    "user_name": todo.user.name,
-                    "contents": todo.contents,
-                    "date": todo.date,
-                    "is_checked": todo.is_checked,
-                }
+                "data": TodoSerializer(todo).data
             }
             return ret_object
 
@@ -66,12 +53,7 @@ class TodoSerializer(serializers.ModelSerializer):
             todo.save()
             ret_object = {
                 "message": "업데이트 완료",
-                "data": {
-                    "user_name": todo.user.name,
-                    "contents": todo.contents,
-                    "date": todo.date,
-                    "is_checked": todo.is_checked,
-                }
+                "data": TodoSerializer(todo).data
             }
             return ret_object
 
