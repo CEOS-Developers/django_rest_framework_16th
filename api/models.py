@@ -5,7 +5,15 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 
-class User(models.Model):
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class User(BaseModel):
     email = models.CharField(max_length=30, unique=True)
     nickname = models.CharField(max_length=10)
     password = models.CharField(max_length=30)
@@ -18,17 +26,13 @@ class User(models.Model):
         return self.nickname
 
 
-# User를 onetoone 방식으로 선언하면 나머지 클래스에서 foreignkey로 user id를 쓰고 싶을 때 어떻게 해야 하는지 궁금함
-class Follower(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+class Follow(BaseModel):
+    follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
+    following = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
 
 
-class Following(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
-class Category(models.Model):
-    category_id = models.AutoField(primary_key=True)
+class Category(BaseModel):
+    category_id = models.AutoField(primary_key=True, on_delete=models.CASCADE, related_name='category_user')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     color = models.IntegerField(default=0)
@@ -39,10 +43,10 @@ class Category(models.Model):
         return self.title
 
 
-class Todo(models.Model):
-    todo_id = models.AutoField(primary_key=True)
+class Todo(BaseModel):
+    todo_id = models.AutoField(primary_key=True, on_delete=models.CASCADE, related_name='todo_user')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)  # 여기를 CASCADE로 설정하는 것이 맞는지 모르겠다.
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_success = models.BooleanField(default=False)
     is_valid = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
@@ -54,13 +58,31 @@ class Todo(models.Model):
         return self.content
 
 
-class Diary(models.Model):
+class Diary(BaseModel):
     diary_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.CharField(max_length=400)
-    emoji = models.CharField(max_length=100)
+    emoji = models.CharField(max_length=20)
     public = models.IntegerField(default=0)
-    deadline = models.DateField(default=timezone.localtime())
+    date = models.DateField(default=timezone.localtime())
 
     def __str__(self):
         return self.content
+
+
+class DiaryLike(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='diary_like_user')
+    diary = models.ForeignKey(Diary, on_delete=models.CASCADE, related_name='diary_like_diary')
+    emoji = models.CharField(max_length=20)
+
+    def __str__(self):
+        return 'Diary: {} likes {}'.format(self.user.nickname, self.diary.content)
+
+
+class TodoLike(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='todo_like_user')
+    todo = models.ForeignKey(Todo, on_delete=models.CASCADE, related_name='todo_like_todo')
+    like_emoji = models.CharField(max_length=20)
+
+    def __str__(self):
+        return 'Todo: {} likes {}'.format(self.user.nickname, self.todo.content)
