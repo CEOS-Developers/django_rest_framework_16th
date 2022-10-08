@@ -67,6 +67,67 @@ python manage.py migrate를 하면 다음 에러가 뜬다.
 
 ## 3주차 미션: Django Serializer & Django View
 
+### 데이터 삽입
+
+User 데이터 삽입
+```python
+class User(AbstractUser):
+    username = None
+    email = models.EmailField(max_length=255, unique=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+```
+![img_4.png](images/img_4.png)
+
+Category 데이터 삽입
+```python
+class Category(models.Model):
+    category_name = models.CharField(max_length=50, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.category_name
+```
+![img_5.png](images/img_5.png)
+
+Todo 데이터 삽입
+```python
+class Todo(models.Model):
+    DISCLOSURE_CHOICES = {
+        ('private', 'Private'),
+        ('onlyFriends', 'Only Friends'),
+        ('public', 'Public'),
+    }
+    todo_name = models.CharField(max_length=50, null=False)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    disclosure_choice = models.CharField(default='public', max_length=30, choices=DISCLOSURE_CHOICES)
+    date = models.DateTimeField(default=now)
+    def __str__(self):
+        return self.todo_name
+```
+![img_6.png](images/img_6.png)
+
 ### API 만들기
+모든 데이터를 가져오는 api
+![img_7.png](images/img_7.png)
+
+특정 과제를 가져오는 api
+![img_8.png](images/img_8.png)
+
+새로운 데이터를 create하도록 요청하는 api
+![img_9.png](images/img_9.png)
+
+특정 데이터를 삭제하는 api
+![img_10.png](images/img_10.png)
+![img_11.png](images/img_11.png)
+
+특정 데이터를 업데이트하는 api
+![img_12.png](images/img_12.png)
+![img_13.png](images/img_13.png)
+
 
 ### 이번 과제를 하며...
