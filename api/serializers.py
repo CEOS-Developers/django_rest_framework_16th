@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.utils import json
+
 from .models import Todo, User
 
 
@@ -9,38 +11,69 @@ class TodoSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'user']
 
+    def findOne(self, pk):
+        try:
+            todo = Todo.objects.get(id=pk)
+        except Todo.DoesNotExist:
+            return {"message": "해당 기록을 찾을 수 없습니다."}
+        else:
+            return json.loads(todo)
+
     def create(self, validated_data):
-        user = User.objects.get(id=validated_data['user_id'])
-        if user:
+        try:
+            user = User.objects.get(id=validated_data['user_id'])
+        except User.DoesNotExist:
+            return {"message": "해당 유저를 찾을 수 없습니다."}
+        else:
             todo = Todo.objects.create(
                 user=user,
                 contents=validated_data['contents'],
                 date=validated_data['date'],
             )
             todo.save()
-            return "할 일 생성에 성공하였습니다."
-        else:
-            return "해당 유저를 확인할 수 없습니다."
+            ret_object = {
+                "message": "할 일을 생성하였습니다.",
+                "data": {
+                    "user_name": todo.user.name,
+                    "contents": todo.contents,
+                    "date": todo.date,
+                    "is_checked": todo.is_checked,
+                }
+            }
+            return ret_object
 
     def delete(self, pk):
-        todo = Todo.objects.filter(id=pk)
-        if todo:
-            todo.delete()
-            return "삭제 완료"
+        try:
+            todo = Todo.objects.get(id=pk)
+        except Todo.DoesNotExist:
+            return {"message": "해당 기록을 찾을 수 없습니다."}
         else:
-            return "해당 할 일이 존재하지 않습니다."
+            ret_object = {"message": "삭제 성공"}
+            todo.delete()
+            todo.save()
+            return ret_object
+
 
     def update(self, pk, validated_data):
-        todo = Todo.objects.filter(id=pk)
-        if todo:
+        try:
+            todo = Todo.objects.get(id=pk)
+        except Todo.DoesNotExist:
+            return {"message": "해당 기록을 찾을 수 없습니다."}
+        else:
             todo.contents = validated_data.get('contents', todo.contents)
             todo.date = validated_data.get('date', todo.date)
             todo.is_checked = validated_data.get('is_checked', todo.is_checked)
             todo.save()
-            return "업데이트 완료"
-        else:
-            return "해당 할 일이 존재하지 않습니다."
-
+            ret_object = {
+                "message": "업데이트 완료",
+                "data": {
+                    "user_name": todo.user.name,
+                    "contents": todo.contents,
+                    "date": todo.date,
+                    "is_checked": todo.is_checked,
+                }
+            }
+            return ret_object
 
 class UserSerializer(serializers.ModelSerializer):
 
