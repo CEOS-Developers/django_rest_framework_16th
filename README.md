@@ -56,3 +56,107 @@ Profile 인스턴스를 만들면 User가 자동으로 생성되는 줄 알았�
 3. 어렵다<br>
 그래도 프론트보단 좋다ㅋ
 
+---
+
+## 3주차 : DRF1 : Serializer
+## 데이터 삽삭
+![image](https://user-images.githubusercontent.com/67852689/194706621-b1a21901-663b-4eb2-942e-9feff43498a8.png)
+> Profile
+![image](https://user-images.githubusercontent.com/67852689/194706738-8fac3407-6408-41bd-a4d4-f6dac33a2de7.png)
+> Goal
+
+## API
+### 모든 데이터를 가져오는 API 만들기
+* url : http://127.0.0.1:8000/api/goal
+* method : get
+```json
+{
+    "status": 200,
+    "message": "SUCCESS",
+    "data": [
+        {
+            "id": 6,
+            "user": 5,
+            "name": "ggsadasddasd",
+            "is_goal_private": false,
+            "color": ""
+        },
+        {
+            "id": 7,
+            "user": 5,
+            "name": "g4",
+            "is_goal_private": false,
+            "color": ""
+        },
+        {
+            "id": 8,
+            "user": 5,
+            "name": "g5",
+            "is_goal_private": false,
+            "color": ""
+        }
+    ]
+}
+```
+### 특정 데이터를 가져오는 API 만들기
+* url : http://127.0.0.1:8000/api/goal/7
+* method : get
+```json
+{
+    "status": 200,
+    "message": "SUCCESS",
+    "data": {
+        "id": 7,
+        "user": 5,
+        "name": "g4",
+        "is_goal_private": false,
+        "color": ""
+    }
+}
+```
+### 새로운 데이터를 create하도록 요청하는 API 만들기
+* url : http://127.0.0.1:8000/api/goal
+* method : post
+```json
+{
+    "status": 200,
+    "message": "SUCCESS",
+    "data": {
+        "id": 8,
+        "user": 5,
+        "name": "g5",
+        "is_goal_private": false,
+        "color": ""
+    }
+}
+```
+### 특정 데이터를 삭제 또는 업데이트하는 API
+#### 삭제
+* url : http://127.0.0.1:8000/api/goal/5
+* method : delete
+```json
+{
+    "status": 204,
+    "message": "SUCCESS"
+}
+```
+#### 업데이트
+* url : http://127.0.0.1:8000/api/goal/5
+* method : delete
+```json
+{
+    "status": 200,
+    "message": "SUCCESS",
+    "data": {
+        "id": 6,
+        "user": 5,
+        "name": "ggsadasddasd",
+        "is_goal_private": false,
+        "color": ""
+    }
+}
+```
+## 회고
+* 코드상 중복되는 부분이 많다. 다음엔 중복을 제거해 봐야겠다
+* 토큰을 사용하지 않아서 요청 헤더에 유저 정보를 넣어보냈다. 토큰을 여기에 적용시킨다면, 토큰을 이용해 유저 인증을 한 후, api가 작동하도록 만들 것이다.
+* 잘 작동하긴 하는데, 잘 만든지 모르겠다.
