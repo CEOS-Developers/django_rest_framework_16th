@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
+from rest_framework.response import Response
 from .models import Goal, Todo
 from .serializers import GoalSerializer
 
@@ -9,8 +10,8 @@ from .serializers import GoalSerializer
 def goal_list(request):
     if request.method == 'GET':
         goals = Goal.objects.all()
-        serializer = GoalSerializer(goals)
-        return JsonResponse(serializer.data)
+        serializer = GoalSerializer(goals, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)

@@ -6,9 +6,9 @@ from .models import *
 
 @admin.register(Goal)
 class GoalAdmin(admin.ModelAdmin):
-    list_display = ['title', 'user', 'privacy', 'color']
+    list_display = ['id', 'title', 'user', 'privacy', 'color']
 
 
 @admin.register(Todo)
 class TodoAdmin(admin.ModelAdmin):
-    list_display = ['goal', 'title', 'is_done']
+    list_display = ['id', 'goal', 'title', 'is_done']
