@@ -85,14 +85,14 @@ python manage.py shell
 
 ### 느낀 점
 DB 설계를 너무 오랜만에 해봐서 감이 잘 안잡혔다. create/update 시간도 필드로 추가했어야 했는데 잊었다. 그리고 following/follower를 구조 상 어떻게 표현해야 할지 모르겠어서 내 생각대로 해봤는데 아마 틀린 것 같다. 🥲
-<<<<<<< HEAD
 책 좀 읽고 공부해야겠다!
 
 ---
 
 ## 3주차 미션 : DRF1 - Serializer 및 API 설계
 ### 데이터 구조 수정
-%erd 사진
+![image](https://user-images.githubusercontent.com/68368633/194756523-96f4e2dc-0d56-4034-ab5f-37bd5158af3e.png)
+
 
 2주차 과제 코드리뷰 때 말씀해주셨던 점들을 반영하여 구조를 수정했다.
 ```python
@@ -113,22 +113,26 @@ class BaseModel(models.Model):
 BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 변수들을 추가하여 관리하는 방식으로 변경했다. 
 
 ### 데이터 삽입
-%데이터 삽입 사진 2장
+![image](https://user-images.githubusercontent.com/68368633/194756547-de480898-ee47-44fc-b3f3-aab6d0445f66.png)
+![image](https://user-images.githubusercontent.com/68368633/194756558-7869d199-9137-4075-bfc3-9023d9e2ed24.png)
 
 - 추가된 데이터 
   - Category: study, play 
   - Todo: django study, code review, lets go sinchon
 - mysql로 확인
 
-  %mysql 사진
+  ![image](https://user-images.githubusercontent.com/68368633/194756567-913be689-274e-47dc-831e-40f77d278c5b.png)
+
 
 ### 모든 데이터를 가져오는 API
 - URL: api/todo
 - METOD: GET
+  ![image](https://user-images.githubusercontent.com/68368633/194756576-9ff73e4f-553e-430c-acd3-4c20f2a36ab2.png)
 
 ### 특정 데이터를 가져오는 API
 - URL: api/todo/<int:pk>
 - METOD: GET
+  ![image](https://user-images.githubusercontent.com/68368633/194756582-31c62d19-e657-4588-89e9-1c321cfc64cc.png)
 
 ### 새로운 데이터를 create하도록 요청하는 API
 - URL: api/todo
@@ -141,6 +145,7 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
     "content": "TODO 내용"
   }
   ```
+  ![image](https://user-images.githubusercontent.com/68368633/194756593-40851b84-f09b-4ad7-beb0-acc0e91a88bb.png)
 
   deadline을 지정하지 않아도 괜찮지만 models.py에서 field와 default의 데이터 타입을 다르게 설정하여 에러가 나 이번에만 설정해주었다. 추후에 수정 예정
   
@@ -148,6 +153,9 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
 ####삭제
 - URL: api/todo/< int:pk >
 - METOD: DELETE
+  <img width="1006" alt="image" src="https://user-images.githubusercontent.com/68368633/194756628-347713d8-611a-4581-b932-de1a2ce61ce7.png">
+  삭제 결과
+  ![image](https://user-images.githubusercontent.com/68368633/194756647-b63253ce-22e1-40ff-8bd6-d31a51a96ee7.png)
 
 ####업데이트
 - URL: api/todo/< int:pk >
@@ -160,22 +168,24 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
     "수정을 원하는 필드"
   }
   ```
-  
+  ![image](https://user-images.githubusercontent.com/68368633/194756666-0021258b-acea-46e0-9609-809a3be2679c.png)
+
   user와 category를 body 추가하지 않고 api를 요청하였더니 필수값이라고 에러가 났다. 안해도 상관 없는 것으로 아는데 확인 필요!
 ### 에러 해결
 - BaseModel의 created_at
 
-  %created_at error 사진 1
+  ![image](https://user-images.githubusercontent.com/68368633/194756675-2448c930-f5da-4206-a66e-745fe9fb1402.png)
 
   이때 created_at에 그냥 auto_now_add=True만 지정해주면 다음과 같이 default를 추가하라는 메시지가 나온다.
 
-  %created_at error 사진 2
+  ![image](https://user-images.githubusercontent.com/68368633/194756685-8af0968f-3cc6-4c9d-961d-675c1b432ce0.png)
 
   그래서 default를 지정해주면 둘 중에 하나만 쓰라고 에러 메시지가 출력되어 null=True을 추가하여 우선 해결해주었다.
 
 - DELETE
+  DELETE 요청 시에 발생
   
-  %DELETE 에러 사진 
+  ![image](https://user-images.githubusercontent.com/68368633/194756693-42741d26-d788-48d3-95ce-72a41fea5be6.png) 
   ```
   TypeError: __init__() missing 1 required positional argument: 'data'
   ```
@@ -200,7 +210,3 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
 그리고 세션 때 알려주신 SerializerMethodField를 추가해서 좀 하고 싶었는데 에러가 생겨서 우선 주석처리 해놨다.😢
 
 이번 과제에서 모르는 부분들을 많이 발견해서 답답하기도 했지만 공부할 것들을 찾은 것 같아 좋았다!
-
-=======
-책 좀 읽고 공부해야겠다! 그리고 좋아요 기능이 있다는걸 나중에 알아서 추가를 못했는데 후에 수정해야 한다.
->>>>>>> origin/geniee44
