@@ -1,4 +1,5 @@
 
+
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
 
@@ -193,3 +194,160 @@ TodoClass.objects.all()을 통해서 모든 TodoClass를 가져왔고, QuerySet�
 
 이번 과제 피드백을 통해서 모델링을 제대로 한건지 아닌지를 조금 더 배울 수 있을 것 같고,  이번 과제는 진짜로 백엔드 개발하는 느낌이 났어서 정말 재밌었다!! 다음 과제도 기대가 된다!
 
+
+
+## 3주차 미션: DRF1: Serializer
+
+이번 과제는 내가 가장 기대했던 과제이다. 그 이유는 백엔드에서 프론트엔드로 데이터를 보내줄 때의 방식들을 배울 수 있을거라고 생각했기 때문이다. 아니나 다를까, 역시 가장 재밌는 과제였다. ~~기왕 하는거 프론트도 개발해볼까 했는데 리소스 부족으로 실패,,,~~ 
+
+근데 사실 맞게 한건지는 모르겠다. 분명 뭔가를 빼먹고 있는 것 같은데, 뭔지를 잘 모르겠다,,, 그리고 생각보다 방식이 정말 다양하더라.. 근데 분명 현업에서 가장 많이 쓰이는 방식이 있을텐데, 어떤건지를 잘 모르겠다.. 쓰다보면 알게되겠지
+
+아무튼 저번 과제의 연장선이기 때문에, 저번에 만들었던 모델들을 이용했고, 조금 틀렸거나 아쉬웠던 부분들은 수정을 했다. 
+
+이번 과제에서 중점적으로 이용한 모델은
+
+ 1. 투두클래스
+ 2. 투두
+
+이렇게 두가지이다. 
+
+## 1. 데이터 삽입
+
+![image](https://user-images.githubusercontent.com/80627536/194548738-2fdfbae9-0839-43b3-80e8-f36cdfba1c06.png)
+
+
+유저는 세개를 생성을 했고,
+
+![image](https://user-images.githubusercontent.com/80627536/194549065-cd85e572-d796-401b-902f-5fff021e9076.png)
+
+투두 클래스는 네개,
+
+![image](https://user-images.githubusercontent.com/80627536/194549419-0bd4cb08-2af5-4789-908d-82ef69d48b73.png)
+
+투두도 네개를 생성했다.
+
+
+## 2. 모든 데이터를 가져오는 API 만들기
+
+사실 어떤 데이터를 자주 한꺼번에 가져오게 될까를 고민해봤는데, 투두클래스, 투두 둘다 많이 쓰지 않을까 싶어서 결국 둘 다 만들었다. 
+
+### 모든 투두클래스 가져오기
+URL:  `v1/todo_classes/`
+Method: `GET`
+
+![image](https://user-images.githubusercontent.com/80627536/194550711-3742925f-14c9-44c4-860b-619b16b26aa2.png)
+
+
+
+### 모든 투두 가져오기
+URL:  `v1/todos/`
+Method: `GET`
+
+![image](https://user-images.githubusercontent.com/80627536/194550807-7427b3ae-7d24-4027-a740-87e5a8d0a388.png)
+
+## 3. 특정 데이터를 가져오는 API 만들기
+
+### 특정 투두 클래스 가져오기
+URL:  `v1/todo_class/<int:id>`
+Method: `GET`
+
+![image](https://user-images.githubusercontent.com/80627536/194551280-d00ab871-efae-4f81-b374-17d8e62e0bde.png)
+
+
+### 특정 투두 가져오기
+URL:  `v1/todo/<int:id>`
+Method: `GET`
+
+![image](https://user-images.githubusercontent.com/80627536/194551378-fd740e4c-67db-4520-bb16-de5972235cd3.png)
+
+## 4. 새로운 데이터를 create하도록 요청하는 API 만들기
+
+### 새로운 투두 클래스 생성하기
+URL:  `v1/todo_classes/<int:id>`
+Method: `POST`
+
+Request Body
+![image](https://user-images.githubusercontent.com/80627536/194552641-6dd968c8-48c3-4b2b-b1b2-1574bb7710ee.png)
+
+Response
+![image](https://user-images.githubusercontent.com/80627536/194552700-ff3c4683-1abf-474c-b0e1-0dafc954f8d2.png)
+
+### 새로운 투두 생성하기
+URL:  `v1/todos/<int:id>`
+Method: `POST`
+
+Request Body
+![image](https://user-images.githubusercontent.com/80627536/194553125-bd2032cf-b42c-4655-a3eb-b70e236987db.png)
+
+Response
+![image](https://user-images.githubusercontent.com/80627536/194553268-6a2435c6-1763-4822-9320-52c04a6a7b95.png)
+
+
+## 5.  특정 데이터를 수정/삭제하는 API
+
+### 특정 투두 클래스 수정하기
+URL:  `v1/todo_class/<int:id>`
+Method: `PATCH`
+
+Request Body
+![image](https://user-images.githubusercontent.com/80627536/194553931-53ffc971-c6bf-4819-ab0e-d1080f4063bd.png)
+
+Response
+![image](https://user-images.githubusercontent.com/80627536/194554066-709f92f3-a815-4f3e-b781-87fec201ade9.png)
+
+### 특정 투두 클래스 삭제하기 (Soft-Delete)
+URL:  `v1/todo_class/<int:id>`
+Method: `PATCH`
+
+Request Body
+![image](https://user-images.githubusercontent.com/80627536/194554949-b70a0724-fc9c-4c7f-9521-17e883704ee6.png)
+
+Response
+![image](https://user-images.githubusercontent.com/80627536/194555020-1d4a9deb-ab15-4942-b230-bc56c406cd91.png)
+
+
+### 특정 투두 수정하기
+URL:  `v1/todo/<int:id>`
+Method: `PATCH`
+
+Request Body
+![image](https://user-images.githubusercontent.com/80627536/194555553-1049de44-a555-4179-a79f-ff28cc5863cd.png)
+
+Response
+![image](https://user-images.githubusercontent.com/80627536/194555620-8a97c30b-4887-4796-9383-0aaa7b492422.png)
+
+
+### 특정 투두 삭제하기
+URL:  `v1/todo/<int:id>`
+Method: `PATCH`
+
+Request Body
+![image](https://user-images.githubusercontent.com/80627536/194554949-b70a0724-fc9c-4c7f-9521-17e883704ee6.png)
+
+Response
+![image](https://user-images.githubusercontent.com/80627536/194555753-832039c9-8782-4d3b-99e3-a8ccbcbfa40e.png)
+
+## 회고
+진짜 진짜 재밌었다!
+1, 2주차 과제도 백엔드 개발하는 것 같았어서 재밌었지만, 이번엔 진짜로 뭔가 백엔드 개발자가 된 느낌을 1% 받은 것 같아서 너무 재밌게 과제를 했다!
+
+사실 이렇게 백엔드 API를 DRF로 만들어본적이 한번 있지만, 그때는 책을 따라 치기만 했기 때문에 내껄 만든다는 느낌도 없었는데, 이번에는 순도 100%는 아니고 사실 한 50%정도 내가 만든 느낌? 어쩌면 구글링이 한 60% 차지해서 내가 실제로 한건 40%도 안될지도,,,
+
+아무튼 진짜 이번에는 내가 만든 것 같다는 느낌을 받아서 너무나도 재밌었다! ORM이 있으니까 DB에서 원하는 데이터를 뽑아내는게 훨씬 더 쉬워서 예상보다 더 수월하게 할 수 있었다. 
+
+그래도 과제를 수행하면서 막히고 헷갈렸던 부분이 몇가지 있다. 
+
+ 1. POST 요청을 할 때에는 뭔가 당연히 /todo/로 POST 요청을 해야할 것 같은데, 사실 그렇게 하면 id값을 보내주지 않기 때문에 할 수가 없다.. 그래서 /todos/로 POST 요청을 보내야한다. 
+ 
+ 이건 사실 프론트엔드 개발자로 일을 할때에도 의문을 가졌던 부분이다. 왜 저렇게 하지?? POST 요청을 /todo/가 아니라 /todos/ 로 보낸다고?? 영어 문법상 뭔가 좀 이상한데? ? 라는 생각을 갖고 있었다... 이게 결국 아는 만큼 보인다고,,, 다 그런 이유가 있던 것이다... 
+ 
+ 2. Request Body에 데이터를 넣어서 보낼 때, 끝에 , 로 끝나면 오류가 난다...
+
+이거는 진짜 위에 과제 사진 올리면서 계속 반복적으로 발생했던 오류다... 도대체 뭐가 문제지? ? 왜 어떨 땐 되고 어떨 땐 안되지? ?? 라는 생각을 하면서 한 30분을 고민했는데, 
+진짜 간단한 이유였어서 조금 어이가 없었다,,
+
+근데 사실 저게 맞는거 아닐까? ? 내가 그동안 너무 자동 디버깅에 익숙해져서 사소한 디테일들을 놓치고 있을 수도 있겠구나 라는 생각을 하게 되었다. . . 
+
+아무튼 그렇습니다~! 너무나도 재밌게 했던 과제이고, 진짜로 백엔드 개발을 한 느낌이라서 백엔드 개발자로 한걸음 더 다가간 느낌이다! 만약 추후에 내가 백엔드 개발자를 하기로 선택을 한다면, 그 이유에서 이번 과제가 아주아주아주 큰 비중을 갖게 될 것 같다. 
+
+사실 내년 초에 프론트엔드 개발자로 취업을 해야하는 상황이라 조금 고민을 많이 했고, 걱정도 많이 했다.. 프론트엔드 개발도 제대로 못하는 상황에서 백엔드 개발을 배우는건 너무 오만한 생각이 아닌가 싶었는데, 백엔드 개발 공부를 하면서 분명 취업에 도움이 되는 부분이 있을거라고 생각하기에 잡생각 말고 집중하기로 마음을 먹었다. 열심히 하겠습니다!
