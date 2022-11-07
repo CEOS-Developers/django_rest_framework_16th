@@ -16,8 +16,6 @@ class BaseModel(models.Model):
 
 class Profile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # OneToOne 방식 이용
-    user_name = models.CharField(max_length=20)
-    email = models.EmailField()  # default max : 254
     profile_description = models.CharField(max_length=200, blank=True, null=True)
     profile_image = models.URLField(blank=True, null=True)  # default max : 200
     is_premium = models.BooleanField(default=False)
@@ -25,21 +23,21 @@ class Profile(BaseModel):
     can_show_todo = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user_name
+        return self.user.username
 
 
 class Goal(BaseModel):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='goal')
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='goal_user')
     name = models.CharField(max_length=20)
     is_goal_private = models.BooleanField(default=True)
-    color = models.CharField(max_length=20, blank=True)
+    color = models.CharField(max_length=20, blank=True, default="#FFF")
 
     def __str__(self):
         return self.name
 
 
 class Todo(BaseModel):
-    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='todo')
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='todo_goal')
     todo_date = models.DateField()
     task = models.CharField(max_length=20)
     time = models.DateTimeField(blank=True, null=True)
@@ -51,7 +49,7 @@ class Todo(BaseModel):
 
 
 class Diary(BaseModel):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='diary')
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='diary_user')
     date = models.DateField()
     emoji = models.CharField(max_length=20)
     text = models.CharField(max_length=200)
@@ -60,30 +58,30 @@ class Diary(BaseModel):
     is_diary_private = models.BooleanField(default=False)
 
     def __str__(self):
-        return '{}의 일기'.format(self.user.user_name)
+        return self.date
 
 
 class Follow(BaseModel):
-    follow_to = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='follow_to_id')
-    follow_from = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='follow_from_id')
+    follow_to = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='follow_to_user')
+    follow_from = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='follow_from_user')
 
     def __str__(self):
-        return '{} to {}'.format(self.follow_from.user_name, self.follow_to.user_name)
+        return '{} to {}'.format(self.follow_from.user.username, self.follow_to.user.username)
 
 
 class DiaryLike(BaseModel):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='diary_like')
-    diary = models.ForeignKey(Diary, on_delete=models.CASCADE, related_name='diary_like')
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='diary_like_user')
+    diary = models.ForeignKey(Diary, on_delete=models.CASCADE, related_name='diary_like_diary')
     emoji = models.CharField(max_length=20)
 
     def __str__(self):
-        return '{}: {} 좋아요'.format(self.user.user_name, self.diary.date)
+        return '{}: {} 좋아요'.format(self.user.user.username, self.diary.date)
 
 
 class TodoLike(BaseModel):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='todo_like')
-    todo = models.ForeignKey(Todo, on_delete=models.CASCADE, related_name='todo_like')
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='todo_like_user')
+    todo = models.ForeignKey(Todo, on_delete=models.CASCADE, related_name='todo_like_todo')
     like_emoji = models.CharField(max_length=20)
 
     def __str__(self):
-        return '{}: {} 좋아요'.format(self.user.user_name, self.todo.task)
+        return '{}: {} 좋아요'.format(self.user.user.username, self.todo.task)
