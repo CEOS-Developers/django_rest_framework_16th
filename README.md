@@ -1,5 +1,116 @@
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
+## 3주차 미션 : DRF1 - Serializer 및 API 설계
+
+### 모델 선택 및 데이터 삽입
+```shell
+>>> from api.models import *
+>>> category = Category.objects.create(user_id=1, name='playing')
+>>> category.save()
+>>> todo = ToDo.objects.create(user_id=1, category_id=1, content='math', is_done=False, is_repeat=False)
+>>> todo = ToDo.objects.create(user_id=1, category_id=2, content='practice drum', is_done=False, is_repeat=False)
+>>> todo.save()
+>>> todo = ToDo.objects.create(user_id=1, category_id=1, content='math', is_done=False, is_repeat=False)
+>>> todo.save()
+>>> todo = ToDo.objects.get(id=4)
+>>> todo.content
+'math'
+>>> todo.content = 'english'
+>>> todo.save()
+```
+- 카테고리 (category)
+
+![image](https://user-images.githubusercontent.com/68186101/194684633-5fd1cc44-a1a3-4291-b054-7266cd018572.png)
+
+- 해야할 일 (todo)
+
+![image](https://user-images.githubusercontent.com/68186101/194684607-14210892-95d6-49e0-83f7-bfc2e2702a20.png)
+
+### 모든 데이터 가져오는 API
+- URL: `api/todo/` 
+- METHOD: `GET`
+
+![image](https://user-images.githubusercontent.com/68186101/194711986-bd70146f-ef73-47f7-a84f-9752b0fed747.png)
+![image](https://user-images.githubusercontent.com/68186101/194712063-5ea9c06a-9974-4214-9dae-468d34d76d12.png)
+
+
+### 특정 데이터 가져오는 API
+- URL: `api/todo/<int:pk>/`
+- METHOD: `GET`
+
+![image](https://user-images.githubusercontent.com/68186101/194712790-472e0e3b-044c-40bf-9030-b730c57d4902.png)
+
+
+### 새로운 데이터 create 하는 API
+- URL: `api/todo/`
+- METHOD: `POST`
+- BODY
+  ```json
+  { "user" : "유저번호", 
+    "category" : "카테고리 번호", 
+    "content" : "todo 내용", 
+  } 
+  ```
+![image](https://user-images.githubusercontent.com/68186101/194712199-0f38d706-2b16-4d5d-8116-6c94aa1c0ac1.png)
+
+  
+
+### 데이터 삭제하는 API
+- URL: `api/todo/<int:pk>`
+- METHOD: `DELETE`
+
+- 에러
+```
+TypeError: __init__() missing 1 required positional argument: 'data'
+```
+
+
+### 데이터 업데이트하는 API
+- URL: `api/todo/<int:pk>`
+- METHOD: `PUT`
+  ```json
+  { "필드명" : "업데이트할 필드값", 
+     ...
+  } 
+  ```
+  
+![image](https://user-images.githubusercontent.com/68186101/194713453-c7faa5e5-c0fd-4ffb-99b4-33e2df020a22.png)
+  
+  
+### Issue
+- 모든 데이터 얻는 GET 요청에서 아래 에러가 났었다 😥
+  - 에러 메시지
+  ```py
+  TypeError: In order to allow non-dict objects to be serialized set the safe parameter to False.
+  ```
+  -> 구글링 해서 해결책을 찾은 결과..
+  기존에 views.py에서 JSON 전달하는 부분에 safe=False를 추가해주니 해결되었다
+  ```py
+  return JsonResponse(serializer.data, safe=False)
+  ```
+- 특정 데이터 얻는 GET 요청에서 아래 에러가 났었다
+  - 에러 메시지
+  ```py
+  TypeError: 'ToDo' object is not iterable
+  ```
+  -> 알고보니, 객체가 하나인데, serializer를 해줄 때, `many=True` 속성을 넣어서 에러가 났던 거 같다! 이걸 빼니까 해결되었다. list가 아닌데 list인척 하려니 당연히 에러가 나지..! 난 바보다..
+  
+- Forbidden (CSRF cookie not set.) 오류
+[해결 블로그](https://velog.io/@langssi/django-Forbidden-CSRF-cookie-not-set.-%EC%98%A4%EB%A5%98-%ED%95%B4%EA%B2%B0
+)
+
+- 데이터 Update하는 PUT 요청 시 아래 에러 났었음
+  - 에러 메시지
+  ```
+  TypeError: __init__() missing 1 required positional argument: 'data'
+  ```
+  -> 필드 값을 다 안채워줘서 그런 거 같다. 필드 값 다 채워주니 에러는 해결. 
+  ❗ 그런데 그럼 매번 update마다 모든 필드를 채운 다음에 변경값만 변경해서 보내줘야 하는건가..? -> 알아볼 필요 !!
+
+
+### 후기 💪
+api설계의 난이도는 어렵지 않았지만, 역시 늘 다른 언어를 배우고 새로운 프레임워크를 배우고 응용하는 건 어려운 일인 것 같다!!!! 장고로 api를 직접 구현하며 에러도 많이 보고,,해결하고,,!! 이번 기회를 통해 장고랑 더 많이 친해진 거 같아서 기분이 좋다 💘😎
+
 
 ## 2주차 미션: DB 모델링 및 Django ORM
 
