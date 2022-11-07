@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'diary',
     'social',
     'todo',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
