@@ -1,35 +1,54 @@
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 
-class User(models.Model):
-    id = models.BigIntegerField()   # key
-    username = models.TextField(max_length=30)
-    password = models.TextField(max_length=32)
-    email = models.TextField()
-    profile_image = models.imageField()
-    can_search_by_email = models.TextField()
-    is_shown = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)  # 해당 레코드 생성시 현재 시간 자동저장
-    updated_at = models.DateTimeField(auto_now=True)  # 해당 레코드 갱신시 현재 시간 자동저장
-    deleted_at = models.DateTimeField()
-
-class Todo(models.Model):
-    id = models.BigIntegerField()
-    user_id = models.BigIntegerField()
-    is_done = models.BooleanField()
-    is_stored = models.BooleanField()
+# 공통으로 쓰이는 created_at, updated_at, deleted_at model
+class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField()
+    deleted_at = models.DateTimeField(blank=True)
 
-class Diary(models.Model):
-    id = models.BigIntegerField()
-    user_id = models.BigIntegerField()
+    class Meta:
+        abstract = True
+
+class User(BaseModel):
+    username = models.CharField(max_length=30)
+    password = models.CharField(max_length=30)
+    email = models.CharField(max_length=50)
+    profile_image = models.URLField(blank=True)
+    can_search_by_email = models.BooleanField(default=False)
+    is_shown = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.username
+
+class Goal(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    goal_name = models.CharField(max_length=100, null=False)
+    is_public = models.IntegerField(default=0, null=False)
+    color = models.CharField(max_length=10, blank=True, null=False)
+
+    def __str__(self):
+        return self.goal_name
+
+class Todo(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
+    content = models.CharField(max_length=100)
+    is_done = models.BooleanField(default=False)
+    is_stored = models.BooleanField(default=False)
+    done_date = models.DateField()
+
+    def __str__(self):
+        return self.content
+
+class Diary(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, null=False)
     content = models.TextField()
     bg_color = models.TextField()
     feeling_temp = models.IntegerField()
-    emoji = models.CharField()
+    emoji = models.CharField(max_length=10)
     is_secret = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField()
+
+    def __str__(self):
+        return self.content
