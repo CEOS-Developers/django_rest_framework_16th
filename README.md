@@ -160,3 +160,68 @@ Profile 인스턴스를 만들면 User가 자동으로 생성되는 줄 알았�
 * 코드상 중복되는 부분이 많다. 다음엔 중복을 제거해 봐야겠다
 * 토큰을 사용하지 않아서 요청 헤더에 유저 정보를 넣어보냈다. 토큰을 여기에 적용시킨다면, 토큰을 이용해 유저 인증을 한 후, api가 작동하도록 만들 것이다.
 * 잘 작동하긴 하는데, 잘 만든지 모르겠다.
+
+---
+
+## 4주차 : DRF2 - API View & Viewset & Filter
+## DRF API View 의 CBV 으로 리팩토링
+```python
+class GoalView(APIView):
+    def get(self, request):
+        user = require_auth(request)
+        if user is None:
+            return JsonResponse(custom_response(401), status=401)
+
+        goals = Goal.objects.filter(user_id=user.id)
+        serializer = serializers.GoalSerializer(goals, many=True)
+        return JsonResponse(custom_response(200, serializer.data), status=200)
+```
+이미 DRF API View의 CBV 방식으로 만들었기 때문에, FBV를 CBV로 변경할 필요 없었다. 지난번 리뷰 때 지적받았던 부분을 수정 후 주석 처리했다.
+### 수정 부분
+* url 수정
+* 유저 인증 부분을 require_auth로 통합
+* custom_response, require_auth 함수를 common.py로 이동
+
+## Viewset으로 리팩토링하기
+```python
+
+```
+이전 코드에서도 구현했던, 유저 검증과 response custom을 똑같이 구현했다
+* 유저 검증
+```python
+# permission.py
+
+class AuthCheck(permissions.BasePermission):
+    def has_permission(self, request, view):
+        try:
+            user_id = request.headers["userId"]
+            # 값이 존재하지 않으면, try catch에 걸림
+            Profile.objects.get(user_id=user_id)
+            return True
+        except:
+            return False
+```
+* response custom
+```python
+# util.py
+
+class CustomRenderer(JSONRenderer):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        response_data = renderer_context.get('response')
+
+        response = custom_response(response_data.status_code, data)
+
+        return super(CustomRenderer, self).render(response, accepted_media_type, renderer_context)
+```
+```python
+# base.py (setting.py)
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'api.util.CustomRenderer',
+    ]
+}
+```
+setting.py에 default renderer를 추가하여, 커스텀 리스폰스를 구현함
+## filter 기능 구현하기
+## 공부한 내용 정리 및 회고
