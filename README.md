@@ -1,5 +1,34 @@
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
+## 4주차 미션 : DRF2 - API View & Viewset & Filter
+
+### DRF API View 의 CBV 으로 리팩토링하기
+- CBV로 리팩토링하면서 클래스 내 메서드를 생성해서 사용함으로써 코드가 더 깔끔해진 것 같다.
+- `get_object(self, id)` 메서드를 만들어서 오브젝트를 DB에서 얻어오고, 없으면 바로 404를 반환하도록 했다.
+
+
+### Viewset으로 리팩토링하기
+
+
+### filter 기능 구현하기
+
+### Issue
+- delete 요청 시 에러 해결 ! 
+  - 에러 : DB에서 삭제는 되는데, Response에서 오류.
+  ```
+  TypeError: __init__() missing 1 required positional argument: 'data'
+  ```
+  - 해결
+    - JsonResponse 대신 Response로 보내니 해결
+
+
+### 후기 💪
+- DB 테이블을 많이 수정했다. 마이그레이션 과정에서 꼬여서 결국 DB 다시 생성해서 해결했는데, 실제 협업하면 이럴 수 없으니까 얼른 마이그레이션에 익숙해져야겠다............
+- CBV로 리팩토링 하는 과정에서 기존에 잘 처리하지 못했던 예외처리까지 하게 되었다! 
+- 
+
+
+
 ## 3주차 미션 : DRF1 - Serializer 및 API 설계
 
 ### 모델 선택 및 데이터 삽입
