@@ -8,6 +8,75 @@
 
 
 ### Viewset으로 리팩토링하기
+- `ModelViewSet`의 기능들 + HTTP Method + URL
+  - 목록 얻기 : `list()` `GET todos/`
+  - 특정 데이터 얻기 : `retrieve()` `GET todos/<int:pk>`
+  - 데이터 생성 : `create()` `POST todos/`
+  - 데이터 수정 (완전) : `update()` `PUT todos/<int:pk>`
+  - 데이터 수정 (일부) : `partial_update()` `PATCH todos/<int:pk>`
+  - 데이터 삭제 : `destroy()` `DELETE todos/<int:pk>`
+  
+  
+- `as_view()` 함수 활용하기
+```py
+# views.py
+
+from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
+from .models import ToDo
+from .serializers import ToDoSerializer
+
+class TodoViewSet(ModelViewSet):
+    serializer_class = ToDoSerializer
+    queryset = ToDo.objects.all() 
+
+todo_list = TodoViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+todo_detail = TodoViewSet.as_view({
+    'get': 'retrieve',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+```
+```py
+# urls.py
+
+from django.urls import path, include
+from . import views
+
+urlpatterns = [
+    path('todos/', views.todo_list),
+    path('todos/<int:pk>/', views.todo_detail),
+]
+```
+- `router` 활용하기
+```py
+# views.py
+
+from rest_framework.viewsets import ModelViewSet
+from api.models import ToDo
+from api.serializers import ToDoSerializer
+
+
+class TodoViewSet(ModelViewSet):
+    serializer_class = ToDoSerializer
+    queryset = ToDo.objects.all()
+
+```
+```py
+# urls.py
+
+from rest_framework import routers
+from .views import TodoViewSet
+
+router = routers.DefaultRouter()
+router.register(r'todos', TodoViewSet)  # register()함으로써 두 개의 url 생성
+
+urlpatterns = router.urls
+```
 
 
 ### filter 기능 구현하기
@@ -20,12 +89,20 @@
   ```
   - 해결
     - JsonResponse 대신 Response로 보내니 해결
+- 슬래시 안 붙여서 오류.. 
+  - 에러 
+    ```
+    RuntimeError: You called this URL via PATCH, but the URL doesn't end in a slash and you have APPEND_SLASH set. Django can't redirect to the slash URL while maintaining PATCH data. Change your form to point to localhost:8000/api/todos/4/ (note the trailing slash), or set APPEND_SLASH=False in your Django settings.
+    ```
+  - 해결
+    - api 요청 주소 마지막에 '/'를 안 넣어서 생긴 오류였다.. 
+    https://codingdojang.com/scode/377
 
 
 ### 후기 💪
 - DB 테이블을 많이 수정했다. 마이그레이션 과정에서 꼬여서 결국 DB 다시 생성해서 해결했는데, 실제 협업하면 이럴 수 없으니까 얼른 마이그레이션에 익숙해져야겠다............
 - CBV로 리팩토링 하는 과정에서 기존에 잘 처리하지 못했던 예외처리까지 하게 되었다! 
-- 
+- viewset... 정말정말 간편하다.. 대박 신세계다 ✨✨✨✨✨✨
 
 
 
