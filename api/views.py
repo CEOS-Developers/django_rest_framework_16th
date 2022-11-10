@@ -58,3 +58,8 @@ from api.serializers import ToDoSerializer
 class TodoViewSet(ModelViewSet):
     serializer_class = ToDoSerializer
     queryset = ToDo.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        query_params = request.query_params
+        self.queryset = self.get_queryset().filter(content__icontains=query_params.get('content'))
+        return super().list(request, *args, **kwargs)
