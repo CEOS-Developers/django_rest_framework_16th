@@ -5,38 +5,47 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+def articles_image_path(instance, filename):
+    # MEDEIA_ROOT/user_<pk>/ 경로로 <filename> 이름으로 업로드
+    return f'user_{instance.pk}/{filename}'
+
+
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=10)
     bio = models.TextField(blank=True)
-    _profile_img = models.TextField(db_column='profile_img', blank=True)
-
-    def set_profile(self, profile):
-        self._profile_img = base64.encodestring(profile)
-
-    def get_profile(self):
-        return base64.decodestring(self._profile_img)
-
-    profile_img = property(set_profile, get_profile)
+    profile_img = models.ImageField(blank=True, upload_to=articles_image_path)
 
 
 class Friend(models.Model):
-    followed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followed', default = '')
-    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following', default = '')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friend_user_id', default='')
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following', default='')
 
 
-class Category(models.Model):
+class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.TextField(blank=True)
+    content = models.TextField(blank=True)
+    privacy = models.PositiveIntegerField(default=0)  # 0: 숨기기, 1: 나만 보기, 2: 일부 공개, 3: 전체 공개
+    color = models.CharField(max_length=10)  # 16진수 코드로 저장. ex) #ffffff
+    order_num = models.PositiveIntegerField(default=0)  # 목표 순서
 
 
 class ToDo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, default=1)
     content = models.TextField(blank=True)
     date = models.DateField(default=datetime.date.today)
-    range = models.PositiveIntegerField(default=0)
     is_done = models.BooleanField(default=False)
     is_repeat = models.BooleanField(default=False)
     cycle = models.PositiveIntegerField(default=0)
+    is_alarm = models.BooleanField(default=False)  # 알람 여부
+    is_locker = models.BooleanField(default=False)  # 보관함 여부
+    order_num = models.PositiveIntegerField(default=0)  # 할 일 순서
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='like_user_id', default='')
+    target = models.ForeignKey(User, on_delete=models.CASCADE, related_name='target_id', default='')
+    todo = models.ForeignKey(User, on_delete=models.CASCADE, related_name='todo_id', default='')
+

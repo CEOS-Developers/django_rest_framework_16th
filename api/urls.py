@@ -3,5 +3,5 @@ from . import views
 
 app_name = 'api'
 
-urlpatterns = [path('todo/', views.todo_list),
-               path('todo/<int:id>', views.todo_one)]
+urlpatterns = [path('todos/', views.todo_list),
+               path('todos/<int:id>', views.todo_one)]
