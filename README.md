@@ -80,6 +80,18 @@ urlpatterns = router.urls
 
 
 ### filter 기능 구현하기
+- goal 필터
+
+![image](https://user-images.githubusercontent.com/68186101/201207545-7e1fc0d4-34d6-4e93-8249-7cd94e5647b4.png)
+
+
+- todo content에 특정 문자 포함한 거 찾기
+
+![image](https://user-images.githubusercontent.com/68186101/201209178-a2735641-0b9d-4330-b30f-4fbc3d4825a8.png)
+
+
+
+
 
 ### Issue
 - delete 요청 시 에러 해결 ! 
@@ -97,13 +109,21 @@ urlpatterns = router.urls
   - 해결
     - api 요청 주소 마지막에 '/'를 안 넣어서 생긴 오류였다.. 
     https://codingdojang.com/scode/377
+- filtering 할 때, 외래키 관련 오류
+  - 에러
+  ```
+  django.core.exceptions.FieldError: Related Field got invalid lookup: icontains
+  ```
+  - 해결
+    - 외래키는 칼럼 이름에 id가 붙어서 나는 오류였다. 이름 사이에 `__id__`를 넣으니 해결!
+    - `goal__icontains` -> `goal__id__icontains`
 
 
 ### 후기 💪
 - DB 테이블을 많이 수정했다. 마이그레이션 과정에서 꼬여서 결국 DB 다시 생성해서 해결했는데, 실제 협업하면 이럴 수 없으니까 얼른 마이그레이션에 익숙해져야겠다............
 - CBV로 리팩토링 하는 과정에서 기존에 잘 처리하지 못했던 예외처리까지 하게 되었다! 
 - viewset... 정말정말 간편하다.. 대박 신세계다 ✨✨✨✨✨✨
-
+- filtering 할 때는 api 요청 주소 마지막에 슬래시('/') 넣으면 안된다. (왜 그러지?) 
 
 
 ## 3주차 미션 : DRF1 - Serializer 및 API 설계
