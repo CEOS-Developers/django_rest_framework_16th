@@ -4,22 +4,18 @@ from django.utils import timezone
 
 # Create your models here.
 # User Model
-'''
-def create_profile(**kwargs):
-    if kwargs['created']:
-        user = kwargs['instance']
-        Profile.objects.create(user=user)
-'''
 
-'''
+
 class BaseModel(models.Model):
-    created_at = models.DateTimeField()
-    deleted_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-'''
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
 
 
-class Profile(models.Model):
+class Profile(BaseModel):
     user = models.OneToOneField(User, db_column='user', on_delete=models.CASCADE)
     introduction = models.TextField(null=True)
     image = models.TextField(null=True)
@@ -37,7 +33,7 @@ class Profile(models.Model):
         return self.user.username
 
 
-class TodoGroup(models.Model):
+class TodoGroup(BaseModel):
     user = models.ForeignKey(Profile, related_name='group', db_column='user', on_delete=models.CASCADE)
     group = models.TextField()
     opened = models.TextField(default='all')
@@ -50,26 +46,26 @@ class TodoGroup(models.Model):
         return self.group
 
 
-class TodoList(models.Model):
+class Todo(BaseModel):
     user = models.ForeignKey(Profile, db_column='user', on_delete=models.CASCADE)
     group = models.ForeignKey(TodoGroup, related_name='list', db_column='group', on_delete=models.CASCADE)
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
     repeated_day = models.IntegerField(default=1111111)
     alarm_time = models.DateTimeField(null=True)
-    todo = models.TextField()
+    list = models.TextField()
     image = models.TextField(null=True)
     status = models.CharField(max_length=10, default='not done')
 
     class Meta:
-        db_table = "TodoList"
+        db_table = "Todo"
 
     def __str__(self):
         return 'user: {}, todo: {}'.format(self.user, self.todo)
 
 
-class TodoLikes(models.Model):
-    todo_id = models.ForeignKey(TodoList, related_name='todo_likes', db_column='todo_id', on_delete=models.CASCADE)
+class TodoLikes(BaseModel):
+    todo_id = models.ForeignKey(Todo, related_name='todo_likes', db_column='todo_id', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='todo_likes', db_column='user', on_delete=models.CASCADE)
     emoticon = models.ImageField()
 
@@ -80,9 +76,8 @@ class TodoLikes(models.Model):
         return 'user: {}, emoticon: {}'.format(self.user, self.emoticon)
 
 
-class Diary(models.Model):
+class Diary(BaseModel):
     user = models.ForeignKey(Profile, related_name='diary', db_column='user', on_delete=models.CASCADE)
-    date = models.DateField()
     emoji = models.CharField(max_length=20, null=True)
     contents = models.TextField(max_length=500)
     bg_color = models.CharField(max_length=10, default='#FFFFFF')
@@ -94,10 +89,10 @@ class Diary(models.Model):
         db_table = "Diary"
 
     def __str__(self):
-        return self.date
+        return self.created_at
 
 
-class DiaryLikes(models.Model):
+class DiaryLikes(BaseModel):
     diary_id = models.ForeignKey(Diary, related_name='diary_likes', db_column='diary_id', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='diary_likes', db_column='user', on_delete=models.CASCADE)
     emoticon = models.ImageField()
@@ -109,7 +104,7 @@ class DiaryLikes(models.Model):
         return 'user: {}, emoticon: {}'.format(self.user, self.emoticon)
 
 
-class Relation(models.Model):
+class Relation(BaseModel):
     follower = models.ForeignKey(Profile, related_name='follower', db_column='follower', on_delete=models.CASCADE)
     followee = models.ForeignKey(Profile, related_name='followee', db_column='followee', on_delete=models.CASCADE)
 

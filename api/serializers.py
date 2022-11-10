@@ -26,10 +26,10 @@ class TodoGroupSerializer(serializers.ModelSerializer):
         fields = ['user', 'group', 'opened', 'color']
 
 
-class TodoListSerializer(serializers.ModelSerializer):
+class TodoSerializer(serializers.ModelSerializer):
     user = UserSerializer
     group = TodoGroupSerializer
 
     class Meta:
-        model = TodoList
-        fields = ['user', 'group', 'start_date', 'end_date', 'repeated_day', 'alarm_time', 'todo', 'status']
+        model = Todo
+        fields = ['user', 'group', 'start_date', 'end_date', 'repeated_day', 'alarm_time', 'list', 'status']

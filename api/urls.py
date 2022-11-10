@@ -18,6 +18,6 @@ from django.urls import path
 from api import views
 
 urlpatterns = [
-    path('todolists', views.todo_lists),
-    path('todolist/<int:pk>', views.todo_list),
+    path('todos/', views.todos),
+    path('todo/<int:pk>', views.todo),
 ]

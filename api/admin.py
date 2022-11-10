@@ -4,5 +4,5 @@ from .models import *
 # Register your models here.
 admin.site.register(Profile)
 admin.site.register(TodoGroup)
-admin.site.register(TodoList)
+admin.site.register(Todo)
 admin.site.register(TodoLikes)
