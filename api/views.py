@@ -41,7 +41,7 @@ def todo_one(request, id):
         todo.delete()
         return JsonResponse(status=204)
 
-    elif request.method == 'PUT':  # 특정 데이터 업데이트
+    elif request.method == 'PATCH':  # 특정 데이터 업데이트
         todo = get_object_or_404(ToDo, id=id)
         data = JSONParser().parse(request)
         serializer = ToDoSerializer(todo, data=data)
