@@ -4,8 +4,8 @@ from api.views import *
 
 urlpatterns = [
     path("todo_classes/", TodoClassesAPI),
-    path("todo_class/<int:id>/", TodoClassAPI),
+    path("todo_classes/<int:id>/", TodoClassAPI),
     path("todos/", TodosAPI),
-    path("todo/<int:id>/", TodoAPI)
+    path("todos/<int:id>/", TodoAPI)
 
 ]
