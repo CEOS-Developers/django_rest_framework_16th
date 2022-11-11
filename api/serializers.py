@@ -14,8 +14,9 @@ class TodoClassesSerializer(serializers.ModelSerializer):
             'is_open',
             'created_at',
             'updated_at',
-            'deleted_at'
+            'deleted_flag'
         ]
+
 
 class TodoClassSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,8 +29,9 @@ class TodoClassSerializer(serializers.ModelSerializer):
             'is_open',
             'created_at',
             'updated_at',
-            'deleted_at'
+            'deleted_flag'
         ]
+
 
 class TodosSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,8 +45,9 @@ class TodosSerializer(serializers.ModelSerializer):
             'is_default',
             'created_at',
             'updated_at',
-            'deleted_at'
+            'deleted_flag'
         ]
+
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,5 +61,5 @@ class TodoSerializer(serializers.ModelSerializer):
             'is_default',
             'created_at',
             'updated_at',
-            'deleted_at'
+            'deleted_flag',
         ]
