@@ -53,13 +53,22 @@
 from rest_framework.viewsets import ModelViewSet
 from api.models import ToDo
 from api.serializers import ToDoSerializer
+from django_filters.rest_framework import FilterSet, filters
+from django_filters.rest_framework import DjangoFilterBackend
+
+
+class TodoFilter(FilterSet):
+    content = filters.CharFilter(field_name='content')
+    is_done = filters.BooleanFilter(field_name='is_done')
+
+    class Meta:
+        model = ToDo
+        fields = ['content', 'is_done']
 
 
 class TodoViewSet(ModelViewSet):
     serializer_class = ToDoSerializer
     queryset = ToDo.objects.all()
 
-    def list(self, request, *args, **kwargs):
-        query_params = request.query_params
-        self.queryset = self.get_queryset().filter(content__icontains=query_params.get('content'))
-        return super().list(request, *args, **kwargs)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TodoFilter
