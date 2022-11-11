@@ -1,11 +1,19 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework import viewsets
+
 from api.serializers import *
+from api.filters import *
 
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    ordering_fields = ['username']
+    ordering = ['username']
 
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
@@ -19,10 +27,22 @@ class GoalViewSet(viewsets.ModelViewSet):
     serializer_class = GoalSerializer
     queryset = Goal.objects.all()
 
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filterset_fields = ['name', 'user']
+    ordering_fields = ['name']
+    ordering = ['name']
+
 
 class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
+
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    # filter_class = TodoFilter
+    filterset_fields = ['state', 'content', 'user', 'goal']
+    # search_fields = ['=content', 'user']
+    ordering_fields = ['date', 'like_count']
+    ordering = ['date']
 
 
 class LikeViewSet(viewsets.ModelViewSet):

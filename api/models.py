@@ -21,6 +21,7 @@ class BaseModel(models.Model):
 class User(AbstractUser, BaseModel):
     email = models.EmailField(max_length=254, unique=True, verbose_name='사용자 이메일')
     password = models.CharField(max_length=128, null=False, verbose_name='사용자 비밀 번호')
+
     # followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
 
     def __str__(self):
@@ -44,7 +45,7 @@ class Todo(BaseModel):
     content = models.CharField(max_length=100)
     date = models.DateTimeField(default=timezone.now, help_text="날짜 및 시간")
     state = models.BooleanField(default=False)
-    like_count=models.PositiveIntegerField(default=0)
+    like_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return '{} : {} : {} : {}'.format(self.user, self.goal, self.content, self.date)
@@ -56,6 +57,7 @@ class Like(BaseModel):
 
     def __str__(self):
         return '{} : {}'.format(self.user, self.todo.content)
+
 
 class Follow(BaseModel):
     follower = models.ForeignKey(User, related_name='follower', on_delete=models.DO_NOTHING)
