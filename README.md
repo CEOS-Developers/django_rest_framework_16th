@@ -80,6 +80,12 @@ urlpatterns = router.urls
 
 
 ### filter 기능 구현하기
+```py
+def list(self, request, *args, **kwargs):
+    query_params = request.query_params
+    self.queryset = self.get_queryset().filter(content__icontains=query_params.get('content'))
+    return super().list(request, *args, **kwargs)
+```
 - goal 필터
 
 ![image](https://user-images.githubusercontent.com/68186101/201207545-7e1fc0d4-34d6-4e93-8249-7cd94e5647b4.png)
@@ -90,6 +96,22 @@ urlpatterns = router.urls
 ![image](https://user-images.githubusercontent.com/68186101/201209178-a2735641-0b9d-4330-b30f-4fbc3d4825a8.png)
 
 
+#### filterset 활용
+
+```py
+class TodoFilter(FilterSet):
+    content = filters.CharFilter(field_name='content')
+    is_done = filters.BooleanFilter(field_name='is_done')
+
+    class Meta:
+        model = ToDo
+        fields = ['content', 'is_done']
+```
+
+
+- content필드와 is_done필드 필터링하기
+
+![image](https://user-images.githubusercontent.com/68186101/201251538-d79fc63f-5dbc-44ec-977f-d8a5b0739cb4.png)
 
 
 
@@ -124,6 +146,7 @@ urlpatterns = router.urls
 - CBV로 리팩토링 하는 과정에서 기존에 잘 처리하지 못했던 예외처리까지 하게 되었다! 
 - viewset... 정말정말 간편하다.. 대박 신세계다 ✨✨✨✨✨✨
 - filtering 할 때는 api 요청 주소 마지막에 슬래시('/') 넣으면 안된다. (왜 그러지?) 
+- fileterset 메서드 구현에 대해 공부 필요
 
 
 ## 3주차 미션 : DRF1 - Serializer 및 API 설계
