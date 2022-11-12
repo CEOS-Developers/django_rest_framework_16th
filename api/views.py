@@ -6,12 +6,29 @@ from .common import *
 
 from rest_framework import viewsets
 from .permission import *
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, filters
+
+
+class GoalFilter(FilterSet):
+    id = filters.NumberFilter(field_name='id', lookup_expr='icontains')
+    name = filters.CharFilter(field_name='name', lookup_expr='icontains')
+    is_goal_private = filters.BooleanFilter(method='private_filter')
+
+    def private_filter(self, queryset, name, value):
+        return queryset.filter(type=value)
+
+    class Meta:
+        model = Goal
+        fields = ['id', 'name', 'is_goal_private']
 
 
 class GoalViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GoalSerializer
     queryset = Goal.objects.all()
     permission_classes = [AuthCheck]
+    filter_backends = [DjangoFilterBackend]
+    filter_class = GoalFilter
+    filterset_fields = ['is_goal_private', 'name', 'id']
 
 # class GoalView(APIView):
 #     def get(self, request):

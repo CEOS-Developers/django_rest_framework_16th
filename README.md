@@ -183,8 +183,25 @@ class GoalView(APIView):
 * custom_response, require_auth 함수를 common.py로 이동
 
 ## Viewset으로 리팩토링하기
+* viewset으로 리팩토링
 ```python
+# view.py
 
+class GoalViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.GoalSerializer
+    queryset = Goal.objects.all()
+    permission_classes = [AuthCheck]
+    filter_backends = [DjangoFilterBackend]
+    filter_class = GoalFilter
+    filterset_fields = ['is_goal_private', 'name', 'id']
+```
+* router 사용
+```python
+# url.py
+
+router = routers.DefaultRouter()
+router.register(r'goals', GoalViewSet)
+urlpatterns = router.urls
 ```
 이전 코드에서도 구현했던, 유저 검증과 response custom을 똑같이 구현했다
 * 유저 검증
@@ -222,6 +239,99 @@ REST_FRAMEWORK = {
     ]
 }
 ```
-setting.py에 default renderer를 추가하여, 커스텀 리스폰스를 구현함
 ## filter 기능 구현하기
-## 공부한 내용 정리 및 회고
+id, name, is_goal_private 필드 filter 구현
+```python
+# view.py
+
+class GoalFilter(FilterSet):
+    id = filters.NumberFilter(field_name='id', lookup_expr='icontains')
+    user = filters.CharFilter(field_name='user')
+    name = filters.CharFilter(field_name='name', lookup_expr='name__icontains')
+    is_goal_private = filters.BooleanFilter(method='private_filter')
+    color = filters.CharFilter(field_name='color')
+
+    def private_filter(self, queryset, name, value):
+        return queryset.filter(type=value)
+
+    class Meta:
+        model = Goal
+        fields = ['id', 'user', 'name', 'is_goal_private', 'color']
+
+  class GoalViewSet(viewsets.ModelViewSet):
+      serializer_class = serializers.GoalSerializer
+      queryset = Goal.objects.all()
+      permission_classes = [AuthCheck]
+      filter_backends = [DjangoFilterBackend]
+      filter_class = GoalFilter
+      filterset_fields = ['is_goal_private', 'name', 'id']
+```
+### is_goal_private 필터 적용
+* 적용하지 않았을 경우
+  * url : http://127.0.0.1:8000/api/goals
+```json
+{
+    "status": 200,
+    "message": "SUCCESS",
+    "data": [
+        {
+            "id": 14,
+            "user": 5,
+            "name": "public 1",
+            "is_goal_private": false,
+            "color": ""
+        },
+        {
+            "id": 15,
+            "user": 5,
+            "name": "public 2",
+            "is_goal_private": false,
+            "color": ""
+        },
+        {
+            "id": 16,
+            "user": 5,
+            "name": "private 1",
+            "is_goal_private": true,
+            "color": ""
+        },
+        {
+            "id": 17,
+            "user": 5,
+            "name": "private 2",
+            "is_goal_private": true,
+            "color": ""
+        }
+    ]
+}
+```
+* 적용했을 때
+  * url : http://127.0.0.1:8000/api/goals?is_goal_private=true
+```json
+{
+    "status": 200,
+    "message": "SUCCESS",
+    "data": [
+        {
+            "id": 16,
+            "user": 5,
+            "name": "private 1",
+            "is_goal_private": true,
+            "color": ""
+        },
+        {
+            "id": 17,
+            "user": 5,
+            "name": "private 2",
+            "is_goal_private": true,
+            "color": ""
+        }
+    ]
+}
+```
+
+## 회고
+* filter에서 lookup_expr에 icontains를 사용했지만, 정확히 동일한 값을 입력하지 않으면 값을 반환하지 않는다. 이유를 못찾겠다.
+* ordering도 적용하려 했으나, 이것도 안된다
+  * django-filter 설치했을 때, 버전이 다르다고 해서, 다른 django 버전을 적용했는데, 그 부분에서 문제가 발생한 것 같다. 정확히 이유는 모르겠고, 해결 방법도 모르겠다.
+* ViewSet을 이용하여 views.py를 리팩토링하니 코드가 매우 간결해져서 좋았다. 장고가 정말 편하다는 걸 느낄 수 있었다!!
