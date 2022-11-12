@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
-
+import datetime
 # Create your models here.
 # User Model
 
@@ -49,13 +48,14 @@ class TodoGroup(BaseModel):
 class Todo(BaseModel):
     user = models.ForeignKey(Profile, db_column='user', on_delete=models.CASCADE)
     group = models.ForeignKey(TodoGroup, related_name='list', db_column='group', on_delete=models.CASCADE)
-    start_date = models.DateField(default=timezone.now)
-    end_date = models.DateField(default=timezone.now)
+    start_date = models.DateField(default=datetime.date.today)
+    end_date = models.DateField(default=datetime.date.today)
     repeated_day = models.IntegerField(default=1111111)
     alarm_time = models.DateTimeField(null=True)
     list = models.TextField()
     image = models.TextField(null=True)
     status = models.CharField(max_length=10, default='not done')
+    # status: not done, done, private
 
     class Meta:
         db_table = "Todo"
