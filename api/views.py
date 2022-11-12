@@ -65,7 +65,7 @@ class TodoView(APIView):
             print(e)
             return Response({"message: not exist"})
 """
-
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets
 from api.models import *
 from api.serializers import *
@@ -75,11 +75,20 @@ from django_filters.rest_framework import FilterSet, filters, DjangoFilterBacken
 class TodoFilter(FilterSet):
     id = filters.NumberFilter(field_name='id', lookup_expr='iexact')
     contents = filters.CharFilter(field_name='contents', lookup_expr='contains')
-    status = filters.CharFilter(field_name='status', lookup_expr='iexact')
+    group = filters.NumberFilter(method='filter_group_notDone')
 
     class Meta:
         model = Todo
-        fields = ['id', 'contents', 'status']
+        fields = ['id', 'contents', 'group']
+
+    def filter_group_notDone(self, queryset, group, value):
+        queryset = Todo.objects.all()
+        try:
+            filtered_queryset = queryset.filter(group=value, status='not_done')
+            return filtered_queryset
+        except ObjectDoesNotExist as e:
+            print(e)
+            return False
 
 
 class TodoViewSet(viewsets.ModelViewSet):
