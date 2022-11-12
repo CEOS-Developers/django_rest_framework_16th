@@ -1,8 +1,12 @@
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import FilterSet, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.status import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
 from .models import Goal
 from .serializers import GoalSerializer
 
@@ -38,8 +42,19 @@ from .serializers import GoalSerializer
 #         if serializer.is_valid():
 #             serializer.save()
 #         return Response({'data': serializer.data, 'message': "goal detail put 요청 성공"}, status=HTTP_200_OK)
+class GoalFilter(FilterSet):
+    color = filters.CharFilter(method='filter_color')
+    class Meta:
+        model = Goal
+        fields = ['user']
+
+    def filter_color(self, queryset, value):
+        filtered_queryset = queryset.filter(color__icontains=value)
+        return filtered_queryset
+
 
 class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     serializer_class = GoalSerializer
-    
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = GoalFilter
