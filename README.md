@@ -1,10 +1,9 @@
 # CEOS 16기 백엔드 스터디
-***
 
 ## 4주차 미션 : API View & Viewset & Filter
-***
+
 ### API View를 이용한 CBV 구현
-***
+
 
   <pre><code>
   # views.py
@@ -36,7 +35,7 @@
   </code></pre>
 
 ### ViewSet으로 리팩토링
-***
+
 - ViewSet 구현
     <pre><code>
     # views.py
@@ -71,7 +70,7 @@
 
 
 ### filter 기능 구현
-***
+
 url의 쿼리를 통해 원하는 결과값을 얻을 수 있다.
 - FilterSet
   <pre><code>
@@ -110,7 +109,7 @@ url의 쿼리를 통해 원하는 결과값을 얻을 수 있다.
     - <code>DjangoFilterBackend</code>는 설정 파일에서 전역적으로 설정해주거나, 개별 View나 ViewSet에 설정해주면 된다. 
 
 ### 회고 및 수정사항
-***
+
 1. restful API를 만족하도록 <code>todo -> todos</code>로 변경
 2. ViewSet로 create 실행 시 read_only로 지정해둔 user를 참조하면서 오류 발생. serializer에서 read_only 삭제
 
@@ -118,10 +117,9 @@ ViewSet을 사용했을 때 내가 생각한 것보다 더 대부분의 것을 �
 궁금했다. ViewSet으로 변경하는 과정에서 이전에 만들어둔 응답 컨벤션을 사용하지 못하게 되었는데 ViewSet의 Permission을 이용하여 
 다시 생성할 수 있다는 걸 늦게 알아 구현하지 못했다,,, 이후에 구현해볼 예정이다. 점점 더 구조화된 API를 설계하며 발전해가는 것 같아 뿌듯하다. 
 
-----
+***
 
 ## 3주차 미션 : Serializer, API 구현
-***
 
 - Todo 모델
     <pre><code>
@@ -134,13 +132,13 @@ ViewSet을 사용했을 때 내가 생각한 것보다 더 대부분의 것을 �
         is_checked = models.BooleanField(default=False)
     </code></pre>
 ### 데이터 삽입
-***
+
 - Todo 모델 데이터
 
     ![Todo objects](https://user-images.githubusercontent.com/74910760/194697856-ce2c7c13-8e30-4ce4-b90e-1f242ffd99c7.png)
 
 ### API 구현
-***
+
 #### 모든 데이터를 가져오는 API
 - URL : <code> http://127.0.0.1:8000/api/todo/ </code>
 - method : <code> GET </code>
@@ -312,7 +310,7 @@ ViewSet을 사용했을 때 내가 생각한 것보다 더 대부분의 것을 �
     </code></pre>
 
 ### 회고
-***
+
 1. 마이그레이션 실수로 디비를 통채로 날렸다... 덕분에 마이그레이션 동작 방식을 정확히 알게되었다,,하하 앞으로는 마이그레이션 파일 멋대로 지우지 말기,,
 2. get으로 데이터를 찾을 때 해당하는 데이터가 없다면 <code> DoesNotExist </code> 에러가 뜬다. 
    에러를 사용하여 성공 시, 실패 시 다른 리턴 메세지를 주었다. 다음에는 status code도 추가해줄 예정이다.
@@ -324,7 +322,6 @@ ViewSet을 사용했을 때 내가 생각한 것보다 더 대부분의 것을 �
 ***
   
 ## 2주차 미션: DB 모델링 및 Django ORM
-***
 
 #### Todo Mate 기능
 - 날짜별 할 일 추가 및 관리
@@ -333,7 +330,7 @@ ViewSet을 사용했을 때 내가 생각한 것보다 더 대부분의 것을 �
 
 
 ### erd
-***
+
 #### User
 ![User](https://user-images.githubusercontent.com/74910760/193414501-044002c3-4abc-4da4-aa6a-5f7f59e688b1.png)
 #### Todo
@@ -356,7 +353,7 @@ ViewSet을 사용했을 때 내가 생각한 것보다 더 대부분의 것을 �
 
 
 ### ORM
-***
+
 - ForiegnKey 필드를 포함하는 Todo 모델 객체 생성
 ![ForiegnKey로 사용될 User 객체 생성](https://user-images.githubusercontent.com/74910760/193414608-ef404fdf-b704-4054-ab12-c71985dadf62.png)
 ![Todo 모델 객체 생성](https://user-images.githubusercontent.com/74910760/193414621-0024336c-e46a-4c0b-9d91-5c755b00efdd.png)
@@ -368,7 +365,7 @@ ViewSet을 사용했을 때 내가 생각한 것보다 더 대부분의 것을 �
 
 
 ### 회고
-***
+
 mysql 사용부터 migration을 하는 과정에서 에러가 많이 떠서 해결하는데 고생을 했다... 과제도 이전보다 난이도가 많이 높아져서 어려웠지만 1대다 관계, 다대다 관계등을 고민해보고 erd를 짜면서 각각 모델이 어떻게 연결되는지 이해할 수 있었다. 기억나는 에러사항은 
 1. m1 환경에서는 settings.py에 pymysql을 다운받고 import하여 pymysql.install_as_MySQLdb()를 작성해주어야한다.
 2. 원하는 날짜를 객체의 field값으로 넣어주고 싶을 때 input_format으로 형식으로 지정해줄 수 있다.
