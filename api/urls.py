@@ -1,7 +1,14 @@
-from django.urls import path
+# from django.urls import path
+from rest_framework import routers
 from .views import *
 
-urlpatterns = [
-    path("todos/", TodoListsAPI.as_view()),
-    path("todos/<int:pk>/", TodoListAPI.as_view()),
-]
+# # CBV용 url
+# urlpatterns = [
+#     path("todos/", TodoListsAPI.as_view()),
+#     path("todos/<int:pk>/", TodoListAPI.as_view()),
+# ]
+
+router = routers.DefaultRouter()
+router.register(r'todos', TodoListViewSet, basename='todo')
+
+urlpatterns = router.urls
