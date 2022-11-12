@@ -5,7 +5,7 @@ from .views import TodoViewSet
 #from api.views import TodoList, TodoItem
 
 router = routers.DefaultRouter()
-router.register(r'todo', TodoViewSet)
+router.register(r'todos', TodoViewSet)
 
 urlpatterns = router.urls
 
@@ -13,7 +13,7 @@ urlpatterns = router.urls
 #Urls for Class-Based View
 urlpatterns = [
     #Todo
-    path('todo/', TodoList.as_view(), name="todo-list"),
+    path('todos/', TodoList.as_view(), name="todo-list"),
     path('todo/<int:pk>/', TodoItem.as_view(), name="todo-item"),
 ]
 
@@ -21,7 +21,7 @@ urlpatterns = [
 #Urls for Fuction-Based View
 urlpatterns = [
     #Todo
-    path('todo/', views.todo_list, name="todo_list"),
+    path('todos/', views.todo_list, name="todo_list"),
     path('todo/<int:pk>', views.todo_item, name="todo_item"),
 ]
 """

@@ -26,6 +26,7 @@ class TodoFilter(FilterSet):
         queryset = Todo.objects.all()
         filtered_queryset = queryset.filter(date__gte=datetime.now()-timedelta(days=7))
         filtered_queryset_false = queryset.exclude(pk__in=filtered_queryset)
+
         if(value==True):
             return filtered_queryset
         else:

@@ -139,3 +139,31 @@ JsonResponse 대신 그냥 Response를 사용해야 drf를 테스트 할 수 있
 함수형 뷰를 작성할 때는 @api_view를 꼭 달아야한다는 사실도 알게 되었다.
 
 나중에 서비스에 필요한 나머지 api들도 만들고 Postman도 한번 사용해 봐야겠다!
+
+## 4주차 미션 : DRF2 - API View & Viewset & Filter
+
+### Model 수정
+```python
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+```
+BaseModel을 정의하고 Category, Todo, Comment Model이 BaseModel을 상속받아 created_at과 updated_at 속성을 갖게 했다.
+  
+```python
+is_completed = models.BooleanField(default=False)
+```
+Todo가 완료되었는지 체크하는 기능이 빠진 것 같아서 Todo에 is_completed attribute을 추가했다.
+
+### 기존 FBV로 작성했던 API
+
+### DRF API View의 CBV으로 리팩토링하기
+
+### Viewset으로 리팩토링하기
+
+### filter 기능 구현하기
+
+### 이번 과제를 하며...
