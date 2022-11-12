@@ -1,9 +1,9 @@
 from django.db import models
-from account.models import User
+from account.models import User, BaseModel
 # Create your models here.
 
 
-class Diary(models.Model):
+class Diary(BaseModel):
     PRIVACY_CHOICES = (
         ('나만보기', '나만보기'),
         ('일부공개', '일부공개'),

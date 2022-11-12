@@ -1,10 +1,10 @@
 from django.db import models
-from account.models import User
+from account.models import User, BaseModel
 
 
 # Create your models here.
 
-class Goal(models.Model):
+class Goal(BaseModel):
     PRIVACY_CHOICES = (
         ('숨기기', '숨기기'),
         ('나만보기', '나만보기'),
@@ -20,7 +20,7 @@ class Goal(models.Model):
         return "goal: " + self.title
 
 
-class Todo(models.Model):
+class Todo(BaseModel):
     goal = models.ForeignKey('Goal', on_delete=models.CASCADE)
     title = models.CharField(max_length=20, blank=True)
     date = models.DateField()
@@ -34,7 +34,7 @@ class Todo(models.Model):
         return "todo: " + self.title
 
 
-class Keep(models.Model):
+class Keep(BaseModel):
     goal = models.ForeignKey('Goal', on_delete=models.CASCADE)
     title = models.CharField(max_length=20, blank=True)
     time = models.TimeField(null=True, blank=True)
@@ -43,7 +43,7 @@ class Keep(models.Model):
         return "keep: " + self.title
 
 
-class EasyInput(models.Model):
+class EasyInput(BaseModel):
     goal = models.ForeignKey('Goal', on_delete=models.CASCADE)
     title = models.CharField(max_length=20, blank=True)
     start_date = models.DateField(null=True, blank=True)
