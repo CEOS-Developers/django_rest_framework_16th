@@ -159,7 +159,12 @@ is_completed = models.BooleanField(default=False)
 Todo가 완료되었는지 체크하는 기능이 빠진 것 같아서 Todo에 is_completed attribute을 추가했다.
 
 ### 기존 FBV로 작성했던 API
-저번주 과제에서 수정된 부분: 잘못 사용된 status number 수정, 복수형 url(todos/)로 고치기, get_object_or_404 사용
+저번주 과제에서 수정된 부분: 잘못 사용된 status number 수정, url 고치기(todo/ 에서 todos/로)  
+* get_object_or_404는 사용해보려고 했으나
+```python
+todo = get_object_or_404(Todo,id=pk)
+```
+를 적었을 때 'Todo' object is not iterable 에러가 발생했고 시간이 없어서 해결은 못하고 결국 원래 사용했던 방식으로 돌아갔다. 다음에 다시 시도해볼 예정이다.
 ```python
 #Function-Based View - views.py
 @csrf_exempt
