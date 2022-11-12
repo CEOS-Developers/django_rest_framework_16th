@@ -1,5 +1,5 @@
 from django.db import models
-from account.models import User, BaseModel
+from account.models import User
 from todo.models import Todo
 from diary.models import Diary
 
@@ -7,7 +7,7 @@ from diary.models import Diary
 # Create your models here.
 
 
-class TodoCheer(BaseModel):
+class TodoCheer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     todo = models.ForeignKey(Todo, on_delete=models.CASCADE, related_name='cheer')
     imoji = models.ImageField()
@@ -16,7 +16,7 @@ class TodoCheer(BaseModel):
         return "todo cheer: " + self.user.email
 
 
-class DiaryCheer(BaseModel):
+class DiaryCheer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     diary = models.ForeignKey(Diary, on_delete=models.CASCADE, related_name='cheer')
     imoji = models.ImageField()

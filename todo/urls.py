@@ -4,6 +4,6 @@ from .views import *
 app_name = 'todo'
 
 urlpatterns = [
-    path('goals/', goal_list),
+    path('goals/', GoalList.as_view()),
     path('goals/<int:pk>', goal_detail),
 ]

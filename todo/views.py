@@ -1,27 +1,26 @@
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.status import *
 from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from .models import Goal, Todo
 from .serializers import GoalSerializer
 
 
-@csrf_exempt
-def goal_list(request):
-    if request.method == 'GET':
+class GoalList(APIView):
+    def get(self, request, format=None):
         goals = Goal.objects.all()
         serializer = GoalSerializer(goals, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response({'data': serializer.data, 'message': "goal list get 요청 성공"}, status=HTTP_200_OK)
 
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = GoalSerializer(data=data)
+    def post(self, request, format=None):
+        serializer = GoalSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response({'data': serializer.data, 'message': "goal post 요청 성공"}, status=HTTP_200_OK)
+        return Response({'data': serializer.errors, 'message': "goal post 실패"}, status=HTTP_400_BAD_REQUEST)
 
 
-@csrf_exempt
 def goal_detail(request, pk):
     if request.method == 'GET':
         goal = Goal.objects.get(pk=pk)
