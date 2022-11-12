@@ -126,17 +126,17 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
 
 ### 모든 데이터를 가져오는 API
 - URL: api/todo
-- METOD: GET
+- METHOD: GET
   ![image](https://user-images.githubusercontent.com/68368633/194756576-9ff73e4f-553e-430c-acd3-4c20f2a36ab2.png)
 
 ### 특정 데이터를 가져오는 API
 - URL: api/todo/<int:pk>
-- METOD: GET
+- METHOD: GET
   ![image](https://user-images.githubusercontent.com/68368633/194756582-31c62d19-e657-4588-89e9-1c321cfc64cc.png)
 
 ### 새로운 데이터를 create하도록 요청하는 API
 - URL: api/todo
-- METOD: POST
+- METHOD: POST
 - BODY
   ```json
   {
@@ -150,16 +150,19 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
   deadline을 지정하지 않아도 괜찮지만 models.py에서 field와 default의 데이터 타입을 다르게 설정하여 에러가 나 이번에만 설정해주었다. 추후에 수정 예정
   
 ### 특정 데이터를 삭제 또는 업데이트 하는 API
-####삭제
-- URL: api/todo/< int:pk >
-- METOD: DELETE
+#### 삭제
+- URL: api/todos/< int:pk >
+- METHOD: DELETE
+
   <img width="1006" alt="image" src="https://user-images.githubusercontent.com/68368633/194756628-347713d8-611a-4581-b932-de1a2ce61ce7.png">
+  
   삭제 결과
+
   ![image](https://user-images.githubusercontent.com/68368633/194756647-b63253ce-22e1-40ff-8bd6-d31a51a96ee7.png)
 
-####업데이트
+#### 업데이트
 - URL: api/todo/< int:pk >
-- METOD: PUT
+- METHOD: POST
 - BODY
   ```json
   {
@@ -171,6 +174,10 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
   ![image](https://user-images.githubusercontent.com/68368633/194756666-0021258b-acea-46e0-9609-809a3be2679c.png)
 
   user와 category를 body 추가하지 않고 api를 요청하였더니 필수값이라고 에러가 났다. 안해도 상관 없는 것으로 아는데 확인 필요!
+  ```python
+  serializer = TodoSerializer(instance=todo, data=data, partial=True)
+  ```
+  serializer에 partial=True을 추가하여 해결
 ### 에러 해결
 - BaseModel의 created_at
 
@@ -190,6 +197,8 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
   TypeError: __init__() missing 1 required positional argument: 'data'
   ```
   에러가 나지만 DB를 확인해보면 어찌됐든 지워져 있었다. 구글링해봐도 잘 모르겠어서 더 찾아보고 수정해야 한다.
+  
+  &rarr; JsonResponse를 Response로 수정하여 해결!
 
 - safe
   ```
@@ -210,3 +219,127 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
 그리고 세션 때 알려주신 SerializerMethodField를 추가해서 좀 하고 싶었는데 에러가 생겨서 우선 주석처리 해놨다.😢
 
 이번 과제에서 모르는 부분들을 많이 발견해서 답답하기도 했지만 공부할 것들을 찾은 것 같아 좋았다!
+
+
+## 4주차 : DRF2 - API View & Viewset & Filter
+#### 저번 주차와 비교했을 때 달라진 점들:
+- url 형태: todo/ &rarr; todos/
+- 특정 데이터 업데이트 메소드:  PUT &rarr; PATCH
+- BaseModel에서 삭제 여부와 시기를 관리하던 is_deleted와 deleted_at 필드 중 is_deleted 제거
+- migration 파일들 git에 추가
+
+### DRF API View 의 CBV 으로 리팩토링하기
+기존에 FBV(Function-Based View)로 코딩했던 내용을 CBV(Class-Based View)로 수정하였다.
+
+views.py refactoring 전/후
+```python
+# FBV
+@csrf_exempt
+@api_view(['GET', 'POST'])
+def todo_list(request):
+    if request.method == 'GET':
+        todos = Todo.objects.filter(deleted_at=None)
+        serializer = TodoSerializer(todos, many=True)
+        return JsonResponse(serializer.data, safe=False, status=200)
+```
+```python
+# CBV
+class TodoList(APIView):
+    def get(self, request):
+        todos = Todo.objects.filter(deleted_at=None)
+        serializer = TodoSerializer(todos, many=True)
+        return JsonResponse(serializer.data, safe=False, status=200)
+```
+urls.py refactoring 전/후
+```python
+# FBV
+urlpatterns = [
+    path('todos/', views.todo_list, name="todo_list"),
+    path('todos/<int:pk>', views.todo_detail, name="todo_detail"),
+]
+```
+```python
+# CBV
+urlpatterns = [
+    path('todos/', TodoList.as_view()),
+    path('todos/<int:pk>', TodoDetail.as_view()),
+]
+```
+### Viewset으로 리팩토링하기
+views.py refactoring 후
+```python
+class TodoViewSet(viewsets.ModelViewSet):
+    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
+```
+urls.py refactoring 후 (Router 사용하여 url mapping)
+```python
+router = routers.DefaultRouter()
+router.register(r'todos', TodoViewSet)
+
+urlpatterns = router.urls
+```
+### filter 기능 구현하기
+- 특정 user filtering 
+- content에 특정 문자열 포함되는지 판별하여 filtering
+```python
+class TodoFilter(FilterSet):
+    user = filters.CharFilter(method='user_filter')
+    content = filters.CharFilter(field_name='content', lookup_expr='icontains')
+
+    class Meta:
+        model = Todo
+        fields = ['user', 'content']
+
+    def user_filter(self, queryset, user, value):
+        filtered_queryset = queryset.filter(**{
+            user: value,
+        })
+        return filtered_queryset
+
+
+class TodoViewSet(viewsets.ModelViewSet):
+    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TodoFilter
+```
+#### user filter
+  url: /api/todos/?user=''
+
+  <사진>
+
+#### content filter
+  url: /api/todos/?content=''
+
+  <사진>
+
+#### user & content filter
+  url: /api/todos/?user=''&content=''
+
+  <사진>
+
+### 에러 해결
+- Field 삭제 에러
+  
+  <사진>
+
+  is_deleted 필드를 삭제하고 deleted_at으로만 삭제 여부와 시기를 관리하도록 models.py를 수정하였다. 
+  파일 수정 후에 마이그레이션을 했는데도 DB에는 반영이 되지 않아 아직 필드가 남아있어 발생하는 오류였다. 
+  mysql로 들어가 <code>ALTER TABLE `테이블명` DROP `컬럼명`;</code>로 필드를 하나하나 삭제하여 해결
+
+- Todo TypeError
+  
+  <사진>
+
+  특정 데이터를 확인할 때 발생했던 에러로 get_object_or_404를 objects.filter로 수정하여 해결
+
+### 회고
+과제하려고 보니까 분명 월요일까지만 해도 있던 migration file들이 다 날라가서 간담이 서늘했다. git에 migration file들을 굳이 올릴 필요가 있나..? 싶어서 안올렸었는데 이제 꼬박꼬박 올려야겠다.
+파일들이 다 날라갔어도 DB 연결은 잘 되어있고 migration 기록들을 보면 아직 다 있는데 왜 내 로컬에서만 사라진건지 정말 의문 🤔
+그리고 피드백을 받고서 코드를 수정했던 부분들이 예상치 못하게 에러가 나서 왜 그러는건지도 감이 안잡힌다. 우선 주먹구구식으로 해결..
+
+CBV와 ViewSet 모두 처음 사용해보는데 정말 신세계였다. 특히 ViewSet 어떻게 이렇게 간편할 수가..! 근데 오히려 처음 배울 때 ViewSet으로 했으면 어떻게 작동하는건지 몰라서 헷갈렸을 것 같다.
+filterset도 익숙하지가 않아서 deleted_at이 Null이 아닌 데이터들만 가져오는 필터 기능을 추가하고 싶었는데 만들다가 포기했다 🙃
+어쨌든 너무너무 편한 기능들을 알게 되어서 재밌었다!
