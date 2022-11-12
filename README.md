@@ -213,3 +213,68 @@ OnetoOneField로 연결된 User 모델은 import 후에 UserSerializer 작성함
 ## 회고...
 이전에는 직접 json 형태로 반환해주는 form을 만들어서 쫌쫌따리 반환했는데 serializer를 알게되었다.
 클래스형 뷰로 코드를 리팩토링 하면서 URL에 알맞게 GET, POST 함수들의 위치를 조정할 예정이다.
+
+# 2022.11.12
+## 과제
+1. CBV로 리팩토링
+<pre><code># views.py
+
+class TodosView(APIView):
+    # noinspection PyMethodMayBeStatic
+    def get(self, request):
+        try:
+            lists = Todo.objects.all()
+            serializer = TodoSerializer(lists, many=True)
+            return Response(serializer.data)
+        except AttributeError as e:
+            print(e)
+            return Response("message: no data")</code></pre>
+
+
+2. Viewset으로 리팩토링
+<pre><code># views.py
+
+class TodoViewSet(viewsets.ModelViewSet):
+    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TodoFilter</code></pre>
+<pre><code># urls.py
+
+from rest_framework import routers
+from .views import TodoViewSet
+
+router = routers.DefaultRouter()
+router.register(r'todo', TodoViewSet)
+
+urlpatterns = router.urls</code></pre>
+<img src="getId.png">
+
+3. filter 기능 구현
+<pre><code># views.py
+
+class TodoFilter(FilterSet):
+    id = filters.NumberFilter(field_name='id', lookup_expr='iexact')
+    contents = filters.CharFilter(field_name='contents', lookup_expr='contains')
+    status = filters.CharFilter(field_name='status', lookup_expr='iexact')
+
+   class Meta:
+        model = Todo
+        fields = ['id', 'contents', 'status']
+</code></pre>
+<img src="filterset.png">
+<img src="filterset2.png">
+
+## !Done! 
+1. Add BaseModel
+2. Rename model and field
+3. Add Viewset
+4. Add Filterset
+
+## !NEW! = !WONDER!
+1. Viewset : 여러가지 url과 그 작동에 대해서 알아서 처리해주는 기능이라고 대충 이해하고 있다... 굉장히 편하다는 것은 알겠는데 작동 원리를 전혀 이해하지 못했다... 일단 과제 내고 더 찾아볼 예정
+2. Filterset : filter 처리를 대신 해주는 건가..?
+
+## 회고...
+열심히 CBV로 코드 작성하고 너무 뿌듯했는데 Viewset으로 고치는 과정에서,, 굉장히 허탈했다.
+코드 몇줄로 지금까지 작성한 기능을 다 대체할 수 있다니..ㅠ 근데 생각할수록 너무 편리한 것 같아서 장고가 조금 더 좋아졌다
