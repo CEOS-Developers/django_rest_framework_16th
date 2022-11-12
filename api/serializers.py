@@ -32,4 +32,4 @@ class TodoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Todo
-        fields = ['user', 'group', 'start_date', 'end_date', 'repeated_day', 'alarm_time', 'list', 'status']
+        fields = ['user', 'group', 'contents', 'status']
