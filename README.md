@@ -120,4 +120,35 @@ api view에서 데이터를 가져올 때는 request.data로 바로 사용했는
 `JSONParser().parse(request)`로 파싱해서 사용하는데 request가 json 포맷이 아닌건지 궁금했다. 내가 입력하고 요청하는 데이터들이 어떤 형태로 전달되는지 잘 알아야 할 것 같다. 
 
 pycharm에 대해서 새롭게 알게 된 점: . [가상환경이름]/Scripts/activate 을 해도 알 수 없는 명령어라는 말만 나와서
-답답했는데 파이참에서는 settings > Tools > Terminal > Activate virtualenv 가 체크되어 있으면 가상환경이 자동 실행되는데 윈도우에서는 display 오류로 (venv)가 보이지 않는다는 것을 알게 됐다.
+답답했는데 파이참에서는 settings > Tools > Terminal > Activate virtualenv 가 체크되어 있으면 가상환경이 자동 실행되는데 윈도우에서는 display 오류로 (venv)가 보이지 않는다는 것을 알게 됐다.      
+
+
+
+
+
+
+## 3주차 미션: Serializer
+### 1. **DRF API View 의** CBV 으로 리팩토링하기
+![image](https://user-images.githubusercontent.com/69039161/201476614-de6907dd-2d8b-42e2-bf54-86b8e24b5e84.png)  
+
+
+
+### 2. Viewset으로 리팩토링하기
+<image width=70% src="https://user-images.githubusercontent.com/69039161/201476662-b7e21c94-cb56-4ef7-8ac4-20e75190f9fa.png">
+
+
+<image width=70% src="https://user-images.githubusercontent.com/69039161/201476688-fcd10cb4-3cad-4ecd-86a3-7f8ca3b6fcac.png">
+
+코드 두 줄만으로 list, create view가 생긴다는게 신기했다. 
+
+### 3. filter 기능 구현하기
+<image width=70% src="https://user-images.githubusercontent.com/69039161/201477209-f57c03e6-8c50-45a0-abef-a6a7672c4319.png">
+pip install django-filters를 하고, INSTALLED_APPS에 추가해야 했다. 
+구체적으로 커스텀해서 필터링을 해야 할 일이 있을 때나, 필터링을 다양하게 많이 해야할 때 좋을 것 같았다.
+
+### 새롭게 알게 된 점
+viewset과 router를 사용하면 url을 따로 설정할 필요 없이 drf가 알아서 다 해준다는 걸 알게 되었다.
+코드를 조금만 써도 흔한 커뮤니티 같은 것들이 만들어질 수도 있다는 것을 체감했던 것 같다. 
+
+model을 수정했는데 migration을 해도 새로운 class와 field가 mysql db에 반영이 안되는 것 같은 오류가 생겼다.
+일단 수정하지 않고 미션을 했는데 뭐가 문제인지 더 찾아봐야할 것 같다. 
