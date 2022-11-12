@@ -5,8 +5,16 @@ from rest_framework.response import Response
 from api.models import *
 from api.serializers import *
 from rest_framework.views import APIView
+from rest_framework import viewsets
 
 # Create your views here.
+class TodoViewSet(viewsets.ModelViewSet):
+    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
+
+
+"""
+#Class-Based View
 class TodoList(APIView):
     def get(self, request, format=None):
         todo_items = Todo.objects.all()
@@ -36,9 +44,9 @@ class TodoItem(APIView):
         todo = Todo.objects.filter(id=pk)
         todo.delete()
         return Response(status=201)
-
-"""
-Function-Based View
+        
+        
+#Function-Based View
 @csrf_exempt
 @api_view(['GET', 'POST'])
 def todo_list(request):
