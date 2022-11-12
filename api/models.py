@@ -2,7 +2,14 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.timezone import now
 # Create your models here.
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        abstract = True
+
+        
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -46,14 +53,14 @@ class Follower(models.Model):
     follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
     following = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
 
-class Category(models.Model):
+class Category(BaseModel):
     category_name = models.CharField(max_length=50, null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
         return self.category_name
 
 
-class Todo(models.Model):
+class Todo(BaseModel):
     DISCLOSURE_CHOICES = {
         ('private', 'Private'),
         ('onlyFriends', 'Only Friends'),
@@ -69,7 +76,7 @@ class Todo(models.Model):
         return self.todo_name
 
 
-class Comment(models.Model):
+class Comment(BaseModel):
     todo = models.ForeignKey(Todo, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     emoji = models.CharField(max_length=1)
