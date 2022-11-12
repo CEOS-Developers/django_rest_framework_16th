@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from rest_framework.status import *
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
@@ -21,21 +22,20 @@ class GoalList(APIView):
         return Response({'data': serializer.errors, 'message': "goal post 실패"}, status=HTTP_400_BAD_REQUEST)
 
 
-def goal_detail(request, pk):
-    if request.method == 'GET':
-        goal = Goal.objects.get(pk=pk)
+class GoalDetail(APIView):
+    def get(self, request, pk):
+        goal = get_object_or_404(Goal, pk=pk)
         serializer = GoalSerializer(goal)
-        return JsonResponse(serializer.data, safe=False)
+        return Response({'data': serializer.data, 'message': "goal detail get 요청 성공"}, status=HTTP_200_OK)
 
-    if request.method == 'DELETE':
-        goal = Goal.objects.get(pk=pk)
+    def delete(self, request, pk):
+        goal = get_object_or_404(Goal, pk=pk)
         goal.delete()
-        return JsonResponse({'data': '삭제 성공'})
+        return Response({'message': "goal delete 요청 성공"}, status=HTTP_200_OK)
 
-    if request.method == 'PUT':
-        data = JSONParser().parse(request)
-        goal = Goal.objects.get(pk=pk)
-        serializer = GoalSerializer(goal, data=data)
+    def put(self, request, pk):
+        goal = get_object_or_404(Goal, pk=pk)
+        serializer = GoalSerializer(goal, data=request.data)
         if serializer.is_valid():
             serializer.save()
-        return JsonResponse(serializer.data, safe=False)
+        return Response({'data': serializer.data, 'message': "goal detail put 요청 성공"}, status=HTTP_200_OK)
