@@ -1,3 +1,4 @@
+"""
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
@@ -51,7 +52,7 @@ class TodoView(APIView):
             return Response({"message: not exist"})
     
     # noinspection PyMethodMayBeStatic
-    def put(self, request, pk):
+    def put(self, request, pk): => patch & delete partial=True
         try:
             todo = Todo.objects.get(id=pk)
             data = request.data
@@ -63,3 +64,26 @@ class TodoView(APIView):
         except ObjectDoesNotExist as e:
             print(e)
             return Response({"message: not exist"})
+"""
+
+from rest_framework import viewsets
+from api.models import *
+from api.serializers import *
+from django_filters.rest_framework import FilterSet, filters, DjangoFilterBackend
+
+
+class TodoFilter(FilterSet):
+    id = filters.NumberFilter(field_name='id', lookup_expr='iexact')
+    contents = filters.CharFilter(field_name='contents', lookup_expr='contains')
+    status = filters.CharFilter(field_name='status', lookup_expr='iexact')
+
+    class Meta:
+        model = Todo
+        fields = ['id', 'contents', 'status']
+
+
+class TodoViewSet(viewsets.ModelViewSet):
+    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TodoFilter
