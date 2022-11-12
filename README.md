@@ -38,7 +38,8 @@ python manage.py shell
 2. 삽입한 객체들을 쿼리셋으로 조회해보기 (단, 객체들이 객체의 특성을 나타내는 구분가능한 이름으로 보여야 함)
 ![image](https://user-images.githubusercontent.com/68368633/193413193-25847923-d905-49bc-8027-b88335d7fbe9.png)
 3. filter 함수 사용해보기
-![image](https://user-images.githubusercontent.com/68368633/193413421-85045bee-7289-46f7-88f5-1bada10195b6.png)
+
+  ![image](https://user-images.githubusercontent.com/68368633/193413421-85045bee-7289-46f7-88f5-1bada10195b6.png)
 
 
 ### 에러 해결
@@ -307,22 +308,26 @@ class TodoViewSet(viewsets.ModelViewSet):
 #### user filter
   url: /api/todos/?user=''
 
-  <사진>
+  ![image](https://user-images.githubusercontent.com/68368633/201473291-50ef8953-ebfe-4980-a9a3-5439e6baa203.png)
+
 
 #### content filter
   url: /api/todos/?content=''
 
-  <사진>
+  ![image](https://user-images.githubusercontent.com/68368633/201473301-102846c0-e979-4a5d-b0d2-7c587dc0e1f4.png)
+
 
 #### user & content filter
   url: /api/todos/?user=''&content=''
 
-  <사진>
+  ![image](https://user-images.githubusercontent.com/68368633/201473308-fa88508b-748b-4177-ad81-0793ffb6c81e.png)
+
 
 ### 에러 해결
 - Field 삭제 에러
   
-  <사진>
+  ![image](https://user-images.githubusercontent.com/68368633/201473317-7ea270db-b8f9-48fb-bf30-e6702e066c83.png)
+
 
   is_deleted 필드를 삭제하고 deleted_at으로만 삭제 여부와 시기를 관리하도록 models.py를 수정하였다. 
   파일 수정 후에 마이그레이션을 했는데도 DB에는 반영이 되지 않아 아직 필드가 남아있어 발생하는 오류였다. 
@@ -330,7 +335,8 @@ class TodoViewSet(viewsets.ModelViewSet):
 
 - Todo TypeError
   
-  <사진>
+  ![image](https://user-images.githubusercontent.com/68368633/201473320-ec0054ea-5634-4125-b587-821f7c76eda5.png)
+
 
   특정 데이터를 확인할 때 발생했던 에러로 get_object_or_404를 objects.filter로 수정하여 해결
 
