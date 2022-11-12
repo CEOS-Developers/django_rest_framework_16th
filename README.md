@@ -41,6 +41,7 @@ pagination과 같은 기능들도 많던데 일단 안되는 이유 찾느라 �
 OrderingFilter과 같이 SearchFilter도 있는데 api에 요청 날릴 때 좀 뭐랄까 명확하지 않게 전송되는거 같아서 
 이 부분은 제외했다. 끝!
 
+*****
 ### 3주차 미션: DRF1 - Serialize, API 설계
 
 #### - serializes.py
