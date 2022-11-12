@@ -256,11 +256,16 @@ urlpatterns = router.urls</code></pre>
 class TodoFilter(FilterSet):
     id = filters.NumberFilter(field_name='id', lookup_expr='iexact')
     contents = filters.CharFilter(field_name='contents', lookup_expr='contains')
-    status = filters.CharFilter(field_name='status', lookup_expr='iexact')
+    group = filters.NumberFilter(method='filter_group_notDone')
 
-   class Meta:
+    class Meta:
         model = Todo
-        fields = ['id', 'contents', 'status']
+        fields = ['id', 'contents', 'group']
+
+    def filter_group_notDone(self, queryset, group, value):
+        queryset = Todo.objects.all()
+        filtered_queryset = queryset.filter(group=value, status='not_done')
+        return filtered_queryset
 </code></pre>
 <img src="filterset.png">
 <img src="filterset2.png">
@@ -273,8 +278,13 @@ class TodoFilter(FilterSet):
 
 ## !NEW! = !WONDER!
 1. Viewset : 여러가지 url과 그 작동에 대해서 알아서 처리해주는 기능이라고 대충 이해하고 있다... 굉장히 편하다는 것은 알겠는데 작동 원리를 전혀 이해하지 못했다... 일단 과제 내고 더 찾아볼 예정
-2. Filterset : filter 처리를 대신 해주는 건가..?
+2. Filterset
+   1. filterset_fields : View Class 내부에서 사용, 일치여부를 확인하고 싶은 경우에 사용
+   2. filterset : Filter Class 내부에서 사용
+   3. filterset_method : 반환된 queryset으로 추가적인 질의를 하고싶은 경우
 
 ## 회고...
 열심히 CBV로 코드 작성하고 너무 뿌듯했는데 Viewset으로 고치는 과정에서,, 굉장히 허탈했다.
-코드 몇줄로 지금까지 작성한 기능을 다 대체할 수 있다니.. 근데 생각할수록 너무 편리한 것 같아서 장고가 조금 더 좋아졌다
+코드 몇줄로 지금까지 작성한 기능을 다 대체할 수 있다니.. 근데 생각할수록 너무 편리한 것 같다
+특히 Filterset  ( ･ᴗ･̥̥̥ )... 과제를 하면 할수록 공식문서의 중요성을 느낀다
+아무튼 장고가 조금 더 좋아졌다.
