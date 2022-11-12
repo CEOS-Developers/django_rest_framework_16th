@@ -12,7 +12,8 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
 
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    ordering_fields = ['username']
+    filterset_fields = ['username', 'email', 'is_staff', 'is_active']
+    ordering_fields = ['username', 'last_login']
     ordering = ['username']
 
     def destroy(self, request, *args, **kwargs):
@@ -28,7 +29,7 @@ class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
 
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filterset_fields = ['name', 'user']
+    filterset_fields = ['name', 'user', 'privacy']
     ordering_fields = ['name']
     ordering = ['name']
 
@@ -37,10 +38,9 @@ class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
 
-    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
     # filter_class = TodoFilter
     filterset_fields = ['state', 'content', 'user', 'goal']
-    # search_fields = ['=content', 'user']
     ordering_fields = ['date', 'like_count']
     ordering = ['date']
 
