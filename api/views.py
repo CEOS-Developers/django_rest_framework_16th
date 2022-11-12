@@ -6,11 +6,24 @@ from api.models import *
 from api.serializers import *
 from rest_framework.views import APIView
 from rest_framework import viewsets
-
+from django_filters.rest_framework import FilterSet, filters
+from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
+
+class TodoFilter(FilterSet):
+    user = filters.ModelChoiceFilter(queryset=User.objects.all())
+    disclosure_choice = filters.TypedChoiceFilter(choices=Todo.DISCLOSURE_CHOICES)
+
+    class Meta:
+        model = Todo
+        fields = ['user', 'disclosure_choice']
+
+
 class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user','disclosure_choice',]
 
 
 """
