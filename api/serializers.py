@@ -25,13 +25,13 @@ class FollowSerializer(serializers.ModelSerializer):
 
 class TodoSerializer(BaseModelSerializer):
     user = UserSerializer
-    # category_name = serializers.SerializerMethodField()
+    category_title = serializers.SerializerMethodField()
 
     class Meta:
         model = Todo
         fields = ['todo_id', 'user', 'category', 'is_success', 'is_valid', 'deadline', 'alarm', 'content']
 
-    # def get_category_title(self, obj):  # 질문: static으로 선언해야 하나요?
+    # def get_category_title(self, obj):
     #     return obj.category.title
 
 

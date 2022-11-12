@@ -4,16 +4,13 @@ from django.utils import timezone
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
-    # auto_now_add만 추가하면 default 값이 없다고 떠서 default=timezone.now()를 추가하면 둘 중 하나만 쓸 수 있다고 나옵니다. 그래서 우선 null로 해결했는데 이게 맞는지 모르겠습니다ㅠ
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, default=None)
-    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
 
     def delete(self, using=None, keep_parents=False):
-        self.is_deleted = True
         self.deleted_at = timezone.now()
         self.save()
 
@@ -42,7 +39,6 @@ class Category(BaseModel):
     title = models.CharField(max_length=50)
     color = models.IntegerField(default=0)
     is_public = models.BooleanField(default=False)
-    # is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -54,7 +50,6 @@ class Todo(BaseModel):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_success = models.BooleanField(default=False)
     is_valid = models.BooleanField(default=False)
-    # is_deleted = models.BooleanField(default=False)
     deadline = models.DateField(default=timezone.now())
     alarm = models.DateTimeField(null=True)
     content = models.CharField(max_length=200)
