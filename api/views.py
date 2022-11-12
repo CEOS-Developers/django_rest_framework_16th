@@ -57,7 +57,7 @@ class TodoList(APIView):
 
 class TodoItem(APIView):
     def get(self, request, pk, format=None):
-        todo = Todo.objects.filter(id=pk)
+        todo = get_object_or_404(Todo,id=pk)
         serializer = TodoSerializer(todo, many=True)
         return Response(serializer.data)
     def put(self, request, pk, format=None):
@@ -70,7 +70,7 @@ class TodoItem(APIView):
     def delete(self, request, pk, format=None):
         todo = Todo.objects.filter(id=pk)
         todo.delete()
-        return Response(status=201)
+        return Response(status=204)
         
         
 #Function-Based View
@@ -95,7 +95,7 @@ def todo_list(request):
 def todo_item(request, pk):
 
     if request.method == 'GET':
-        todo = Todo.objects.filter(id=pk)
+        todo = get_object_or_404(Todo,id=pk)
         serializer = TodoSerializer(todo, many=True)
         return Response(serializer.data)
 
@@ -110,7 +110,7 @@ def todo_item(request, pk):
     elif request.method == 'DELETE':
         todo = Todo.objects.filter(id=pk)
         todo.delete()
-        return Response(status=201)
+        return Response(status=204)
 
 
 """
