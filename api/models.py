@@ -9,7 +9,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-        
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -72,6 +72,7 @@ class Todo(BaseModel):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     disclosure_choice = models.CharField(default='public', max_length=30, choices=DISCLOSURE_CHOICES)
     date = models.DateTimeField(default=now)
+    is_completed = models.BooleanField(default=False)
     def __str__(self):
         return self.todo_name
 
