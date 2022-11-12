@@ -1,19 +1,40 @@
 from rest_framework import viewsets
-# from rest_framework.parsers import JSONParser
-# from rest_framework.response import Response
-# from rest_framework.views import APIView
+from django_filters.rest_framework import FilterSet, filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.models import *
 from api.serializers import *
 
+# from rest_framework.parsers import JSONParser
+# from rest_framework.response import Response
+# from rest_framework.views import APIView
+
 # from django.http import JsonResponse
 # from django.shortcuts import  get_object_or_404
+
+
+class TodoFilter(FilterSet):
+    user = filters.CharFilter(method='user_filter')
+    content = filters.CharFilter(field_name='content', lookup_expr='icontains')
+
+    class Meta:
+        model = Todo
+        fields = ['user', 'content']
+
+    def user_filter(self, queryset, user, value):
+        filtered_queryset = queryset.filter(**{
+            user: value,
+        })
+
+        return filtered_queryset
 
 
 class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
 
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TodoFilter
 
 
 # class TodoList(APIView):
