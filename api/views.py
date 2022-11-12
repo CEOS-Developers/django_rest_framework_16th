@@ -57,7 +57,7 @@ class TodoList(APIView):
 
 class TodoItem(APIView):
     def get(self, request, pk, format=None):
-        todo = get_object_or_404(Todo,id=pk)
+        todo = Todo.objects.filter(id=pk)
         serializer = TodoSerializer(todo, many=True)
         return Response(serializer.data)
     def put(self, request, pk, format=None):
@@ -95,7 +95,7 @@ def todo_list(request):
 def todo_item(request, pk):
 
     if request.method == 'GET':
-        todo = get_object_or_404(Todo,id=pk)
+        todo = Todo.objects.filter(id=pk)
         serializer = TodoSerializer(todo, many=True)
         return Response(serializer.data)
 
