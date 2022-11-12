@@ -83,12 +83,8 @@ class TodoFilter(FilterSet):
 
     def filter_group_notDone(self, queryset, group, value):
         queryset = Todo.objects.all()
-        try:
-            filtered_queryset = queryset.filter(group=value, status='not_done')
-            return filtered_queryset
-        except ObjectDoesNotExist as e:
-            print(e)
-            return False
+        filtered_queryset = queryset.filter(group=value, status='not_done')
+        return filtered_queryset
 
 
 class TodoViewSet(viewsets.ModelViewSet):
