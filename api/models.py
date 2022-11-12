@@ -47,12 +47,12 @@ class TodoGroup(BaseModel):
 
 class Todo(BaseModel):
     user = models.ForeignKey(Profile, db_column='user', on_delete=models.CASCADE)
-    group = models.ForeignKey(TodoGroup, related_name='list', db_column='group', on_delete=models.CASCADE)
+    group = models.ForeignKey(TodoGroup, related_name='todo', db_column='group', on_delete=models.CASCADE)
     start_date = models.DateField(default=datetime.date.today)
     end_date = models.DateField(default=datetime.date.today)
     repeated_day = models.IntegerField(default=1111111)
     alarm_time = models.DateTimeField(null=True)
-    list = models.TextField()
+    contents = models.TextField()
     image = models.TextField(null=True)
     status = models.CharField(max_length=10, default='not done')
     # status: not done, done, private
