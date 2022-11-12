@@ -14,6 +14,6 @@ from rest_framework import routers
 from .views import TodoViewSet
 
 router = routers.DefaultRouter()
-router.register(r'todo', TodoViewSet)  # register()함으로써 두 개의 url 생성
+router.register(r'todo', TodoViewSet)
 
 urlpatterns = router.urls
