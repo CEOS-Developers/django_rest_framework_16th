@@ -25,7 +25,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
 class TodoSerializer(BaseModelSerializer):
     user = UserSerializer
-    category_title = serializers.SerializerMethodField()
+    # category_title = serializers.SerializerMethodField()
 
     class Meta:
         model = Todo

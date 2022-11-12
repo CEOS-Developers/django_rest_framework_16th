@@ -13,9 +13,9 @@ from api.serializers import *
 @api_view(['GET', 'POST'])
 def todo_list(request):
     if request.method == 'GET':
-        todos = Todo.objects.all()
+        todos = Todo.objects.filter(deleted_at=None)
         serializer = TodoSerializer(todos, many=True)
-        return Response(serializer.data, status=200)
+        return JsonResponse(serializer.data, safe=False, status=200)
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
@@ -23,27 +23,28 @@ def todo_list(request):
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+        return JsonResponse(serializer.errors, status=400)
 
 
 @csrf_exempt
 @api_view(['GET', 'DELETE', 'PATCH'])
 def todo_detail(request, pk):
     if request.method == 'GET':
-        todo = get_object_or_404(Todo, todo_id=pk)
+        # todo = get_list_or_404(Todo, todo_id=pk)
+        todo = Todo.objects.filter(todo_id=pk)
         serializer = TodoSerializer(todo, many=True)
-        return Response(serializer.data, status=200)
+        return JsonResponse(serializer.data, safe=False, status=200)
 
     if request.method == 'DELETE':
-        todo = Todo.objects.filter(todo_id=pk)
+        todo = get_object_or_404(Todo, todo_id=pk)
         todo.delete()
         return Response(status=200)
 
     if request.method == 'PATCH':
-        todo = Todo.objects.get(todo_id=pk)
+        todo = get_object_or_404(Todo, todo_id=pk)
         data = JSONParser().parse(request)
         serializer = TodoSerializer(instance=todo, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=200)
-        return Response(serializer.errors, status=400)
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)
