@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
@@ -8,22 +10,33 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from django_filters.rest_framework import FilterSet, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from datetime import datetime, timedelta
+
 # Create your views here.
 
 class TodoFilter(FilterSet):
     user = filters.ModelChoiceFilter(queryset=User.objects.all())
     disclosure_choice = filters.TypedChoiceFilter(choices=Todo.DISCLOSURE_CHOICES)
-
+    recent_todos = filters.BooleanFilter(method='filter_recent_todos', label='recent_todos')
     class Meta:
         model = Todo
         fields = ['user', 'disclosure_choice']
+
+    def filter_recent_todos(self, queryset, name, value):
+        queryset = Todo.objects.all()
+        filtered_queryset = queryset.filter(date__gte=datetime.now()-timedelta(days=7))
+        filtered_queryset_false = queryset.exclude(pk__in=filtered_queryset)
+        if(value==True):
+            return filtered_queryset
+        else:
+            return filtered_queryset_false
 
 
 class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['user','disclosure_choice',]
+    filterset_class = TodoFilter
 
 
 """
