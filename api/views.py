@@ -9,6 +9,7 @@ from .permission import *
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, filters
 
 
+# 이거 작동 안함
 class GoalFilter(FilterSet):
     id = filters.NumberFilter(field_name='id', lookup_expr='icontains')
     name = filters.CharFilter(field_name='name', lookup_expr='icontains')
@@ -19,7 +20,11 @@ class GoalFilter(FilterSet):
 
     class Meta:
         model = Goal
-        fields = ['id', 'name', 'is_goal_private']
+        fields = {
+            'id': ['exact', 'contains'],
+            'name': ['exact', 'contains'],
+            'is_goal_private': ['exact', 'contains']
+        }
 
 
 class GoalViewSet(viewsets.ModelViewSet):
@@ -27,7 +32,7 @@ class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     permission_classes = [AuthCheck]
     filter_backends = [DjangoFilterBackend]
-    filter_class = GoalFilter
+    # filter_class = GoalFilter
     filterset_fields = ['is_goal_private', 'name', 'id']
 
 # class GoalView(APIView):

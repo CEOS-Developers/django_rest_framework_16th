@@ -192,7 +192,7 @@ class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     permission_classes = [AuthCheck]
     filter_backends = [DjangoFilterBackend]
-    filter_class = GoalFilter
+    # filter_class = GoalFilter
     filterset_fields = ['is_goal_private', 'name', 'id']
 ```
 * router 사용
@@ -218,6 +218,7 @@ class AuthCheck(permissions.BasePermission):
         except:
             return False
 ```
+ViewSet의 Permission을 이용함
 * response custom
 ```python
 # util.py
@@ -240,10 +241,13 @@ REST_FRAMEWORK = {
 }
 ```
 ## filter 기능 구현하기
-id, name, is_goal_private 필드 filter 구현
+id, name, is_goal_private 필드 filter 구현<br/>
+filter_class로 filterset을 추가했을 때 filter가 작동하지 않는 문제가 있어서, filterset_fields로 대체함.<br/>
+'lookup_expr=exact' 와 동일하게 작동함
 ```python
 # view.py
 
+# 이거 작동 안함
 class GoalFilter(FilterSet):
     id = filters.NumberFilter(field_name='id', lookup_expr='icontains')
     user = filters.CharFilter(field_name='user')
@@ -263,10 +267,10 @@ class GoalFilter(FilterSet):
       queryset = Goal.objects.all()
       permission_classes = [AuthCheck]
       filter_backends = [DjangoFilterBackend]
-      filter_class = GoalFilter
+      # filter_class = GoalFilter
       filterset_fields = ['is_goal_private', 'name', 'id']
 ```
-### is_goal_private 필터 적용
+### ex) is_goal_private 필터 적용
 * 적용하지 않았을 경우
   * url : http://127.0.0.1:8000/api/goals
 ```json
@@ -331,7 +335,6 @@ class GoalFilter(FilterSet):
 ```
 
 ## 회고
-* filter에서 lookup_expr에 icontains를 사용했지만, 정확히 동일한 값을 입력하지 않으면 값을 반환하지 않는다. 이유를 못찾겠다.
-* ordering도 적용하려 했으나, 이것도 안된다
-  * django-filter 설치했을 때, 버전이 다르다고 해서, 다른 django 버전을 적용했는데, 그 부분에서 문제가 발생한 것 같다. 정확히 이유는 모르겠고, 해결 방법도 모르겠다.
+* filterset이 작동하지 않는다. 이유를 못찾겠다.
+  * django-filter를 설치했을 때, 버전이 다르다고 해서, 다른 django 버전을 적용했는데, 그 부분에서 문제가 발생한 것 같다. 정확한 이유는 모르겠고, 해결 방법도 모르겠다.
 * ViewSet을 이용하여 views.py를 리팩토링하니 코드가 매우 간결해져서 좋았다. 장고가 정말 편하다는 걸 느낄 수 있었다!!
