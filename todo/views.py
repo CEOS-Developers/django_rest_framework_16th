@@ -48,7 +48,7 @@ class GoalFilter(FilterSet):
         model = Goal
         fields = ['user']
 
-    def filter_color(self, queryset, value):
+    def filter_color(self, queryset, color, value):
         filtered_queryset = queryset.filter(color__icontains=value)
         return filtered_queryset
 
