@@ -184,7 +184,7 @@ def todo_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def todo_item(request, pk):
     if request.method == 'GET':
-        todo = get_object_or_404(Todo,id=pk)
+        todo = Todo.objects.filter(id=pk))
         serializer = TodoSerializer(todo, many=True)
         return Response(serializer.data)
     elif request.method == 'PUT':
@@ -223,7 +223,7 @@ class TodoList(APIView):
         return Response(serializer.errors, status=400)
 class TodoItem(APIView):
     def get(self, request, pk, format=None):
-        todo = get_object_or_404(Todo,id=pk)
+        todo = Todo.objects.filter(id=pk)
         serializer = TodoSerializer(todo, many=True)
         return Response(serializer.data)
     def put(self, request, pk, format=None):
