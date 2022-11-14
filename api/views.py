@@ -39,8 +39,8 @@ class TodoViewSet(viewsets.ModelViewSet):
     queryset = Todo.objects.all()
 
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    # filter_class = TodoFilter
-    filterset_fields = ['state', 'content', 'user', 'goal']
+    filterset_class = TodoFilter
+    # filterset_fields = ['state', 'content', 'user', 'goal']
     ordering_fields = ['date', 'like_count']
     ordering = ['date']
 
