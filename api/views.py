@@ -1,10 +1,14 @@
 # views.py
+import mixins as mixins
 from django.http import JsonResponse
+from django.views import generic
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters, generics
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_filters.rest_framework import FilterSet, filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.models import Profile, TodoList
 from api.serializers import UserSerializer, TodoSerializer
@@ -84,11 +88,32 @@ from api.serializers import UserSerializer, TodoSerializer
 #
 #         return Response(serializer.data)
 
-# 2.Viewset으로 리팩토링 하기
+# 2.Viewset으로 리팩토링 하기 & filters
+class ProfileFilter(FilterSet):
+    user = filters.NumberFilter(field_name="user")
+    nickname = filters.CharFilter(field_name="nickname")
+
+    class Meta:
+        model = Profile
+        fields = ['user','nickname']  # 사용할 모델의 필드
+
+
 class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = Profile.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = ProfileFilter
+
+class TodoListFilter(FilterSet):
+    profile=filters.NumberFilter(field_name="profile")
+
+    class Meta:
+        model = TodoList
+        fields = ['profile']  # 사용할 모델의 필드
 
 class TodoListViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     queryset = TodoList.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TodoListFilter
+
