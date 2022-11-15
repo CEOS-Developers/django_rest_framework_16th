@@ -140,3 +140,90 @@
 2. 새로운 데이터를 create하도록 요청하는 API 만들기 부분에서 시간이 좀 걸렸는데, 내가 view에서 class상단에 **@csrf_exempt**를 추가 안해줘서 자꾸만 Forbidden 에러가 발생했었다.
 앞으로 개발을 할 때 이 부분에서 어떻게 해야할지 생각해봐야겠다.
 3. 간단하게 GET,POST하는 부분에 대해서 해봤는데, 막상 해보니 어려운 것 같다. 이걸 과연 어떻게 프론트에게 전달하고 개발이 진행되는지 궁금하다. 진짜 아무리 봐도 모르겠는 백엔드다..
+
+
+  
+## 4주차 미션: DRF2 - API View & Viewset & Filter
+### 1. **DRF API View 의** CBV 으로 리팩토링하기
+
+- 기존에 구현했던 API 를 API View 을 이용하여 리팩토링 해주세요!
+```python
+#api/views.py
+class ProfileList(APIView):
+    def post(self, request, format=None):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self,request,format=None):
+        profile_lists = Profile.objects.all()
+        serializer = UserSerializer(profile_lists, many=True)
+        return Response(serializer.data)
+
+
+class TodoLists(APIView):
+    def get(self, request, format=None):
+        todo_lists = TodoList.objects.all()
+        serializer = TodoSerializer(TodoList.objects.all(), many=True)
+        return Response(serializer.data)
+
+    def post(self, request,format=None):
+        data = JSONParser().parse(request)
+        serializer = TodoSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TodoListID(APIView):
+    def get(self, request, pk):
+        todo_list = TodoList.objects.get(id=pk)
+        serializer = TodoSerializer(todo_list)
+
+        return Response(serializer.data)
+```
+
+<img width="1000" alt="스크린샷 2022-11-08 21 00 00" src="https://user-images.githubusercontent.com/56791347/200558554-637646b3-e7cb-4ece-a508-28a062b61db5.png">
+<img width="1001" alt="스크린샷 2022-11-08 21 00 16" src="https://user-images.githubusercontent.com/56791347/200558597-5ad5b0b8-4d66-4658-8e66-aa23048c3e91.png">
+<img width="1007" alt="스크린샷 2022-11-08 21 00 28" src="https://user-images.githubusercontent.com/56791347/200558629-70d02225-5b3f-4695-8c84-71b2099c4b03.png">
+
+
+
+### 2. Viewset으로 리팩토링하기
+
+- 1번의 코드를 주석처리하고, 다시 Viewset 으로 리팩토링 해주세요!
+```python
+#api/views.py
+class ProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = Profile.objects.all()
+
+class TodoListViewSet(viewsets.ModelViewSet):
+    serializer_class = TodoSerializer
+    queryset = TodoList.objects.all()
+```
+<img width="1210" alt="스크린샷 2022-11-08 21 20 23" src="https://user-images.githubusercontent.com/56791347/200562188-8dde6d75-cf86-43c1-95b6-6a7b8bc28d0a.png">
+
+```python
+#api/urls.py
+router = DefaultRouter()
+router.register('users',ProfileViewSet)
+router.register('todolists',TodoListViewSet)
+
+urlpatterns = router.urls
+```
+<img width="1192" alt="스크린샷 2022-11-08 21 20 50" src="https://user-images.githubusercontent.com/56791347/200562256-3843826c-e85e-459d-9e64-b7299d62452e.png">
+
+
+
+### 3. filter 기능 구현하기
+<img width="1011" alt="스크린샷 2022-11-15 19 10 40" src="https://user-images.githubusercontent.com/56791347/201892444-12fc4d2d-a1ec-4ead-b06f-a925d16dbee6.png">
+<img width="1011" alt="스크린샷 2022-11-15 19 11 00" src="https://user-images.githubusercontent.com/56791347/201892508-112e8818-c568-48bf-942c-b947ec84f5f6.png">
+<img width="1009" alt="스크린샷 2022-11-15 19 11 56" src="https://user-images.githubusercontent.com/56791347/201892747-99dca165-5ebf-41a6-a35e-0720723a1eaa.png">
+
+🐱간단한 회고🐱  
+이번 과제는 재밌으면서도 ... 다사다난했던 과제였던 것 같다.  
+2번까지는 금방 후루룩 했는데, 3번은 살짝 어려웠어서 생각을 좀 했던 것 같다.  
+그런데 이렇게 url에서 filter를 걸어서 하는 방법을 배우면서, 나중에 프로젝트를 진행할 때 어떻게 정보를 주고 받을 수 있게 하는지 짐작이 가는 것 같은 재밌는 과제였다!
