@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets
 
@@ -10,6 +11,7 @@ from api.filters import *
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
 
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_fields = ['username', 'email', 'is_staff', 'is_active']
@@ -27,6 +29,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class GoalViewSet(viewsets.ModelViewSet):
     serializer_class = GoalSerializer
     queryset = Goal.objects.all()
+    permission_classes = [IsAuthenticated]
 
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_fields = ['name', 'user', 'privacy']
@@ -37,6 +40,7 @@ class GoalViewSet(viewsets.ModelViewSet):
 class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
+    permission_classes = [IsAuthenticated]
 
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = TodoFilter
@@ -48,8 +52,10 @@ class TodoViewSet(viewsets.ModelViewSet):
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
+    permission_classes = [IsAuthenticated]
 
 
 class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowSerializer
     queryset = Follow.objects.all()
+    permission_classes = [IsAuthenticated]
