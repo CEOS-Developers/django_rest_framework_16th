@@ -9,17 +9,16 @@ from .permission import *
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, filters
 
 
-# 이거 작동 안함
 class GoalFilter(FilterSet):
     name = filters.CharFilter(field_name='name', lookup_expr='icontains')
     is_goal_private = filters.BooleanFilter(method='private_filter')
 
     def private_filter(self, queryset, name, value):
-        return queryset.filter(type=value)
+        return queryset.filter(is_goal_private=value)
 
     class Meta:
         model = Goal
-        fields = ['id', 'name', 'is_goal_private']
+        fields = ['name', 'is_goal_private']
 
 
 class GoalViewSet(viewsets.ModelViewSet):
@@ -28,7 +27,13 @@ class GoalViewSet(viewsets.ModelViewSet):
     permission_classes = [AuthCheck]
     filter_backends = [DjangoFilterBackend]
     filterset_class = GoalFilter
-    # filterset_fields = ['is_goal_private', 'name', 'id']
+
+    # 응답에 필요한 쿼리셋을 가져오기 위해 사용되는 메서드
+    def get_queryset(self):
+        user_id = self.request.headers["userId"]
+        queryset = super().get_queryset()
+        return queryset.filter(user_id=user_id)
+
 
 # class GoalView(APIView):
 #     def get(self, request):
