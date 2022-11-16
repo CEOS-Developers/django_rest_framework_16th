@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
-    'django_filters',
     'rest_framework',
     # DRF
 ]
@@ -119,8 +118,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'api.util.CustomRenderer',
-    ],
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend'
     ]
 }
+
+# abstractUser
+AUTH_USER_MODEL = 'api.User'

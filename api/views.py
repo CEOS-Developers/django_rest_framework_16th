@@ -11,7 +11,6 @@ from django_filters.rest_framework import DjangoFilterBackend, FilterSet, filter
 
 # 이거 작동 안함
 class GoalFilter(FilterSet):
-    id = filters.NumberFilter(field_name='id', lookup_expr='icontains')
     name = filters.CharFilter(field_name='name', lookup_expr='icontains')
     is_goal_private = filters.BooleanFilter(method='private_filter')
 
@@ -20,11 +19,7 @@ class GoalFilter(FilterSet):
 
     class Meta:
         model = Goal
-        fields = {
-            'id': ['exact', 'contains'],
-            'name': ['exact', 'contains'],
-            'is_goal_private': ['exact', 'contains']
-        }
+        fields = ['id', 'name', 'is_goal_private']
 
 
 class GoalViewSet(viewsets.ModelViewSet):
@@ -32,8 +27,8 @@ class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     permission_classes = [AuthCheck]
     filter_backends = [DjangoFilterBackend]
-    # filter_class = GoalFilter
-    filterset_fields = ['is_goal_private', 'name', 'id']
+    filterset_class = GoalFilter
+    # filterset_fields = ['is_goal_private', 'name', 'id']
 
 # class GoalView(APIView):
 #     def get(self, request):

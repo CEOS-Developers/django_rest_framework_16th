@@ -7,7 +7,7 @@ class AuthCheck(permissions.BasePermission):
         try:
             user_id = request.headers["userId"]
             # 값이 존재하지 않으면, try catch에 걸림
-            Profile.objects.get(user_id=user_id)
+            User.objects.get(id=user_id)
             return True
         except:
             return False
