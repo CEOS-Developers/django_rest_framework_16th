@@ -1,8 +1,23 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.db import models
+from django.contrib.auth.models import (
+    BaseUserManager, AbstractBaseUser
+)
 import datetime
+
 # Create your models here.
 # User Model
+
+
+STATUS_CHOICES = (
+
+    (0, 'Not Done'),
+
+    (1, 'Done'),
+
+    (2, 'Not to disclose')
+
+)
 
 
 class BaseModel(models.Model):
@@ -14,26 +29,127 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Profile(BaseModel):
-    user = models.OneToOneField(User, db_column='user', on_delete=models.CASCADE)
-    introduction = models.TextField(null=True)
-    image = models.TextField(null=True)
-    search_yn = models.BooleanField(default=True)
-    open_yn = models.BooleanField(default=True)
-    start_sunday_yn = models.BooleanField(default=False)
-    order_desc_yn = models.BooleanField(default=True)
-    input_top_yn = models.BooleanField(default=False)
-    check_likes_yn = models.BooleanField(default=True)
+class UserManager(BaseUserManager):
+    def create_user(self, email, password):
+
+        if not email:
+            raise ValueError('Email cannot be null')
+
+        if not password:
+            raise ValueError('Password cannot be null')
+
+        user = self.model(
+            email=self.normalize_email(email),
+        )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password):
+
+        user = self.create_user(
+            email,
+            password=password,
+        )
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser):
+    id = models.CharField(max_length=254, primary_key=True, unique=True)
+
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'id'
 
     class Meta:
-        db_table = "Profile"
+        db_table = "User"
 
     def __str__(self):
-        return self.user.username
+        return self.id
+
+
+# class UserManager(BaseUserManager):
+#     def create_user(self, email, password):
+#
+#         if not email:
+#             raise ValueError('Email cannot be null')
+#
+#         if not password:
+#             raise ValueError('Password cannot be null')
+#
+#         user = self.model(
+#             email=self.normalize_email(email),
+#         )
+#
+#         user.set_password(password)
+#         user.save(using=self._db)
+#         return user
+#
+#     def create_superuser(self, email, password):
+#
+#         user = self.create_user(
+#             email,
+#             password=password,
+#         )
+#         user.is_admin = True
+#         user.save(using=self._db)
+#         return user
+#
+#
+# class User(AbstractBaseUser):
+#     email = models.EmailField(max_length=255, unique=True)
+#     nickname = models.CharField(max_length=20, default='me')
+#     image = models.TextField(null=True)
+#     search_yn = models.BooleanField(default=True)
+#     open_yn = models.BooleanField(default=True)
+#     start_sunday_yn = models.BooleanField(default=False)
+#     order_desc_yn = models.BooleanField(default=True)
+#     input_top_yn = models.BooleanField(default=False)
+#     check_likes_yn = models.BooleanField(default=True)
+#
+#     is_active = models.BooleanField(default=True)
+#     is_admin = models.BooleanField(default=False)
+#
+#     objects = UserManager()
+#
+#     USERNAME_FIELD = 'email'
+#
+#     class Meta:
+#         db_table = "User"
+#
+#     def __str__(self):
+#         return self.email
+#
+#     def get_nickname(self):
+#         return self.nickname
+
+
+# class Profile(BaseModel):
+#     user = models.OneToOneField(User, db_column='user', on_delete=models.CASCADE)
+#     introduction = models.TextField(null=True)
+#     image = models.TextField(null=True)
+#     search_yn = models.BooleanField(default=True)
+#     open_yn = models.BooleanField(default=True)
+#     start_sunday_yn = models.BooleanField(default=False)
+#     order_desc_yn = models.BooleanField(default=True)
+#     input_top_yn = models.BooleanField(default=False)
+#     check_likes_yn = models.BooleanField(default=True)
+#
+#     class Meta:
+#         db_table = "Profile"
+#
+#     def __str__(self):
+#         return self.user.username
 
 
 class TodoGroup(BaseModel):
-    user = models.ForeignKey(Profile, related_name='group', db_column='user', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='group', db_column='user', on_delete=models.CASCADE)
     group = models.TextField()
     opened = models.TextField(default='all')
     color = models.CharField(max_length=10, default='#000000')
@@ -46,7 +162,7 @@ class TodoGroup(BaseModel):
 
 
 class Todo(BaseModel):
-    user = models.ForeignKey(Profile, db_column='user', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, db_column='user', on_delete=models.CASCADE)
     group = models.ForeignKey(TodoGroup, related_name='todo', db_column='group', on_delete=models.CASCADE)
     start_date = models.DateField(default=datetime.date.today)
     end_date = models.DateField(default=datetime.date.today)
@@ -54,8 +170,7 @@ class Todo(BaseModel):
     alarm_time = models.DateTimeField(null=True)
     contents = models.TextField()
     image = models.TextField(null=True)
-    status = models.CharField(max_length=10, default='not done')
-    # status: not done, done, private
+    status = models.SmallIntegerField(choices=STATUS_CHOICES, default=0)
 
     class Meta:
         db_table = "Todo"
@@ -77,7 +192,7 @@ class TodoLikes(BaseModel):
 
 
 class Diary(BaseModel):
-    user = models.ForeignKey(Profile, related_name='diary', db_column='user', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='diary', db_column='user', on_delete=models.CASCADE)
     emoji = models.CharField(max_length=20, null=True)
     contents = models.TextField(max_length=500)
     bg_color = models.CharField(max_length=10, default='#FFFFFF')
@@ -105,14 +220,11 @@ class DiaryLikes(BaseModel):
 
 
 class Relation(BaseModel):
-    follower = models.ForeignKey(Profile, related_name='follower', db_column='follower', on_delete=models.CASCADE)
-    followee = models.ForeignKey(Profile, related_name='followee', db_column='followee', on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, related_name='follower', db_column='follower', on_delete=models.CASCADE)
+    followee = models.ForeignKey(User, related_name='followee', db_column='followee', on_delete=models.CASCADE)
 
     class Meta:
         db_table = "Relation"
 
     def __str__(self):
         return '{} follows {}'.format(self.follower, self.followee)
-
-
-
