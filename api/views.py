@@ -58,12 +58,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 class TodoFilter(FilterSet):
-    content = filters.CharFilter(field_name='content')
-    is_done = filters.BooleanFilter(field_name='is_done')
+    content = filters.CharFilter(field_name='content', lookup_expr='iexact')
+    is_done = filters.BooleanFilter(method='done_filter')
 
     class Meta:
         model = ToDo
         fields = ['content', 'is_done']
+
+    def done_filter(self, queryset, name, value):
+        return queryset.filter(is_done=True)
 
 
 class TodoViewSet(ModelViewSet):
