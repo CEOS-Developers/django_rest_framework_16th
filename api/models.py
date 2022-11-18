@@ -1,14 +1,20 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils.timezone import now
+
+
 # Create your models here.
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
 
     class Meta:
         abstract = True
 
+    def delete(self, using=None, keep_parents=False):
+        self.deleted_at = now
+        self.save(update_fields=['deleted_at'])
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -39,19 +45,24 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-class User(AbstractUser):
-    username = None
+class User(AbstractBaseUser, BaseModel):
+    id = models.CharField(max_length=20, primary_key=True)
+    nickname = models.CharField(max_length=20)
     email = models.EmailField(max_length=255, unique=True)
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'id'
+    REQUIRED_FIELDS = ['email', 'nickname', ]
+
+    def __str__(self):
+        return self.nickname
 
 
 class Follower(models.Model):
     follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
     following = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+
 
 class Category(BaseModel):
     category_name = models.CharField(max_length=50, null=False)
