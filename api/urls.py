@@ -10,10 +10,18 @@ urlpatterns = [
 urlpatterns = format_suffix_patterns(urlpatterns)
 """
 
+from django.urls import path
 from rest_framework import routers
-from .views import TodoViewSet
+from .views import TodoViewSet, LoginView  # , JoinView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 router = routers.DefaultRouter()
 router.register(r'todo', TodoViewSet)
 
-urlpatterns = router.urls
+urlpatterns = [
+    # path('join/', JoinView.as_view()),
+    path('login/', LoginView.as_view()),
+    path('login/refresh/', TokenRefreshView.as_view()),
+]
+
+urlpatterns += router.urls
