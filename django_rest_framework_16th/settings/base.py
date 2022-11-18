@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
+
 import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -114,12 +116,21 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'api.util.CustomRenderer',
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
+AUTH_USER_MODEL = 'api.User'
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': env('SECRET_KEY'),
+}
 # abstractUser
 AUTH_USER_MODEL = 'api.User'

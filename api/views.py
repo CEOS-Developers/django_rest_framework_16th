@@ -1,13 +1,30 @@
+import os
+
+import environ
+import jwt
+from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from . import serializers
 from .common import *
+from .models import *
 
 from rest_framework import viewsets
-from .permission import *
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, filters
 
+from .serializers import LoginSerializer
+
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+BASE_DIR = os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 class GoalFilter(FilterSet):
     name = filters.CharFilter(field_name='name', lookup_expr='icontains')
@@ -24,16 +41,36 @@ class GoalFilter(FilterSet):
 class GoalViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GoalSerializer
     queryset = Goal.objects.all()
-    permission_classes = [AuthCheck]
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = GoalFilter
 
     # 응답에 필요한 쿼리셋을 가져오기 위해 사용되는 메서드
     def get_queryset(self):
-        user_id = self.request.headers["userId"]
+        access_token = self.request.COOKIES['access']
+        payload = jwt.decode(access_token, env('SECRET_KEY'), algorithms=['HS256'])
+        user_id = payload.get("user_id")
         queryset = super().get_queryset()
         return queryset.filter(user_id=user_id)
 
+
+class LoginView(APIView):
+    def post(self, request):
+        # User 인증 함수. 자격 증명이 유효한 경우 User 객체를, 그렇지 않은 경우 None을 반환
+        try:
+            username = request.data.get("id")
+            password = request.data.get("pwd")
+
+            user = User.objects.get(username=username)
+            if user.password != password:
+                raise
+            token = TokenObtainPairSerializer.get_token(user)
+            access_token = str(token.access_token)
+            res = JsonResponse(custom_response(200, {"token": access_token}), status=200)
+            res.set_cookie("access", access_token, httponly=True)
+            return res
+        except:
+            return JsonResponse(custom_response(400), status=400)
 
 # class GoalView(APIView):
 #     def get(self, request):
