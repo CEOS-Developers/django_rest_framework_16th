@@ -1,10 +1,14 @@
 # views.py
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from django_filters.rest_framework import FilterSet, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 from .serializers import *
 from .models import Todo, User
@@ -27,9 +31,34 @@ class TodoListViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = TodoListFilter
 
-class UserViewSet(viewsets.ModelViewSet):
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
+
+class LoginView(APIView):
+    def post(self, request):
+        user = authenticate(username=request.data.get("username"), password=request.data.get("password"))
+
+        if user is not None:
+            serializer = UserSerializer(user)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "user": serializer.data,
+                    "message": "login success",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
+            return res
+        else:
+            return Response({"message": "login fail"}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 # # CBV
 # class TodoListsAPI(APIView):
