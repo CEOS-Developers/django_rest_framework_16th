@@ -28,51 +28,6 @@ class BaseModel(models.Model):
         abstract = True
 
 
-# class UserManager(BaseUserManager):
-#     def create_user(self, email, password):
-#
-#         if not email:
-#             raise ValueError('Email cannot be null')
-#
-#         if not password:
-#             raise ValueError('Password cannot be null')
-#
-#         user = self.model(
-#             email=self.normalize_email(email),
-#         )
-#
-#         user.set_password(password)
-#         user.save(using=self._db)
-#         return user
-#
-#     def create_superuser(self, email, password):
-#
-#         user = self.create_user(
-#             email,
-#             password=password,
-#         )
-#         user.is_admin = True
-#         user.save(using=self._db)
-#         return user
-
-
-# class User(AbstractBaseUser):
-#     id = models.CharField(max_length=254, primary_key=True, unique=True)
-#
-#     is_active = models.BooleanField(default=True)
-#     is_admin = models.BooleanField(default=False)
-#
-#     objects = UserManager()
-#
-#     USERNAME_FIELD = 'id'
-#
-#     class Meta:
-#         db_table = "User"
-#
-#     def __str__(self):
-#         return self.id
-
-
 class UserManager(BaseUserManager):
     def create_user(self, email, password):
 
