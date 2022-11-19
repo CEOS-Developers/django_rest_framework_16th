@@ -119,5 +119,5 @@ class LoginSerializer(serializers.Serializer):
             token = Token.objects.get(user=user)
             return token
         raise serializers.ValidationError(
-            {"error": "Unable to log in with provided credentials."}
+            {"message" : "존재하지 않는 사용자입니다"}
         )
