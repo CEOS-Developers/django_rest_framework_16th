@@ -139,3 +139,158 @@ JsonResponse 대신 그냥 Response를 사용해야 drf를 테스트 할 수 있
 함수형 뷰를 작성할 때는 @api_view를 꼭 달아야한다는 사실도 알게 되었다.
 
 나중에 서비스에 필요한 나머지 api들도 만들고 Postman도 한번 사용해 봐야겠다!
+
+## 4주차 미션 : DRF2 - API View & Viewset & Filter
+
+### Model 수정
+```python
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+```
+BaseModel을 정의하고 Category, Todo, Comment Model이 BaseModel을 상속받아 created_at과 updated_at 속성을 갖게 했다.
+  
+```python
+is_completed = models.BooleanField(default=False)
+```
+Todo가 완료되었는지 체크하는 기능이 빠진 것 같아서 Todo에 is_completed attribute을 추가했다.
+
+### 기존 FBV로 작성했던 API
+저번주 과제에서 수정된 부분: 잘못 사용된 status number 수정, url 고치기(todo/ 에서 todos/로)  
+* get_object_or_404는 사용해보려고 했으나
+```python
+todo = get_object_or_404(Todo,id=pk)
+```
+를 적었을 때 'Todo' object is not iterable 에러가 발생했고 시간이 없어서 해결은 못하고 결국 원래 사용했던 방식으로 돌아갔다. 다음에 다시 시도해볼 예정이다.
+```python
+#Function-Based View - views.py
+@csrf_exempt
+@api_view(['GET', 'POST'])
+def todo_list(request):
+    if request.method == 'GET':
+        todo_items = Todo.objects.all()
+        serializer = TodoSerializer(todo_items, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = TodoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+@csrf_exempt
+@api_view(['GET', 'PUT', 'DELETE'])
+def todo_item(request, pk):
+    if request.method == 'GET':
+        todo = Todo.objects.filter(id=pk)
+        serializer = TodoSerializer(todo, many=True)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        todo_instance = Todo.objects.get(id=pk)
+        serializer = TodoSerializer(instance=todo_instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    elif request.method == 'DELETE':
+        todo = Todo.objects.filter(id=pk)
+        todo.delete()
+        return Response(status=204)
+```
+```python
+#Urls for Fuction-Based View
+urlpatterns = [
+    #Todo
+    path('todos/', views.todo_list, name="todo_list"),
+    path('todo/<int:pk>', views.todo_item, name="todo_item"),
+]
+```
+### DRF API View의 CBV으로 리팩토링하기
+```python
+#Class-Based View - views.py
+class TodoList(APIView):
+    def get(self, request, format=None):
+        todo_items = Todo.objects.all()
+        serializer = TodoSerializer(todo_items, many=True)
+        return Response(serializer.data)
+    def post(self, request, format=None):
+        serializer = TodoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+class TodoItem(APIView):
+    def get(self, request, pk, format=None):
+        todo = Todo.objects.filter(id=pk)
+        serializer = TodoSerializer(todo, many=True)
+        return Response(serializer.data)
+    def put(self, request, pk, format=None):
+        todo_instance = Todo.objects.get(id=pk)
+        serializer = TodoSerializer(instance=todo_instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    def delete(self, request, pk, format=None):
+        todo = Todo.objects.filter(id=pk)
+        todo.delete()
+        return Response(status=204)
+```
+```python
+urlpatterns = [
+    #Todo
+    path('todos/', TodoList.as_view(), name="todo-list"),
+    path('todo/<int:pk>/', TodoItem.as_view(), name="todo-item"),
+]
+```
+
+### Viewset으로 리팩토링하기 & filter 기능 구현하기
+구현한 filter 기능:
+1. user filtering
+2. disclosure_choice(public, only friends, private)에 따른 filtering
+3. recent_todos (method 사용해 custom filtering): date(todo를 설정한 날짜)가 7일 이내인 todo만 보여주기
+
+```python
+#Viewset - views.py
+class TodoFilter(FilterSet):
+    user = filters.ModelChoiceFilter(queryset=User.objects.all())
+    disclosure_choice = filters.TypedChoiceFilter(choices=Todo.DISCLOSURE_CHOICES)
+    recent_todos = filters.BooleanFilter(method='filter_recent_todos', label='recent_todos')
+    class Meta:
+        model = Todo
+        fields = ['user', 'disclosure_choice']
+
+    def filter_recent_todos(self, queryset, name, value):
+        queryset = Todo.objects.all()
+        filtered_queryset = queryset.filter(date__gte=datetime.now()-timedelta(days=7))
+        filtered_queryset_false = queryset.exclude(pk__in=filtered_queryset)
+
+        if(value==True):
+            return filtered_queryset
+        else:
+            return filtered_queryset_false
+
+
+class TodoViewSet(viewsets.ModelViewSet):
+    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TodoFilter
+```
+```python
+#Viewset - urls.py
+router = routers.DefaultRouter()
+router.register(r'todos', TodoViewSet)
+
+urlpatterns = router.urls
+```
+
+### 이번 과제를 하며...
+같은 API를 다양하게 만들어보며 api 만들기에 대한 이해도가 높아진 것 같다. Viewset은 이번 과제를 하며 처음 알게 된 방식인데 너무 편리해서 깜짝 놀랐다.  
+이렇게 적게 썼는데 기능이 다 완성됐다고?  
+
+그리고 filterset도 처음 사용해봤는데 앞으로 유용하게 사용할 것 같다. 과제를 하면서 찾아봤는데 아주 다양한 종류가 있었다.  
+
+오늘도 또 django가 편리한 프레임워크임을 느꼈다. 또 custom을 해서 사용하는 법도 잘 알아야겠다는 생각을 했다.
