@@ -1,13 +1,30 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
+from django.utils.timezone import datetime
 
 
 # Create your models here.
+# class BaseModel(models.Model):
+#     is_deleted = models.BooleanField(default=False)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     deleted_at = models.DateTimeField(null=True)
+#
+#     class Meta:
+#         abstract = True
+#
+#     def delete(self, using=None, keep_parents=False):
+#         self.is_deleted=True
+#         self.deleted_at = datetime.now()
+#         self.save()
+
 
 class User(models.Model):
     email = models.EmailField()
     password = models.CharField(max_length=20)
     is_premium = models.BooleanField()
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # deleted_at = models.DateTimeField(null=True, auto_now=True)
 
     def __str__(self):
         return self.email

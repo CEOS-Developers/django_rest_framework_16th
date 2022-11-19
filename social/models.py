@@ -1,5 +1,5 @@
 from django.db import models
-from account.models import Profile, User
+from account.models import User
 from todo.models import Todo
 from diary.models import Diary
 

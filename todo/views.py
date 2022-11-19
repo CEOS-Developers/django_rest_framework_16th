@@ -1,42 +1,60 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
-from .models import Goal, Todo
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import FilterSet, filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
+from rest_framework.status import *
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from .models import Goal
 from .serializers import GoalSerializer
 
 
-@csrf_exempt
-def goal_list(request):
-    if request.method == 'GET':
-        goals = Goal.objects.all()
-        serializer = GoalSerializer(goals, many=True)
-        return JsonResponse(serializer.data, safe=False)
+# class GoalList(APIView):
+#     def get(self, request, format=None):
+#         goals = Goal.objects.all()
+#         serializer = GoalSerializer(goals, many=True)
+#         return Response({'data': serializer.data, 'message': "goal list get 요청 성공"}, status=HTTP_200_OK)
+#
+#     def post(self, request, format=None):
+#         serializer = GoalSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response({'data': serializer.data, 'message': "goal post 요청 성공"}, status=HTTP_200_OK)
+#         return Response({'data': serializer.errors, 'message': "goal post 실패"}, status=HTTP_400_BAD_REQUEST)
+#
+#
+# class GoalDetail(APIView):
+#     def get(self, request, pk):
+#         goal = get_object_or_404(Goal, pk=pk)
+#         serializer = GoalSerializer(goal)
+#         return Response({'data': serializer.data, 'message': "goal detail get 요청 성공"}, status=HTTP_200_OK)
+#
+#     def delete(self, request, pk):
+#         goal = get_object_or_404(Goal, pk=pk)
+#         goal.delete()
+#         return Response({'message': "goal delete 요청 성공"}, status=HTTP_200_OK)
+#
+#     def put(self, request, pk):
+#         goal = get_object_or_404(Goal, pk=pk)
+#         serializer = GoalSerializer(goal, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#         return Response({'data': serializer.data, 'message': "goal detail put 요청 성공"}, status=HTTP_200_OK)
+class GoalFilter(FilterSet):
+    color = filters.CharFilter(method='filter_color')
+    class Meta:
+        model = Goal
+        fields = ['user']
 
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = GoalSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+    def filter_color(self, queryset, color, value):
+        filtered_queryset = queryset.filter(color__icontains=value)
+        return filtered_queryset
 
 
-@csrf_exempt
-def goal_detail(request, pk):
-    if request.method == 'GET':
-        goal = Goal.objects.get(pk=pk)
-        serializer = GoalSerializer(goal)
-        return JsonResponse(serializer.data, safe=False)
-
-    if request.method == 'DELETE':
-        goal = Goal.objects.get(pk=pk)
-        goal.delete()
-        return JsonResponse({'data': '삭제 성공'})
-
-    if request.method == 'PUT':
-        data = JSONParser().parse(request)
-        goal = Goal.objects.get(pk=pk)
-        serializer = GoalSerializer(goal, data=data)
-        if serializer.is_valid():
-            serializer.save()
-        return JsonResponse(serializer.data, safe=False)
+class GoalViewSet(viewsets.ModelViewSet):
+    queryset = Goal.objects.all()
+    serializer_class = GoalSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = GoalFilter
