@@ -152,3 +152,22 @@ viewset과 router를 사용하면 url을 따로 설정할 필요 없이 drf가 �
 
 model을 수정했는데 migration을 해도 새로운 class와 field가 mysql db에 반영이 안되는 것 같은 오류가 생겼다.
 일단 수정하지 않고 미션을 했는데 뭐가 문제인지 더 찾아봐야할 것 같다. 
+
+
+## 4주차 미션: Serializer
+
+#### Q. 로그인 인증 방식은 어떤 종류가 있나요?
+1. 세션과 쿠키를 통한 인증
+2. Access Token을 이용한 인증
+3. Access Token + Refresh Token을 이용한 인증
+4. OAuth 2.0을 이용한 인증
+
+#### Q. JWT 는 무엇인가요?
+Json Web Token. 인증에 필요한 정보들을 암호화한 JSON 토큰  
+
+
+#### Q. JWT 로그인 구현하기  
+
+django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency account.0001_initial on database 'default'.
+
+Error while finding module specification for 'manage.py' (ModuleNotFoundError: __path__ attribute not found on 'manage' while trying to find 'manage.py'). Try using 'manage' instead of 'manage.py' as the module name.
