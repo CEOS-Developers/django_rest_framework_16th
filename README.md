@@ -288,3 +288,128 @@ class TodoFilter(FilterSet):
 코드 몇줄로 지금까지 작성한 기능을 다 대체할 수 있다니.. 근데 생각할수록 너무 편리한 것 같다
 특히 Filterset  ( ･ᴗ･̥̥̥ )... 과제를 하면 할수록 공식문서의 중요성을 느낀다
 아무튼 장고가 조금 더 좋아졌다.
+
+# 2022.11.19
+## 과제
+1. 로그인 인증 방식
+   1. Cookie : 브라우저에 설치
+   2. Session : 서버에 저장
+   3. Token : 클라이언트에 저장
+
+2. JWT란 : JSON Web Token, Header, Payload, Signature로 이루어져있으며 각각은 Base64Url로 인코딩됨
+
+3. JWT 로그인 구현
+   1. 커스텀 User 모델 사용
+   - email로 유저 식별
+
+   <pre><code># models.py
+
+   class MyUser(AbstractBaseUser):
+       email = models.EmailField(max_length=255, unique=True)
+       nickname = models.CharField(max_length=20, default='me')
+       image = models.TextField(null=True)
+       
+       search_yn = models.BooleanField(default=True)
+       open_yn = models.BooleanField(default=True)
+       start_sunday_yn = models.BooleanField(default=False)
+       order_desc_yn = models.BooleanField(default=True)
+       input_top_yn = models.BooleanField(default=False)
+       check_likes_yn = models.BooleanField(default=True)
+
+       is_active = models.BooleanField(default=True)
+       is_admin = models.BooleanField(default=False)
+   
+       objects = UserManager()
+   
+       USERNAME_FIELD = 'email'
+   
+       class Meta:
+           db_table = "MyUser"
+   
+       def __str__(self):
+           return self.email
+   
+       def get_nickname(self):
+           return self.nickname
+
+   </code></pre>
+   
+   2. 로그인 구현
+      - Form 생성
+      <pre><code> # admin.py
+
+      class UserCreationForm(forms.ModelForm):
+         email = forms.EmailField(label='email', required=True, widget=forms.EmailInput)
+         nickname = forms.CharField(label='nickname', required=False, widget=forms.TextInput)
+         password = forms.CharField(label='Password', widget=forms.PasswordInput)
+      
+         class Meta:
+             model = MyUser
+             fields = ('email', 'nickname')
+            
+         # nickname default값 처리, nickname 인자가 들어오지 않으면 default값으로 저장
+         def clean_nickname(self):
+             nickname = self.cleaned_data.get("nickname")
+   
+             if nickname is None:
+                 return self.cleaned_data.initial
+             return nickname
+      
+         def save(self, commit=True):
+            user = super(UserCreationForm, self).save(commit=False)
+            user.set_password(self.cleaned_data["password"])
+            if commit:
+               user.save()
+            return user
+   </code></pre>
+
+   (회원가입)
+   <pre><code># views.py
+
+    class JoinView(APIView):
+    # noinspection PyMethodMayBeStatic
+    def post(self, request):
+        form = UserCreationForm(request.data)
+        if form.is_valid():
+            user = form.save()
+            user.nickname = form.clean_nickname()
+
+            return Response({"message: Success Join"})
+
+        else:
+            return Response(form.errors)
+   </code></pre>
+   
+   (로그인)
+   <pre><code># views.py
+
+   class JoinView(APIView):
+    # noinspection PyMethodMayBeStatic
+    def post(self, request):
+        form = UserCreationForm(request.data)
+        if form.is_valid():
+            user = form.save()
+            user.nickname = form.clean_nickname()
+
+            return Response({"message: Success Join"})
+
+        else:
+            return Response(form.errors)
+   </code></pre>
+      
+<img src="join.png">
+<img src="login.png">
+
+# !NEW!
+1. JWT
+2. Form : request로 받는 데이터를 검증된 형태로 리턴?.?
+3. ChoiceField로 리팩토링
+
+# 회고...
+jwt를 새로 배우게되면서 이전까지 얼마나 용감하게 코딩했는지를 알게되었다. 나는 지금까지 항상 payload에 사용자 정보를 함께 보내줬었는데ㅎㅎ.....
+이번 과제는 Custom model, Form 등 새로운 걸 너무 많이 나와서 어려웠다.
+
+<img src="img.jpg">
+
+어떻게 어떻게 잘 얼기설기 코드를 작성하기는 했는데 위와 같은 상태이다. 이전에 배운 ViewSet도 활용하고 뭔가 더 깔끔하고 효율적으로 고치고 싶었는데 지금은 너무 낡고 지쳐서 다음에 다시 조금 고쳐볼 예정이다.
+refreshtoken 관련해서 코드를 추가하기는 했는데 작동 확인을 하지 못했다. 마찬가지로 다음에 다시 확인해볼 예정이다.
