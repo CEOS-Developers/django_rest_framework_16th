@@ -397,3 +397,109 @@ TodoClass 를 GET 할 때 필터링을 걸어주기 위한 코드다.. 사실 �
 ---
 
 이번 과제는 조금 어려웠다.. 천재 개발자들이 편하게 쓰라고 막 다 줄여버리니까 나같은 초보자들은 이해조차 할 수가 없다,,, "아니 왜 저게 왜 저렇게? ?"라는 생각을 계속 가진 채로 과제를 한 것 같다.. ViewSet,,, FilterSet,,, 자세히 다시 공부를 해봐야할듯하다... 
+
+
+# DRF3 : Simple JWT
+
+---
+
+간단 요약: 망했다. . . 어디서부터 잘못된걸까, , , 너무 어렵다
+
+
+일단 뭐 어찌저찌 구현은 했으니까 적기 시작하겠습니다
+
+
+
+### 로그인 구현하기
+
+사실 로그인 기능을 구현하려면 회원가입도 같이 있어야 하지 않을까 싶어서 회원가입도 같이 구현을 했다. 그러니까 회원가입 먼저 얘기해보도록 하겠습니다
+
+### 회원가입 구현하기
+
+```
+
+email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+)
+password = serializers.CharField(
+    write_only=True,
+    required=True,
+    validators=[validate_password],
+)
+password2 = serializers.CharField(write_only=True, required=True)
+
+```
+
+이메일 중복을 방지하기 위해서 UniqueValidator를 이용했고, 비밀번호 검증, 8자리 등등 그런 안전한 비밀번호 검증을 위해 django.contrib.auth.password_validation에서 validate_password를 이용했다. 그래서 비밀번호를 ceos16으로 하지 못하고 ceos1616으로 했습니다. . .
+
+비밀번호를 다시 한번 쳐서 잘못 친걸 확인하기 위한 password2도 있고, 
+
+![](https://velog.velcdn.com/images/bokdol11859/post/319d3f7f-8ac8-4f7d-985e-c12dc42cb7fe/image.png)
+
+validate 함수를 통해서 두개가 일지하는지 안하는지를 확인하도록 했다.
+
+이제 모든 값들이 정상적으로 입력이 된 input을 받았다고 가정을 하면, 
+
+![](https://velog.velcdn.com/images/bokdol11859/post/36063a3e-6f9e-40d1-b63f-cdab5bdf1430/image.png)
+
+이렇게 유저를 하나 생성하고, 그 유저의 token값을 생성하고 저장을 한다. 추후에 로그인을 하면 이 토큰 값을 반환할 예정
+
+### 되나안되나테스트
+
+![](https://velog.velcdn.com/images/bokdol11859/post/709a478c-2d6d-494b-a5c3-8edaac44d602/image.png)
+
+닉네임은 ceos16, 유저네임도 ceos16, 비밀번호는 보안을 위해 ceos1616, 이메일은 ceos16@ceos.com으로 POST 요청을 보내면
+
+닉네임, 유저네임, 그리고 이메일이 Response로 온다. 이렇게 온다는건 잘 생성이 됐다는 뜻이고, 만약 정보들이 중복된다면?
+
+![](https://velog.velcdn.com/images/bokdol11859/post/ba9df1e2-1591-4299-924c-bf537131c61a/image.png)
+
+똑똑하다... (짝짝짝)
+
+
+### 로그인 구현하기
+
+이제 그럼 과제의 중요한 부분인 로그인으로 돌아가서 설명을 하자면,
+
+![](https://velog.velcdn.com/images/bokdol11859/post/e5aa5704-fccd-406c-aac0-50f4a69627f0/image.png)
+
+username과 password를 보냈을 때, 그 두 값을 이용해서 authenticate함수를 실행한다. 
+
+![](https://velog.velcdn.com/images/bokdol11859/post/773f3232-6787-4c6c-930e-3c43483d28eb/image.png)
+
+authenticate 함수는 내가 만든게 아닌데, 저기 설명에 적힌것처럼 주어진 데이터의 유저가 존재하면 그 유저를 반환하는 함수이다. 
+
+그래서 만약 유저가 존재한다면? 그 유저의 토큰값을 찾아와서 반환을 하고, 만약 존재하지 않는다면 존재하지 않는 사용자라는 메시지를 반환을 한다.
+
+![](https://velog.velcdn.com/images/bokdol11859/post/336cd896-3745-4502-bc90-ec9e89ad5b51/image.png)
+
+뷰는 이렇게... 생겼다.... 진짜 별거 없어요
+
+
+### 로그인 테스트! ! !
+
+아까 만든 세오스 계정이 과연 제대로 로그인이 될까? 그게 너무 궁금해서 바로 테스트를 해보았습니다
+
+![](https://velog.velcdn.com/images/bokdol11859/post/b55ab18e-e3ed-44a3-bd54-02b1f082ea67/image.png)
+
+짜잔
+
+
+
+
+
+## 과제 회고
+
+---
+
+사실 진짜 마음같아선 Refresh Token 구현과 로그아웃 구현도 하고 싶었지만,,, 하필은 쿠팡 코테가 과제 제출 날짜와 겹치는 바람에. . .. 쿠팡한테 호되게 혼나고 와서 멘탈이 조금 아픈 상태입니다.. ~~개발자가 맞는 진로인지 진지하게 고민중~~
+
+
+아무튼 회원가입이랑 로그인을 구현을 해봤는데, 좀 어려웠다.. 정보가 많은데 뭔가 올라온 정보들을 이해하는데에 필요한 사전 지식들이 좀 있는 것 같다.. 블로그 글을 쓰신 분들은 다 그 사전 지식이 있으셔서 그런지 그냥 금방 금방 넘기는데, 이제 그 지식이 없는 나는.... 왜 자꾸 글이 널뛰기를 하나 싶다
+
+책을 통해서 공부를 좋아하는 나는 결국 이전에 보던 DRF 책을 다시 꺼내서 읽으면서 과제를 했다.. 벌써 서비스 개발 시작하는게 두렵다... 그래도.. 재밌다.. ~~재밌나..?~~
+
+처음 시작했을 떄 아무것도 없던 내 투두메이트 클론이 이제는 회원가입도, 로그인도, 이것저것 생성도 가능한 나름 완성도가 있는 클론이 되어가기 시작했다. 벌써 정들었따
+
+다음 과제도 열심히 하겠습니다... 감사합니다
