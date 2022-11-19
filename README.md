@@ -140,7 +140,7 @@ JsonResponse 대신 그냥 Response를 사용해야 drf를 테스트 할 수 있
 
 나중에 서비스에 필요한 나머지 api들도 만들고 Postman도 한번 사용해 봐야겠다!
 
-## 4주차 미션 : DRF2 - API View & Viewset & Filter
+## 4주차 미션: DRF2 - API View & Viewset & Filter
 
 ### Model 수정
 ```python
@@ -294,3 +294,122 @@ urlpatterns = router.urls
 그리고 filterset도 처음 사용해봤는데 앞으로 유용하게 사용할 것 같다. 과제를 하면서 찾아봤는데 아주 다양한 종류가 있었다.  
 
 오늘도 또 django가 편리한 프레임워크임을 느꼈다. 또 custom을 해서 사용하는 법도 잘 알아야겠다는 생각을 했다.
+
+## 5주차 미션: DRF3 - Simple JWT
+
+### Q1. 로그인 인증 방식은 어떤 종류가 있나요?
+1. 세션과 쿠키를 이용한 인증
+2. Access Token을 이용한 인증
+3. Access Token + Refresh Token을 이용한 인증
+4. OAuth 2.0을 이용한 인증
+
+### Q2. JWT는 무엇인가요?
+JWT는 Json Web Token의 약자이다.
+dot(.)을 구분자로 3파트로 구분되어 있으며 각각의 파트를 Header, Payload, Signature라 부르며 각각 필요한 정보들을 담아 보관한다.
+
+토큰 자체에 인증에 필요한 정보가 모두 있기에 별도의 인증 저장소가 필요 없고,
+별도의 사용자 정보를 요청할 필요가 없기에 데이터 요청이 좀 더 가벼워 질 수 있다는 장점이 있다.
+
+
+### Q3. JWT 로그인 구현하기
+
+#### User model refactoring
+User model을 너무 간단하게 만들었던 것 같아서 리팩토링을 진행했다 (지금도 간단하긴 하다,,) 
+
+기존에는 email과 password 필드만 있었는데, id와 nickname 필드를 추가했다.
+그리고 지난 주에 todo, category, comment 모델이 상속받게 한 BaseModel에 deleted_at도 추가해 soft delete를 가능하게 했다.  
+(soft delete는 User model에만 사용하려고 하는데 User model에 대한 views는 아직 작성하지 않았다.)
+
+AbstractUser에서 AbstractBaseUser로 상속받는 유저 모델을 바꾸면서 superuser 기능이 아직 제대로 작동하지 않지만..
+이건 나중에 다시 살펴봐야겠다.
+```python
+# models.py
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
+
+    class Meta:
+        abstract = True
+
+    def delete(self, using=None, keep_parents=False):
+        self.deleted_at = now
+        self.save(update_fields=['deleted_at'])
+
+class UserManager(BaseUserManager):
+    use_in_migrations = True
+
+    def _create_user(self, id, nickname, email, password, **extra_fields):
+        if not id:
+            raise ValueError('Users require an id field')
+        if not nickname:
+            raise ValueError('Users require a nickname field')
+        if not email:
+            raise ValueError('Users require an email field')
+        email = self.normalize_email(email)
+        user = self.model(id=id, nickname=nickname, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, id, nickname, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        return self._create_user(id, nickname, email, password, **extra_fields)
+
+    def create_superuser(self, id, nickname, email, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self._create_user(id, nickname, email, password, **extra_fields)
+
+
+class User(AbstractBaseUser, BaseModel):
+    id = models.CharField(max_length=20, primary_key=True)
+    nickname = models.CharField(max_length=20)
+    email = models.EmailField(max_length=255, unique=True)
+
+    is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'id'
+    REQUIRED_FIELDS = ['email', 'nickname', ]
+
+    def __str__(self):
+        return self.nickname
+```
+
+#### 회원가입 구현
+![image](https://user-images.githubusercontent.com/86969518/202844844-223ca836-9574-4b2b-bebe-68cab5bdf25c.png)
+![image](https://user-images.githubusercontent.com/86969518/202844872-9d003c9d-f69e-4aff-99da-ecc4bbcb5267.png)
+
+#### 로그인 구현
+로그인 성공
+![image](https://user-images.githubusercontent.com/86969518/202844929-42cc447e-69eb-4095-b011-9038321444a2.png)
+![image](https://user-images.githubusercontent.com/86969518/202844960-1e438583-f992-4a1c-bddf-c6479e1619f5.png)
+
+로그인 실패
+![image](https://user-images.githubusercontent.com/86969518/202845054-0548f8c7-5bdd-4191-a134-3e492e5d7956.png)
+![image](https://user-images.githubusercontent.com/86969518/202845083-76b473da-937b-4537-bee4-14774ec1b729.png)
+
+Token Refresh  
+<b>from rest_framework_simplejwt.views import TokenRefreshView</b>를 이용해 token refresh를 구현했다.  
+아직 사용법을 제대로 찾아보지는 못해서 어떻게 동작하는 건지는 나중에 자세히 조사해 볼 예정..
+
+```python
+#api/urls.py
+urlpatterns = [
+    path("", include(router.urls)),
+    path("register/", RegisterAPIView.as_view()),
+    path("auth/", AuthView.as_view()),
+    path('auth/refresh/', TokenRefreshView.as_view()),
+]
+```
