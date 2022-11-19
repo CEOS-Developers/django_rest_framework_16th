@@ -1,5 +1,103 @@
 # CEOS 16기 백엔드 스터디
 
+## 5주차 미션 : Simple JWT
+
+### Abstract User
+
+  <pre><code>
+  # models.py
+  
+  class User(BaseModel, AbstractUser):
+      email = models.EmailField(max_length=250, unique=True)
+      password = models.CharField(max_length=150)
+  
+      def __str__(self):
+          return self.username
+  
+  </code></pre>
+  
+  처음에 email과 password 컬럼 길이를 작게 설정했더니 password가 암호화되는 과정에서 길이가 길어지면서 
+  <code>django.db.utils.DataError: (1406, "Data too long for column 'password' at row 1")</code> 에러가 발생하여
+  길이를 더 크게 지정해주었다.
+
+### Simple JWT를 이용한 로그인 구현
+
+  <pre><code>
+  # serializers.py
+
+  class UserSerializer(serializers.ModelSerializer):
+  
+      todo_list = TodoSerializer(many=True, read_only=True)
+  
+      class Meta:
+          model = User
+          fields = '__all__'
+
+
+
+  # views.py
+  
+  class LoginView(APIView):
+      def post(self, request):
+          user = authenticate(username=request.data.get("username"), password=request.data.get("password"))
+  
+          if user is not None:
+              serializer = UserSerializer(user)
+              token = TokenObtainPairSerializer.get_token(user)
+              refresh_token = str(token)
+              access_token = str(token.access_token)
+              res = Response(
+                  {
+                      "message": "login success",
+                      "token": {
+                          "access": access_token,
+                          "refresh": refresh_token,
+                      },
+                  },
+                  status=status.HTTP_200_OK,
+              )
+              res.set_cookie("access", access_token, httponly=True)
+              res.set_cookie("refresh", refresh_token, httponly=True)
+              return res
+          else:
+              return Response({"message": "login fail"}, status=status.HTTP_400_BAD_REQUEST)
+  
+  </code></pre>
+
+  Viewset으로 구현하고 싶었지만 많은 레퍼런스들이 CBV로 나와있어서 CBV 형태로 구현하였다. rest_framework_simplejwt에서 제공하는
+  <code>TokenObtainPairSerializer</code>를 사용하여 토큰을 발급하였다. 
+  
+  
+  - <code>authenticate(request=None, **credentials)</code> : username과 password를 받아서 모든 authentication backend에 검사하여
+  credential이 유효하다면 유저 객체를 반환하고 그렇지 않다면 None을 반환
+
+  검증을 위하여 <code>python manage.py createsuperuser</code> 명령어를 사용하여 admin 유저들을 생성하였다. 
+
+  ![createsuperuser](https://user-images.githubusercontent.com/74910760/202854531-326a3249-d01c-43ca-a3c9-c874cfd400e5.png)
+
+  로그인 기능이 제대로 구현되었는지 확인하기 위해 postman을 사용하여 검증해보았다. 
+  
+  <img width="1011" alt="성공시" src="https://user-images.githubusercontent.com/74910760/202854687-7e73a36a-139d-4dc9-a4bf-7ceec6236283.png">
+  
+  accessToken과 refreshToken이 성공적으로 잘 나오는 것을 확인할 수 있다.
+
+  <img width="1009" alt="실패시" src="https://user-images.githubusercontent.com/74910760/202854761-aebe73fb-be9c-489e-8eea-46b4cf2665ca.png">
+
+  유저 이름이나 비밀번호가 틀렸을 때는 "login fail"이 뜨며 검증이 잘 된다.
+
+  
+
+### 회고
+기존의 user모델에서 AbstractUser로 커스텀한 유저를 사용하고 나니 여러 개의 컬럼이 <code>not null</code> 처리가 되어 기존의 쿼리를 통한 사용자 추가가 어려워졌다. 그래서 
+createsuperuser를 통해 admin 사용자를 추가하여 사용하였다. 이번 과제에서는 너무 다양한 레퍼런스가 있어 오히려 어떠한 방식으로 구현해야할 지 고르는 것이 매우 어려웠다. 그리고 어느 과제보다도
+많은 에러가 생겨서 더 어렵게 느껴졌다. 
+
+토큰을 생성하는 과정에서 처음에는 <code>TokenObtainSerializer</code>를 사용했는데 계속 for_user 라는 문구로 에러가 떴다. 해당 Serializer를 
+까보니 리턴 값에 <code>for_user()</code>라는 함수가 사용되었다. <code>TokenObtainPairSerializer</code>를 사용하니 그냥 data만을 리턴해주고 해당 에러가 뜨지 않았다. 
+에러가 나오지 않아서 사용하긴 했는데 아직 왜 에러가 생긴건지는 잘 모르겠다. 그 부분에 대해서는 앞으로 더 공부를 해볼 예정이다.
+
+
+
 ## 4주차 미션 : API View & Viewset & Filter
 
 ### API View를 이용한 CBV 구현
@@ -73,20 +171,20 @@
 
 url의 쿼리를 통해 원하는 결과값을 얻을 수 있다.
 - FilterSet
-  <pre><code>
-  # views.py
-
-  class TodoListFilter(FilterSet):
-      contents = filters.CharFilter(field_name='contents', lookup_expr='icontains')
-      is_done = filters.BooleanFilter(method='filter_is_done')
+    <pre><code>
+    # views.py
   
-      class Meta:
-          model = Todo
-          fields = ['contents', 'is_checked']
-  
-      def filter_is_done(self, queryset, name, value):
-          return queryset.filter(type=value)
-  </code></pre>
+    class TodoListFilter(FilterSet):
+        contents = filters.CharFilter(field_name='contents', lookup_expr='icontains')
+        is_done = filters.BooleanFilter(method='filter_is_done')
+    
+        class Meta:
+            model = Todo
+            fields = ['contents', 'is_checked']
+    
+        def filter_is_done(self, queryset, name, value):
+            return queryset.filter(type=value)
+    </code></pre>
 
   - contents의 내용을 value값에 입력된 값으로 해당되는 값을 필터링해주었다. <code>icontains</code>를 사용하여 
 쿼리 입력 값이 포함된 모든 contents를 포함한 객체들이 반환된다.
