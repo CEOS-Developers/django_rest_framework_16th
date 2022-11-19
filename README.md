@@ -3,15 +3,68 @@
 ## 5주차 미션 : DRF3 - Simple JWT
 
 ### Q. 로그인 인증 방식은 어떤 종류가 있나요?
+#### | 세션 
 
-### Q2. JWT 는 무엇인가요?
+#### | 쿠키
+
+#### | 토큰
+
+### Q. JWT 는 무엇인가요?
+
+#### 사용자 인가
 
 ### JWT 로그인 구현하기
 
-#### 커스텀 User 모델 만들기
+#### | 커스텀 User 모델 만들기
 
+- User를 관리하는 account 앱 생성
+- User 모델 생성 (id & password로 로그인 할 수 있는)
+- `settings/base.py` 에 `AUTH_USER_MODEL = 'account.User'` 추가
 
-#### JWT REST API
+##### Reference
+[초기 구조 잡기](https://wikidocs.net/10294)
+
+[전반적 코드 참고](https://velog.io/@iedcon/AbstractBaseUser%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-Django-%EC%BB%A4%EC%8A%A4%ED%85%80-%EC%9C%A0%EC%A0%80-%EB%AA%A8%EB%8D%B8-%EB%A7%8C%EB%93%A4%EA%B8%B0)
+
+#### | JWT settings
+- simple jwt 설치
+```shell
+pip install djangorestframework-simplejwt
+```
+- settings.py 수정
+```shell
+ INSTALLED_APPS = [
+    ...
+    'rest_framework_simplejwt',
+    ...
+]
+
+REST_FRAMEWORK = {
+    ...
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+    ...
+}
+
+# JWT setting
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'TOKEN_USER_CLASS': 'account.User',  # custom user model
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+}
+```
+- `ACCESS_TOKEN_LIFETIME` : access token 유효 기간
+- `REFRESH_TOKEN_LIFETIME` : refresh token 유효 기간
+- `ROTATE_REFRESH_TOKENS` : True이면, refresh 요청 시 새로운 access token과 refresh token 반환
+- `BLACKLIST_AFTER_ROTATION` : True이면, 더 이상 필요없는 토큰(로그아웃)이나 악의적으로 탈취된 token을 서버에서 사용할 수 없도록 관리해줌
+
+#### | JWT REST API
 - 회원가입 `account/register/`
 - 로그인 `account/login/`
 - 인가 확인 `account/auth/`
@@ -19,20 +72,40 @@
 - 로그아웃 `account/logout`
 
 
-#### 회원가입
-- 생각해야 할 예외 : 이미 존재하는 계정인지 (장고 ORM에서 알아서 처리)
-  ![image](https://user-images.githubusercontent.com/68186101/202844560-aaf74fb7-19af-449e-91f6-86e615298974.png)
-- 회원가입 성공
+#### | 회원가입
+- 회원가입 성공 `201 OK`
   ![image](https://user-images.githubusercontent.com/68186101/202844328-1654ef49-d879-4bc7-8d18-4c3956e543fd.png)
+- 이미 존재하는 계정 `400`
+  ![image](https://user-images.githubusercontent.com/68186101/202847722-fc05710b-58b9-4fbf-80b3-85c8e8fa78d9.png)
 
-#### 로그인 
+
+#### | 로그인 
+- 로그인 성공 `200 OK`
+  ![image](https://user-images.githubusercontent.com/68186101/202847927-42b6cf85-b497-4cd6-a962-00a16e9b6233.png)
+- 존재하지 않는 계정 `400`
+  ![image](https://user-images.githubusercontent.com/68186101/202847958-e54e39d9-9d00-4af0-8d64-e5113985981d.png)
+- 비밀번호 오류 `400`
+  ![image](https://user-images.githubusercontent.com/68186101/202847978-1609de91-2306-42be-838b-25348d1ac352.png)
 
 
-#### Refresh Token 발급
+예외는 serializer에서 raise를 발생시켜서 처리
 
-#### 로그아웃
+
+#### | Refresh Token 발급
+
+
+#### | 로그아웃
 
 ### Issue
+#### Custom User Model Migration 할 때
+- 새로운 사용자 모델로 마이그레이션 하려 할 때 아래 오류 발생
+  `(fields.E301) Field defines a relation with the model 'auth.User', which has been swapped out.
+        HINT: Update the relation to point at 'settings.AUTH_USER_MODEL'.`
+- 새로 바뀐 유저 모델을 얻어와야 했던 거였음 [[해결 링크]](https://stackoverflow.com/questions/55780537/how-to-fix-field-defines-a-relation-with-the-model-auth-user-which-has-been-s)
+  ```python
+  from django.contrib.auth import get_user_model
+  User = get_user_model()
+  ```
 
 ### 후기
 
