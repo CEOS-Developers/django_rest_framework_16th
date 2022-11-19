@@ -68,6 +68,7 @@ class MyUser(AbstractBaseUser):
     check_likes_yn = models.BooleanField(default=True)
 
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
     objects = UserManager()
@@ -83,6 +84,29 @@ class MyUser(AbstractBaseUser):
     def get_nickname(self):
         return self.nickname
 
+    def get_full_name(self):
+        pass
+
+    def get_short_name(self):
+        pass
+
+    @property
+    def is_superuser(self):
+        return self.is_admin
+
+    @property
+    def is_staff(self):
+        return self.is_admin
+
+    def has_perm(self, perm, obj=None):
+        return self.is_admin
+
+    def has_module_perms(self, app_label):
+        return self.is_admin
+
+    @is_staff.setter
+    def is_staff(self, value):
+        self._is_staff = value
 
 # class Profile(BaseModel):
 #     user = models.OneToOneField(User, db_column='user', on_delete=models.CASCADE)
