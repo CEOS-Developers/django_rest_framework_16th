@@ -157,22 +157,49 @@ model을 수정했는데 migration을 해도 새로운 class와 field가 mysql d
 ## 4주차 미션: Serializer
 
 #### Q. 로그인 인증 방식은 어떤 종류가 있나요?
-1. 세션과 쿠키를 통한 인증
-2. Access Token을 이용한 인증
-3. Access Token + Refresh Token을 이용한 인증
-4. OAuth 2.0을 이용한 인증
+1. 세션과 쿠키를 통한 인증  
+   사용자가 로그인을 하면 서버가 계정 정보를 확인한 후, 세션 저장소에 저장하고 연결되는 세션 ID를 발급한다. 
+   서버가 HTTP 응답 헤더에 session id를 보낸다.  
+   이후 클라이언트가 http 요청을 보낼 때마다 Session id가 담긴 쿠키를 http요청 헤더에 실어 보낸다.  
+   -> 세션을 서버가 저장하고 있고, 서버에게 요청을 보낼 때마다 인증을 위해 세션 id를 보내는데 그 id를 담는게 쿠키다. 
+2. Access Token을 이용한 인증  
+   Header, Payload, Verify Signature 객체를 필요로 한다. payload는 만료일시, 발급자, 발급 일시 등 토큰에 담을 정보를 포함한다. 
+   verify signature는 payload가 위변조되지 않았다는 것을 증명하는 문자열이다. 
+   Base64방식으로 인코딩한 Header, payload, secret key를 서명한다. 
+3. Access Token + Refresh Token을 이용한 인증  
+   Access token을 오래 사용할 경우 토큰이 해커에게 탈취되는 문제를 해결한다.   
+   access token이 만료되면, access와 refresh를 같이 보내며 새로운 token 발급 요청을 할 수 있다.   
+   -> 사용자는 refresh 토큰이 만료될 때만 다시 로그인을 하면 되지만, access token의 유효 기간마다 토큰이 새롭게 발급 되어 안전성은 올라간다.
+4. OAuth 2.0을 이용한 인증  
+   이 방법에서 클라이언트=내가 만드는 앱의 서버, 서버=인증에 이용할 sns의 auth서버와 OAuth 자원 관리 서버(Google등 OAuth를 통해 접근을 지원하는 제공자)가 된다.   
+   사용자가 앱에 인증 요청을 하면 인증할 수단(구글 로그인 등)을 보여주고, 사용자가 로그인 정보를 입력한다. 애플리케이션이 사용자가 인증했다는 권한 증서를 auth 서버에 보내면, auth는 앱에게 
+   토큰과 유저 정보를 발급해주고 앱은 그걸 db에 저장한다. 사용자가 자원을 요청하면 앱은 OAuth자원 관리 서버에 토큰과 함께 요청을 보내고, 유효하다면 자원을 응답 받는다. 
 
 #### Q. JWT 는 무엇인가요?
 Json Web Token. 인증에 필요한 정보들을 암호화한 JSON 토큰  
 
+`서버기반 인증`은 사용자가 많아질수록 관리가 어렵다. 하나의 서버의 성능을 높이는 것보다 여러 대의 서버를 두는 수평 확장은 경제적 부담이 적고 유연해서 일반적인 방법.
+모든 서버에서 유저의 세션 id를 공유해야한다는 단점이 있다.   
+`토큰 기반 인증`에서는 클라이언트가 토큰을 저장하고, 서버는 토큰 발급과 검증만 해서 서버가 저장하고 있는 것은 없다.
 
-#### Q. JWT 로그인 구현하기  
+헤더에는 토큰 유형, 암호화 알고리즘 두 가지가 포함된다.   
+페이로드는 사용자 정보와 데이터 속성을 포함하는 등록된 클레임, 공개 클레임, 비공개 클레임으로 나뉘는 클레임 단위로 구성된다.   
+서명은 인코딩된 헤더, 페이로드 + secret key를 특정 암호화 알고리즘을 이용해 암호화한다. 보통 HMAC SHA256 또는 RSA가 사용된다
 
-django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency account.0001_initial on database 'default'.
-
-Error while finding module specification for 'manage.py' (ModuleNotFoundError: __path__ attribute not found on 'manage' while trying to find 'manage.py'). Try using 'manage' instead of 'manage.py' as the module name.
-
+#### Q. JWT 로그인 구현하기 
+HTTP Request
 ![image](https://user-images.githubusercontent.com/69039161/202851928-05ddd47e-eb28-4790-a6d0-76489551565e.png)
 
-
+HTTP Response(로그인 성공)
 ![image](https://user-images.githubusercontent.com/69039161/202851955-c1af1edd-c757-4450-8b36-9c8f2cdf1327.png)
+
+HTTP Response(로그인 실패)
+![image](https://user-images.githubusercontent.com/69039161/202852082-01891e17-c440-49ce-94e1-8dc979bf0488.png)
+
+
+### 간단한 회고
+django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency account.0001_initial on database 'default'.  
+-> 그냥  mysql database를 삭제해버렸다. 새로운 필드를 추가할 때마다 이 오류가 생긴다. migration 파일만 삭제해도 같은 오류가 나고, 아예 db를 삭제하고 다시 만들어야 오류가 나오지 않는다. 이유가 궁금했다.
+
+로그인을 구현할 때 대충 상황에 맞는 거 쓰면서 구현했던 것 같은데, 인증 방식 4가지에 대해 정확하게 이해할 수 있는 기회가 되었다. 
+
