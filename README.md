@@ -298,10 +298,15 @@ urlpatterns = router.urls
 ## 5주차 미션: DRF3 - Simple JWT
 
 ### Q1. 로그인 인증 방식은 어떤 종류가 있나요?
-1. 세션과 쿠키를 이용한 인증
-2. Access Token을 이용한 인증
-3. Access Token + Refresh Token을 이용한 인증
+1. <b>세션과 쿠키를 이용한 인증</b>  
+브라우저에 존재하는 쿠키에 세션 id를 발급하고 매 요청마다 브라우저의 쿠키를 검증하여 세션 아이디를 통해 사용자를 인증한다.
+2. <b>Access Token을 이용한 인증</b>  
+JWT 이용 (인증에 필요한 정보 암호화한 토큰)
+3. <b>Access Token + Refresh Token을 이용한 인증</b>  
+Access token의 유효기간이 짧으면 사용자가 로그인을 자주 해야 돼서 번거롭고, 유효기간이 길면 보안에 취약하다는 단점이 있다.  
+이를 해결하기 위한 것이 Refresh token.
 4. OAuth 2.0을 이용한 인증
+5. SNS 로그인
 
 ### Q2. JWT는 무엇인가요?
 JWT는 Json Web Token의 약자이다.
@@ -317,11 +322,11 @@ dot(.)을 구분자로 3파트로 구분되어 있으며 각각의 파트를 Hea
 User model을 너무 간단하게 만들었던 것 같아서 리팩토링을 진행했다 (지금도 간단하긴 하다,,) 
 
 기존에는 email과 password 필드만 있었는데, id와 nickname 필드를 추가했다.
-그리고 지난 주에 todo, category, comment 모델이 상속받게 한 BaseModel에 deleted_at도 추가해 soft delete를 가능하게 했다.  
+그리고 지난 주에 todo, category, comment 모델이 상속받게 한 BaseModel을 user 모델도 상속받게 하며 
+deleted_at도 추가해 soft delete를 가능하게 했다.  
 (soft delete는 User model에만 사용하려고 하는데 User model에 대한 views는 아직 작성하지 않았다.)
 
-AbstractUser에서 AbstractBaseUser로 상속받는 유저 모델을 바꾸면서 superuser 기능이 아직 제대로 작동하지 않지만..
-이건 나중에 다시 살펴봐야겠다.
+
 ```python
 # models.py
 class BaseModel(models.Model):
@@ -390,7 +395,54 @@ class User(AbstractBaseUser, BaseModel):
 #### 회원가입 구현
 ![image](https://user-images.githubusercontent.com/86969518/202844844-223ca836-9574-4b2b-bebe-68cab5bdf25c.png)
 ![image](https://user-images.githubusercontent.com/86969518/202844872-9d003c9d-f69e-4aff-99da-ecc4bbcb5267.png)
+```python
+#serializers.py
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
 
+    def create(self, validated_data):
+        id = validated_data.get('id')
+        nickname = validated_data.get('id')
+        email = validated_data.get('email')
+        password = validated_data.get('password')
+        user = User(
+            id=id,
+            nickname=nickname,
+            email=email,
+            password=password
+        )
+        user.set_password(password)
+        user.save()
+        return user
+    
+    
+#views.py
+class RegisterAPIView(APIView):
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "user": serializer.data,
+                    "message": "register successs",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
+            return res
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
 #### 로그인 구현
 로그인 성공
 ![image](https://user-images.githubusercontent.com/86969518/202844929-42cc447e-69eb-4095-b011-9038321444a2.png)
@@ -400,6 +452,41 @@ class User(AbstractBaseUser, BaseModel):
 ![image](https://user-images.githubusercontent.com/86969518/202845054-0548f8c7-5bdd-4191-a134-3e492e5d7956.png)
 ![image](https://user-images.githubusercontent.com/86969518/202845083-76b473da-937b-4537-bee4-14774ec1b729.png)
 
+```python
+#serializers.py
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+#views.py
+class AuthView(APIView):
+
+    def post(self, request):
+        user = authenticate(
+            id=request.data.get("id"), password=request.data.get("password")
+        )
+        if user is not None:
+            serializer = UserSerializer(user)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "user": serializer.data,
+                    "message": "login success",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+            return res
+        else:
+            return Response({"no such user"}, status=status.HTTP_400_BAD_REQUEST)
+```
 Token Refresh  
 <b>from rest_framework_simplejwt.views import TokenRefreshView</b>를 이용해 token refresh를 구현했다.  
 아직 사용법을 제대로 찾아보지는 못해서 어떻게 동작하는 건지는 나중에 자세히 조사해 볼 예정..
@@ -413,3 +500,5 @@ urlpatterns = [
     path('auth/refresh/', TokenRefreshView.as_view()),
 ]
 ```
+### 이번 과제를 하며..
+단순한 기능 구현을 넘어서 보안까지 생각해볼 수 있어서 좋았던 과제였다. 나중에 Logout 기능도 구현해야겠다.
