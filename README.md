@@ -360,6 +360,7 @@ filterset도 익숙하지가 않아서 deleted_at이 Null이 아닌 데이터들
 HTTP Request Header에 인증 수단인 비밀번호를 직접 넣는 방식이다.
 보통 서버로 HTTP 요청을 할 때 암호화를 하지 않기 때문에 보안적으로 매우 치명적이다.
 만약 해커가 HTTP 요청을 볼 수 있다면 사용자의 계정 정보를 쉽게 알 수 있다.
+
 - 장점
   - 인증 테스트 때 사용 가능
 - 단점
@@ -367,10 +368,9 @@ HTTP Request Header에 인증 수단인 비밀번호를 직접 넣는 방식이�
   - 요청 시마다 서버에 ID, PW 대조 필요
 
 #### Session, Cookie
-- Session: 서버가 가지고 있는 정보
-- Cookie: 사용자에게 발급된 세션을 열기 위한 열쇠(Session ID)
+*Session: 서버가 가지고 있는 정보
+*Cookie: 사용자에게 발급된 세션을 열기 위한 열쇠(Session ID)
 
-(사진)
 Session, Cookie 방식은 Session ID를 만드는 세션 저장소를 사용하는 방식이다.
 Session ID는 로그인을 했을 때 사용자의 정보를 저장하는 것으로 HTTP Header에 실려 사용자에게 보내진다.
 사용자는 보관하고 있던 쿠키를 인증이 필요한 요청에 넣어 보내고 서버는 세션 저장소에서 쿠키와 기존 정보를 비교하여 인증한다.
@@ -385,8 +385,6 @@ Session ID는 로그인을 했을 때 사용자의 정보를 저장하는 것으
   - 세션 저장소를 사용하기 때문에 별도의 저장공간이 필요하다.
 
 #### Access Token (JWT)
-(사진)
-
 - 장점
   - 세션 쿠키 방식과 달리 저장소를 사용하지 않기 때문에 별도의 저장공간이 필요하지 않다.
   - Google, Facebook과 같은 다양한 토큰 기반 서비스로 관련 기능을 확장하기 용이하다
@@ -398,9 +396,8 @@ Session ID는 로그인을 했을 때 사용자의 정보를 저장하는 것으
   - Token의 길이가 길어 요청이 많아질수록 서버의 자원 낭비가 생긴다.
 
 #### Access Token, Refresh Token
-- Refresh Token: Access Token과 같은 형태의 JWT이다. Access Token보다 긴 유효기간을 가지며 Access Token 만료 시에 새로 발급을 도와준다.
+*Refresh Token: Access Token과 같은 형태의 JWT이다. Access Token보다 긴 유효기간을 가지며 Access Token 만료 시에 새로 발급을 도와준다.
 
-(사진)
 Refresh Token을 사용하여 사용자가 자주 로그인을 해야 하는 상황이나 장기간 로그인했을 때 발생하는 보안적 문제점들을 해결하였다.
 
 - 장점
@@ -410,10 +407,7 @@ Refresh Token을 사용하여 사용자가 자주 로그인을 해야 하는 상
   - 서버의 자원 낭비가 생긴다.
 
 #### OAuth 2.0
-- OAuth 2.0(Open Authorization): 인증을 위한 개방형 표준 프로토콜
-
-(사진)
-
+*OAuth 2.0(Open Authorization): 인증을 위한 개방형 표준 프로토콜
 - 장점
   - 직접 타사 사용자의 정보를 입력하는 것보다 안정적이다.
   - 회원 정보뿐만 아니라 기타 API에 대한 정보에도 접근이 가능하다.
@@ -435,7 +429,6 @@ JSON 데이터를 Base64 URL-safe Encode 를 통해 인코딩하여 직렬화한
 따라서 사용자가 JWT 를 서버로 전송하면 서버는 서명을 검증하는 과정을 거치게 되며 검증이 완료되면 요청한 응답을 돌려준다.
 
 - JWT 구조
-  (사진)
   - Header
     - alg: 서명 암호화 알고리즘(ex: HMAC SHA256, RSA)
     - typ: 토큰 유형
@@ -449,3 +442,158 @@ JSON 데이터를 Base64 URL-safe Encode 를 통해 인코딩하여 직렬화한
 [참고링크1](https://inpa.tistory.com/entry/WEB-%F0%9F%93%9A-JWTjson-web-token-%EB%9E%80-%F0%9F%92%AF-%EC%A0%95%EB%A6%AC#JWT_(JSON_Web_Token))
 [참고링크2](https://hudi.blog/self-made-jwt/)
 
+### JWT 로그인 구현하기
+1. Custom User Model 사용
+  ```python
+    # models.py
+    class User(AbstractBaseUser):
+        email = models.EmailField(max_length=30, unique=True)
+        nickname = models.CharField(max_length=10)
+        password = models.CharField(max_length=30)
+        introduce = models.CharField(max_length=200)
+        image = models.TextField(blank=True)
+        is_public = models.BooleanField(default=False)
+        search = models.BooleanField(default=False)
+    
+        is_active = models.BooleanField(default=True)
+        is_superuser = models.BooleanField(default=False)
+    
+        objects = UserManager()
+        USERNAME_FIELD = 'email'
+    
+        class Meta:
+            db_table = "User"
+    
+        def __str__(self):
+            return self.nickname
+    
+        @property
+        def is_staff(self):
+            return self.is_superuser
+  ```
+  Django의 기본 유저 모델에서 AbstractBaseUser를 상속받아 커스텀 모델로 변화시켰다. is_superuser로 관리자 여부를 확인하며 user, superuser를 생성하는 메소드는 UserManager에 추가하였다.
+
+2. 회원가입 구현
+   ```python
+   # serializers.py
+   class JoinSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    password2 = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = User
+        fields = ('email', 'nickname', 'password', 'password2')
+
+    def validate(self, request):
+        if request['password'] != request['password2']:
+            raise serializers.ValidationError({"Password doesn't match."})
+        return request
+
+    def save(self, request):
+        user = User.objects.create_user(
+            email=self.validated_data['email'],
+            nickname=self.validated_data['nickname'],
+            password=self.validated_data['password']
+        )
+
+        return user
+    ```
+   ```python
+   # views.py
+   class JoinView(APIView):
+    serializer_class = JoinSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save(request)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "email": user.email,
+                    "nickname": user.nickname,
+                    "message": "가입이 성공적으로 이뤄졌습니다.",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
+            return res
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   ```
+   (사진1, 2)
+3. 로그인 구현
+   ```python
+   # serializers.py
+   class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, request):
+        email = request.get('email', None)
+        password = request.get('password', None)
+
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            if not user.check_password(password):
+                raise serializers.ValidationError({"Wrong Password"})
+        else:
+            raise serializers.ValidationError({"User doesn't exist."})
+
+        token = RefreshToken.for_user(user)
+        refresh = str(token)
+        access = str(token.access_token)
+
+        data = {
+            'email': user.email,
+            'refresh': refresh,
+            'access': access
+        }
+
+        return data
+   ```
+   ```python
+   # views.py
+   class LoginView(APIView):
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid(raise_exception=False):
+            email = serializer.validated_data['email']
+            access = serializer.validated_data['access']
+            refresh = serializer.validated_data['refresh']
+            # data = serializer.validated_data
+            res = Response(
+                {
+                    "message": "로그인되었습니다.",
+                    "email": email,
+                    "access": access,
+                    "refresh": refresh
+                },
+                status=status.HTTP_200_OK,
+            )
+            return res
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   ```
+   (사진 1, 2, 3)
+
+### 에러 해결
+- Password Column 길이 에러
+  (사진)
+  ALTER TABLE [TABLE명] modify [COLUMN명] VARCHAR(1000);
+  mysql 명령어로 해당 필드 길이 늘려서 해결
+
+### 회고
+너무 어려웠다..😩 어느정도 하고 나서 뒤에 어렵지 않겠지하고 여유롭게 했는데 이리해도 저리해도 안돼서 몇번이나 다시하고 그랬다. 하하. 내가 혼자 느끼기에도 지금 내 코드가 상당히 비효율적이고 더러운 것 같아서 다음에 꼭 리펙토링을 하고 싶다.
+그리고 저번에 viewset이나 url에서 router를 쓰는 작업을 하면서 코드가 간결해졌는데 이번 과제에서는 다시 APIView와 as_view()를 사용해서 두 가지 코드 형식이 같이 있는게 맞는지 모르겠다. 우선 보기에 깔끔하지는 않은 것 같다. 얼렁뚱땅 과제 끝 😎
