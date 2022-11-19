@@ -16,9 +16,6 @@ from .models import *
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, filters
 
-from .serializers import LoginSerializer
-
-
 env = environ.Env(
     DEBUG=(bool, False)
 )
@@ -56,7 +53,6 @@ class GoalViewSet(viewsets.ModelViewSet):
 
 class LoginView(APIView):
     def post(self, request):
-        # User 인증 함수. 자격 증명이 유효한 경우 User 객체를, 그렇지 않은 경우 None을 반환
         try:
             username = request.data.get("id")
             password = request.data.get("pwd")
