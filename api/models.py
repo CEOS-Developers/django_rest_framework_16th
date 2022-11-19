@@ -9,11 +9,11 @@ class BaseModel(models.Model):
         abstract = True
 
 class User(BaseModel, AbstractUser):
-    email = models.EmailField(max_length=50, unique=True)
-    web_pw = models.CharField(max_length=25)
+    email = models.EmailField(max_length=250, unique=True)
+    password = models.CharField(max_length=150)
 
     def __str__(self):
-        return self.name
+        return self.username
 
 
 class Todo(BaseModel):
