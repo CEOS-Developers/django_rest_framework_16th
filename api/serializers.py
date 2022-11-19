@@ -6,8 +6,8 @@ from api.models import *
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['user_id']
+        model = MyUser
+        fields = ['user_id', 'nickname']
 
 
 # class ProfileSerializer(serializers.ModelSerializer):
