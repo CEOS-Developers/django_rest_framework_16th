@@ -1,6 +1,5 @@
 # views.py
 from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import check_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
@@ -43,7 +42,6 @@ class LoginView(APIView):
             access_token = str(token.access_token)
             res = Response(
                 {
-                    "user": serializer.data,
                     "message": "login success",
                     "token": {
                         "access": access_token,
