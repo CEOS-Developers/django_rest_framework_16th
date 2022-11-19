@@ -1,9 +1,10 @@
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterSerializer, LoginSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 
 
 # 회원 가입
@@ -46,3 +47,17 @@ class LogoutView(APIView):
         res.delete_cookie('access')
         res.delete_cookie('refresh')
         return res
+
+
+# 인가
+class AuthorizationView(APIView):
+    def get(self, request):
+        res = JWTAuthentication().authenticate(request)
+        user, token = res
+
+        if not user:
+            return Response({"접근 권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
