@@ -1,5 +1,154 @@
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
+## 4주차 미션 : DRF2 - API View & Viewset & Filter
+
+### DRF API View 의 CBV 으로 리팩토링하기
+- CBV로 리팩토링하면서 클래스 내 메서드를 생성해서 사용함으로써 코드가 더 깔끔해진 것 같다.
+- `get_object(self, id)` 메서드를 만들어서 오브젝트를 DB에서 얻어오고, 없으면 바로 404를 반환하도록 했다.
+
+
+### Viewset으로 리팩토링하기
+- `ModelViewSet`의 기능들 + HTTP Method + URL
+  - 목록 얻기 : `list()` `GET todos/`
+  - 특정 데이터 얻기 : `retrieve()` `GET todos/<int:pk>`
+  - 데이터 생성 : `create()` `POST todos/`
+  - 데이터 수정 (완전) : `update()` `PUT todos/<int:pk>`
+  - 데이터 수정 (일부) : `partial_update()` `PATCH todos/<int:pk>`
+  - 데이터 삭제 : `destroy()` `DELETE todos/<int:pk>`
+  
+  
+- `as_view()` 함수 활용하기
+```py
+# views.py
+
+from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
+from .models import ToDo
+from .serializers import ToDoSerializer
+
+class TodoViewSet(ModelViewSet):
+    serializer_class = ToDoSerializer
+    queryset = ToDo.objects.all() 
+
+todo_list = TodoViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+todo_detail = TodoViewSet.as_view({
+    'get': 'retrieve',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+```
+```py
+# urls.py
+
+from django.urls import path, include
+from . import views
+
+urlpatterns = [
+    path('todos/', views.todo_list),
+    path('todos/<int:pk>/', views.todo_detail),
+]
+```
+- `router` 활용하기
+```py
+# views.py
+
+from rest_framework.viewsets import ModelViewSet
+from api.models import ToDo
+from api.serializers import ToDoSerializer
+
+
+class TodoViewSet(ModelViewSet):
+    serializer_class = ToDoSerializer
+    queryset = ToDo.objects.all()
+
+```
+```py
+# urls.py
+
+from rest_framework import routers
+from .views import TodoViewSet
+
+router = routers.DefaultRouter()
+router.register(r'todos', TodoViewSet)  # register()함으로써 두 개의 url 생성
+
+urlpatterns = router.urls
+```
+
+
+### filter 기능 구현하기
+```py
+def list(self, request, *args, **kwargs):
+    query_params = request.query_params
+    self.queryset = self.get_queryset().filter(content__icontains=query_params.get('content'))
+    return super().list(request, *args, **kwargs)
+```
+- goal 필터
+
+![image](https://user-images.githubusercontent.com/68186101/201207545-7e1fc0d4-34d6-4e93-8249-7cd94e5647b4.png)
+
+
+- todo content에 특정 문자 포함한 거 찾기
+
+![image](https://user-images.githubusercontent.com/68186101/201209178-a2735641-0b9d-4330-b30f-4fbc3d4825a8.png)
+
+
+#### filterset 활용
+
+```py
+class TodoFilter(FilterSet):
+    content = filters.CharFilter(field_name='content')
+    is_done = filters.BooleanFilter(field_name='is_done')
+
+    class Meta:
+        model = ToDo
+        fields = ['content', 'is_done']
+```
+
+
+- content필드와 is_done필드 필터링하기
+
+![image](https://user-images.githubusercontent.com/68186101/201251538-d79fc63f-5dbc-44ec-977f-d8a5b0739cb4.png)
+
+
+
+### Issue
+- delete 요청 시 에러 해결 ! 
+  - 에러 : DB에서 삭제는 되는데, Response에서 오류.
+  ```
+  TypeError: __init__() missing 1 required positional argument: 'data'
+  ```
+  - 해결
+    - JsonResponse 대신 Response로 보내니 해결
+- 슬래시 안 붙여서 오류.. 
+  - 에러 
+    ```
+    RuntimeError: You called this URL via PATCH, but the URL doesn't end in a slash and you have APPEND_SLASH set. Django can't redirect to the slash URL while maintaining PATCH data. Change your form to point to localhost:8000/api/todos/4/ (note the trailing slash), or set APPEND_SLASH=False in your Django settings.
+    ```
+  - 해결
+    - api 요청 주소 마지막에 '/'를 안 넣어서 생긴 오류였다.. 
+    https://codingdojang.com/scode/377
+- filtering 할 때, 외래키 관련 오류
+  - 에러
+  ```
+  django.core.exceptions.FieldError: Related Field got invalid lookup: icontains
+  ```
+  - 해결
+    - 외래키는 칼럼 이름에 id가 붙어서 나는 오류였다. 이름 사이에 `__id__`를 넣으니 해결!
+    - `goal__icontains` -> `goal__id__icontains`
+
+
+### 후기 💪
+- DB 테이블을 많이 수정했다. 마이그레이션 과정에서 꼬여서 결국 DB 다시 생성해서 해결했는데, 실제 협업하면 이럴 수 없으니까 얼른 마이그레이션에 익숙해져야겠다............
+- CBV로 리팩토링 하는 과정에서 기존에 잘 처리하지 못했던 예외처리까지 하게 되었다! 
+- viewset... 정말정말 간편하다.. 대박 신세계다 ✨✨✨✨✨✨
+- filtering 할 때는 api 요청 주소 마지막에 슬래시('/') 넣으면 안된다. (왜 그러지?) 
+- fileterset 메서드 구현에 대해 공부 필요
+
+
 ## 3주차 미션 : DRF1 - Serializer 및 API 설계
 
 ### 모델 선택 및 데이터 삽입
