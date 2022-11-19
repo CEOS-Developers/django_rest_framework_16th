@@ -154,7 +154,7 @@ model을 수정했는데 migration을 해도 새로운 class와 field가 mysql d
 일단 수정하지 않고 미션을 했는데 뭐가 문제인지 더 찾아봐야할 것 같다. 
 
 
-## 4주차 미션: Serializer
+## 4주차 미션: SimpleJWT
 
 #### Q. 로그인 인증 방식은 어떤 종류가 있나요?
 1. 세션과 쿠키를 통한 인증  
