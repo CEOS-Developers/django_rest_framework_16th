@@ -92,11 +92,22 @@ SIMPLE_JWT = {
 
 
 #### | Refresh Token 발급
-- refresh 요청
-  - body에 refresh 토큰 담아서 보냄
+- 라이브러리 내장 뷰 활용 `TokenRefreshView.as_view()`
+- body에 refresh 토큰 담아서 보냄
+- refresh 요청 성공
   ![image](https://user-images.githubusercontent.com/68186101/202855060-e9e481cb-0470-42c4-8499-81f21b3c2121.png)
 
+- 유효하거나 만료된 토큰일 경우
+  ![image](https://user-images.githubusercontent.com/68186101/202855548-bf61de7b-54cc-418d-82e8-f3a0461c350e.png)
+
+
 #### | 로그아웃
+- 쿠키에 저장된 access_token, refresh_token을 삭제
+- 로그아웃 완료
+  ![image](https://user-images.githubusercontent.com/68186101/202856387-66761b27-068c-4224-a515-e0503a97207a.png)
+
+#### | 인가
+
 
 
 ### Issue
@@ -109,8 +120,13 @@ SIMPLE_JWT = {
   from django.contrib.auth import get_user_model
   User = get_user_model()
   ```
+### 새롭게 안 사실
+- simple JWT에서는 token 생성 시 필요한 secret key에 Django 프로젝트마다 사용하는 secret_key를 기본으로 이용함
 
 ### 후기
+- 일단 node에서 express로 jwt 인증/인가 구현할 때보다 코드가 훨씬..예쁘다..
+- 그럼에도 중복 코드들이 있어서 리팩토링 하고 싶다
+- 장고는 편리하게 쓸 수 있는 라이브러리들이 많이 있어서 쉬워보이다가도 막상 제대로 쓰려면 커스텀을 해야 하니 호락호락하지 않은 프레임워크라는 것을 또 느꼈다..
 
 ## 4주차 미션 : DRF2 - API View & Viewset & Filter
 

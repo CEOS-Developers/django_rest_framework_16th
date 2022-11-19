@@ -37,3 +37,12 @@ class LoginView(APIView):
             res.set_cookie("refresh", refresh_token, httponly=True)
             return res
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 로그아웃
+class LogoutView(APIView):
+    def post(self, request):
+        res = Response(status=status.HTTP_204_NO_CONTENT)
+        res.delete_cookie('access')
+        res.delete_cookie('refresh')
+        return res
