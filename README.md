@@ -68,7 +68,7 @@ SIMPLE_JWT = {
 - 회원가입 `account/register/`
 - 로그인 `account/login/`
 - 인가 확인 `account/auth/`
-- Refresh 요청 `account/refresh/`
+- Refresh 요청 `account/auth/refresh/`
 - 로그아웃 `account/logout`
 
 
@@ -92,9 +92,12 @@ SIMPLE_JWT = {
 
 
 #### | Refresh Token 발급
-
+- refresh 요청
+  - body에 refresh 토큰 담아서 보냄
+  ![image](https://user-images.githubusercontent.com/68186101/202855060-e9e481cb-0470-42c4-8499-81f21b3c2121.png)
 
 #### | 로그아웃
+
 
 ### Issue
 #### Custom User Model Migration 할 때
