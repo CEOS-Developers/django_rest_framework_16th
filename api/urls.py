@@ -1,23 +1,27 @@
-"""django_rest_framework_16th URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path
-from api import views
+from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
-    path('todolists', views.todo_lists),
-    path('todolist/<int:pk>', views.todo_list),
+    path('todos/', TodosView.as_view()),
+    path('todo/<int:pk>', TodoView.as_view()),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
+"""
+
+from django.urls import path
+from rest_framework import routers
+from .views import TodoViewSet, LoginView, JoinView
+from rest_framework_simplejwt.views import TokenRefreshView
+
+router = routers.DefaultRouter()
+router.register(r'todo', TodoViewSet)
+
+urlpatterns = [
+    path('join/', JoinView.as_view()),
+    path('login/', LoginView.as_view()),
+    path('login/refresh/', TokenRefreshView.as_view()),
+]
+
+urlpatterns += router.urls
