@@ -65,10 +65,16 @@ class TodoView(APIView):
             print(e)
             return Response({"message: not exist"})
 """
+from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.response import Response
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from api.models import *
 from api.serializers import *
+from .admin import UserCreationForm, UserChangeForm, UserAdmin
 from django_filters.rest_framework import FilterSet, filters, DjangoFilterBackend
 
 
@@ -85,6 +91,35 @@ class TodoFilter(FilterSet):
         queryset = Todo.objects.all()
         filtered_queryset = queryset.filter(group=value, status='not_done')
         return filtered_queryset
+
+
+class JoinView(APIView):
+    # noinspection PyMethodMayBeStatic
+    def post(self, request):
+        form = UserCreationForm(request.data)
+        if form.is_valid():
+            user = form.save()
+            user.nickname = form.clean_nickname()
+
+            return Response({"message: Success Join"})
+
+        else:
+            return Response(form.errors)
+
+
+class LoginView(APIView):
+    # noinspection PyMethodMayBeStatic
+    def post(self, request):
+        user = authenticate(email=request.data.get('email'), password=request.data.get('password'))
+        if user is not None:
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+
+            return Response({"token": access_token})
+
+        else:
+            return Response("message: 존재하지 않는 사용자입니다")
 
 
 class TodoViewSet(viewsets.ModelViewSet):
