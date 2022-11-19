@@ -15,6 +15,7 @@ from api.serializers import *
 
 class TodoFilter(FilterSet):
     user = filters.CharFilter(method='user_filter')
+    is_deleted = filters.BooleanFilter(method='delete_filter')
     content = filters.CharFilter(field_name='content', lookup_expr='icontains')
 
     class Meta:
@@ -25,6 +26,12 @@ class TodoFilter(FilterSet):
         filtered_queryset = queryset.filter(**{
             user: value,
         })
+
+        return filtered_queryset
+
+    def delete_filter(self, queryset, boolean):
+        queryset = Todo.objects.all()
+        filtered_queryset = queryset.filter(deleted_at__isnull=boolean)
 
         return filtered_queryset
 
