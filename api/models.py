@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -7,12 +8,9 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-class User(BaseModel):
-    name = models.CharField(max_length=10)
-    email = models.EmailField()
-    web_id = models.CharField(max_length=15)
+class User(BaseModel, AbstractUser):
+    email = models.EmailField(max_length=50, unique=True)
     web_pw = models.CharField(max_length=25)
-    intro_text = models.TextField(null=True, blank=True, max_length=100)
 
     def __str__(self):
         return self.name
