@@ -353,6 +353,7 @@ filterset도 익숙하지가 않아서 deleted_at이 Null이 아닌 데이터들
 ## 5주차 : DRF3 - Simple JWT
 ### 로그인 인증 방식에는 어떤 것이 있을까?
 +) 인증을 해야하는 이유
+  
   HTTP는 기본적으로 stateless, connectionless하기 때문에 모든 요청(Request)이 이전 요청과 독립적으로 다뤄진다.
   요청이 끝날 때마다 서버는 유저에 대한 정보를 잊어버리게 되기 때문에 요청 시마다 클라이언트는 서버에 인증을 해야 한다.
 
@@ -366,7 +367,7 @@ HTTP Request Header에 인증 수단인 비밀번호를 직접 넣는 방식이�
 - 단점
   - 보안 매우 취약
   - 요청 시마다 서버에 ID, PW 대조 필요
-
+-----
 #### Session, Cookie
 *Session: 서버가 가지고 있는 정보
 *Cookie: 사용자에게 발급된 세션을 열기 위한 열쇠(Session ID)
@@ -383,7 +384,7 @@ Session ID는 로그인을 했을 때 사용자의 정보를 저장하는 것으
   - Session Hijacking 공격 가능
     세션을 가로채서 별도의 인증 작업 없이 세션을 통해 통신을 계속하는 행위를 말한다. HTTPS 프로토콜을 사용하거나 세션에 만료 시간을 설정하는 방식으로 해결 가능하다.
   - 세션 저장소를 사용하기 때문에 별도의 저장공간이 필요하다.
-
+-----
 #### Access Token (JWT)
 - 장점
   - 세션 쿠키 방식과 달리 저장소를 사용하지 않기 때문에 별도의 저장공간이 필요하지 않다.
@@ -394,7 +395,7 @@ Session ID는 로그인을 했을 때 사용자의 정보를 저장하는 것으
     Refresh Token을 발급하여 사용하는 방식으로 해결 가능하다.
   - Payload는 따로 암호화하지 않기 때문에 담을 수 있는 정보가 제한적이다.
   - Token의 길이가 길어 요청이 많아질수록 서버의 자원 낭비가 생긴다.
-
+-----
 #### Access Token, Refresh Token
 *Refresh Token: Access Token과 같은 형태의 JWT이다. Access Token보다 긴 유효기간을 가지며 Access Token 만료 시에 새로 발급을 도와준다.
 
@@ -405,7 +406,7 @@ Refresh Token을 사용하여 사용자가 자주 로그인을 해야 하는 상
 - 단점
   - 구현이 복잡하다.
   - 서버의 자원 낭비가 생긴다.
-
+-----
 #### OAuth 2.0
 *OAuth 2.0(Open Authorization): 인증을 위한 개방형 표준 프로토콜
 - 장점
@@ -416,7 +417,9 @@ Refresh Token을 사용하여 사용자가 자주 로그인을 해야 하는 상
 
 
 [참고링크1](https://velog.io/@gusdnr814/%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%9D%B8%EC%A6%9D-4%EA%B0%80%EC%A7%80-%EB%B0%A9%EB%B2%95)
+
 [참고링크2](https://tansfil.tistory.com/58?category=475681)
+
 [참고링크3](https://baked-corn.tistory.com/29)
 
 
@@ -429,6 +432,8 @@ JSON 데이터를 Base64 URL-safe Encode 를 통해 인코딩하여 직렬화한
 따라서 사용자가 JWT 를 서버로 전송하면 서버는 서명을 검증하는 과정을 거치게 되며 검증이 완료되면 요청한 응답을 돌려준다.
 
 - JWT 구조
+  ![image](https://user-images.githubusercontent.com/68368633/202860264-f46ad6a6-db7d-4526-b904-906f06cf1130.png)
+  
   - Header
     - alg: 서명 암호화 알고리즘(ex: HMAC SHA256, RSA)
     - typ: 토큰 유형
@@ -440,6 +445,7 @@ JSON 데이터를 Base64 URL-safe Encode 를 통해 인코딩하여 직렬화한
     시그니처의 구조는 (헤더 + 페이로드)와 서버가 갖고 있는 유일한 key 값을 합친 것을 헤더에서 정의한 알고리즘으로 암호화
 
 [참고링크1](https://inpa.tistory.com/entry/WEB-%F0%9F%93%9A-JWTjson-web-token-%EB%9E%80-%F0%9F%92%AF-%EC%A0%95%EB%A6%AC#JWT_(JSON_Web_Token))
+
 [참고링크2](https://hudi.blog/self-made-jwt/)
 
 ### JWT 로그인 구현하기
@@ -470,7 +476,7 @@ JSON 데이터를 Base64 URL-safe Encode 를 통해 인코딩하여 직렬화한
         @property
         def is_staff(self):
             return self.is_superuser
-  ```
+   ```
   Django의 기본 유저 모델에서 AbstractBaseUser를 상속받아 커스텀 모델로 변화시켰다. is_superuser로 관리자 여부를 확인하며 user, superuser를 생성하는 메소드는 UserManager에 추가하였다.
 
 2. 회원가입 구현
@@ -529,7 +535,9 @@ JSON 데이터를 Base64 URL-safe Encode 를 통해 인코딩하여 직렬화한
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    ```
-   (사진1, 2)
+   ![image](https://user-images.githubusercontent.com/68368633/202860281-ca0a1161-5c55-4535-b769-cd849fcc7ccc.png)
+   ![image](https://user-images.githubusercontent.com/68368633/202860300-64191607-c20f-4c29-8c1f-a99cf0cec66f.png)
+
 3. 로그인 구현
    ```python
    # serializers.py
@@ -586,12 +594,18 @@ JSON 데이터를 Base64 URL-safe Encode 를 통해 인코딩하여 직렬화한
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    ```
-   (사진 1, 2, 3)
+   ![image](https://user-images.githubusercontent.com/68368633/202860313-d52e1d7f-848c-49ac-a059-ca61351253db.png)
+   ![image](https://user-images.githubusercontent.com/68368633/202860319-68543091-09d9-4fd7-b108-8483482f79f2.png)
+   ![image](https://user-images.githubusercontent.com/68368633/202860338-1cc96607-e09b-4999-a222-8ad88da323f5.png)
+
 
 ### 에러 해결
 - Password Column 길이 에러
-  (사진)
+
+  ![image](https://user-images.githubusercontent.com/68368633/202860350-4083f5d9-5946-42da-92e2-2b9a1e000802.png)
+  
   ALTER TABLE [TABLE명] modify [COLUMN명] VARCHAR(1000);
+  
   mysql 명령어로 해당 필드 길이 늘려서 해결
 
 ### 회고
