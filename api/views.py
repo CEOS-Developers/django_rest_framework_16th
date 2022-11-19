@@ -1,13 +1,17 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from django_filters.rest_framework import FilterSet, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.auth import authenticate
 
 from api.models import *
+from api.forms import *
 from api.serializers import *
 
 # from rest_framework.parsers import JSONParser
-# from rest_framework.response import Response
-# from rest_framework.views import APIView
 
 # from django.http import JsonResponse
 # from django.shortcuts import  get_object_or_404
@@ -43,6 +47,59 @@ class TodoViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = TodoFilter
 
+
+class JoinView(APIView):
+    serializer_class = JoinSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save(request)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "email": user.email,
+                    "nickname": user.nickname,
+                    "message": "가입이 성공적으로 이뤄졌습니다.",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
+            return res
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid(raise_exception=False):
+            email = serializer.validated_data['email']
+            access = serializer.validated_data['access']
+            refresh = serializer.validated_data['refresh']
+            # data = serializer.validated_data
+            res = Response(
+                {
+                    "message": "로그인되었습니다.",
+                    "email": email,
+                    "access": access,
+                    "refresh": refresh
+                },
+                status=status.HTTP_200_OK,
+            )
+            return res
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # class TodoList(APIView):
 #     def get(self, request):
