@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 # Create your models here.
@@ -7,11 +8,11 @@ class TimeStamp(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_flag = models.BooleanField(default=False)
 
-class User(models.Model):
+class User(AbstractUser):
     id = models.AutoField(primary_key=True)
-    nickname = models.CharField(max_length=20)
-    username = models.CharField(max_length=20)
-    password = models.CharField(max_length=30)
+    nickname = models.CharField(max_length=20, unique=True)
+    username = models.CharField(max_length=20, unique=True)
+    password = models.CharField(max_length=100)
     email = models.CharField(max_length=50, blank=True)
     profile_image = models.TextField()
     description = models.CharField(max_length=100)
@@ -20,6 +21,9 @@ class User(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_flag = models.BooleanField(default=False)
+
+    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'username'
 
     def __str__(self):
         return self.nickname
