@@ -92,7 +92,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_rest_framework_16th.wsgi.application'
 
-AUTH_USER_MODEL = 'api.User'
+AUTH_USER_MODEL = 'api.MyUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
