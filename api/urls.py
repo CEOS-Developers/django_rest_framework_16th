@@ -1,4 +1,7 @@
+from django.urls import path, include
 from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
+
 from .views import *
 
 router = routers.DefaultRouter()
@@ -11,4 +14,6 @@ router.register('todo', TodoViewSet)
 router.register('like', LikeViewSet)
 router.register('follow', FollowViewSet)
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),
+]

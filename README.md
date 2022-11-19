@@ -1,6 +1,48 @@
 # CEOS 16기 백엔드 스터디 : TODO_MATE
 
-### 3주차 미션: Serialize, API 설계
+### 4주차 미션 : DRF2 - API View & Viewset & Filter
+저번 주차에 Viewset을 사용하여 설계하였으므로 filter관련해서 정리하겠습니다.
+
+filtering은 어떤 query set에 대하여 <b>원하는 옵션대로 필터</b>를 걸어, 특정 쿼리셋을 만들어내는 작업이라고 한다.
+
+이번 주차에서 2가지의 방식을 사용함
+1. filterset_fields - django-filter 
+2. OrderingFilter - drf의 기본 필터
+
+#### - filterset_fields
+filterset_fields 를 지정해주면 equals로 비교하여 특정 쿼리셋의 결과 값을 반환해준다.
+
+     filter_backends = (DjangoFilterBackend, OrderingFilter)
+     filterset_fields = ['name', 'user', 'privacy']
+
+하지만 자세한 비교는 불가능하여 보통 custom filterset도 많이 사용한다.
+
+<img width="697" alt="스크린샷 2022-11-12 오후 5 40 13" src="https://user-images.githubusercontent.com/62806067/201466292-43882317-bbf0-4227-842e-cda255fdee79.png">
+
+> content=project 쿼리 날려줌 , 부분일치와 같은 세부적인 부분은 고려 불가능
+
+#### - OrderingFilter
+OrderingFilter 에서 해당 필드를 정해주면 get에 ordering=date 이런식으로 명시해주면
+date 오름차순으로 출력하여 준다.
+
+     filter_backends = (DjangoFilterBackend, OrderingFilter)
+     ordering_fields = ['date', 'like_count']
+     ordering = ['date'] # default
+
+<img width="696" alt="스크린샷 2022-11-12 오후 5 39 01" src="https://user-images.githubusercontent.com/62806067/201466255-27bf2eef-48d6-4858-bfac-d0bb826c2796.png">
+
+> date 내림차순 정렬
+
+#### - 총평
+왜 custom filterset이 적용이 안되는지 아직 찾아내지 못했다.
+그래서 아쉽긴하지만 fields로 구현해보았다.
+이번에 확실히 api에 어떻게 날려야 원하는 값이 도출되는지 알게 된 것 같다.
+pagination과 같은 기능들도 많던데 일단 안되는 이유 찾느라 여기 까진 고려하지 못했다.
+OrderingFilter과 같이 SearchFilter도 있는데 api에 요청 날릴 때 좀 뭐랄까 명확하지 않게 전송되는거 같아서 
+이 부분은 제외했다. 끝!
+
+*****
+### 3주차 미션: DRF1 - Serialize, API 설계
 
 #### - serializes.py
 

@@ -1,14 +1,22 @@
-from django.http import JsonResponse, HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework import viewsets
-from django.shortcuts import get_object_or_404
+
 from api.serializers import *
+from api.filters import *
 
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filterset_fields = ['username', 'email', 'is_staff', 'is_active']
+    ordering_fields = ['username', 'last_login']
+    ordering = ['username']
 
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
@@ -21,41 +29,33 @@ class UserViewSet(viewsets.ModelViewSet):
 class GoalViewSet(viewsets.ModelViewSet):
     serializer_class = GoalSerializer
     queryset = Goal.objects.all()
+    permission_classes = [IsAuthenticated]
 
-    def destroy(self, request, *args, **kwargs):
-        goal = self.get_object()
-        goal.delete()
-        goal.save()
-        return Response(data='delete success')
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filterset_fields = ['name', 'user', 'privacy']
+    ordering_fields = ['name']
+    ordering = ['name']
 
 
 class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
+    permission_classes = [IsAuthenticated]
 
-    def destroy(self, request, *args, **kwargs):
-        todo = self.get_object()
-        todo.delete()
-        todo.save()
-        return Response(data='delete success')
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filterset_class = TodoFilter
+    # filterset_fields = ['state', 'content', 'user', 'goal']
+    ordering_fields = ['date', 'like_count']
+    ordering = ['date']
 
 
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
+    permission_classes = [IsAuthenticated]
 
-    def destroy(self, request, *args, **kwargs):
-        like = self.get_object()
-        like.delete()
-        like.save()
-        return Response(data='delete success')
 
 class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowSerializer
     queryset = Follow.objects.all()
-
-    def destroy(self, request, *args, **kwargs):
-        follow = self.get_object()
-        follow.delete()
-        follow.save()
-        return Response(data='delete success')
+    permission_classes = [IsAuthenticated]
