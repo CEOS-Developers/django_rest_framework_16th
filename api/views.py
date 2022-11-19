@@ -43,20 +43,6 @@ class TodoViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = TodoFilter
 
-
-# class LoginView(APIView):
-#     def post(self, request):
-#         id = request.data['id']
-#         pw = request.data['pw']
-#
-#         user = User.objects.filter(username=id)
-#         if user.exists():
-#             if pw == user[0].password:
-#                 return Response({"token": "1234"}, status=status.HTTP_200_OK)
-#
-#         return Response("Invalid Username/Password", status=status.HTTP_404_NOT_FOUND)
-
-
 class SignupView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = SignupSerializer

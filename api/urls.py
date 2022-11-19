@@ -8,7 +8,6 @@ router.register('todo_classes', TodoClassesViewSet)
 router.register('todos', TodoViewSet)
 
 urlpatterns = router.urls + [
-    path('login', LoginView.as_view()),
     path('signup', SignupView.as_view()),
     path('login', LoginView.as_view())
 ]
