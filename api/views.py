@@ -7,7 +7,7 @@ from django_filters.rest_framework import FilterSet, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import *
-from .models import Todo
+from .models import Todo, User
 
 class TodoListFilter(FilterSet):
     contents = filters.CharFilter(field_name='contents', lookup_expr='icontains')
@@ -26,6 +26,10 @@ class TodoListViewSet(viewsets.ModelViewSet):
     queryset = Todo.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = TodoListFilter
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
 # # CBV
 # class TodoListsAPI(APIView):
