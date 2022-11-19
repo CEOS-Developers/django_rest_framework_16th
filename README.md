@@ -171,3 +171,8 @@ Json Web Token. 인증에 필요한 정보들을 암호화한 JSON 토큰
 django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency account.0001_initial on database 'default'.
 
 Error while finding module specification for 'manage.py' (ModuleNotFoundError: __path__ attribute not found on 'manage' while trying to find 'manage.py'). Try using 'manage' instead of 'manage.py' as the module name.
+
+![image](https://user-images.githubusercontent.com/69039161/202851928-05ddd47e-eb28-4790-a6d0-76489551565e.png)
+
+
+![image](https://user-images.githubusercontent.com/69039161/202851955-c1af1edd-c757-4450-8b36-9c8f2cdf1327.png)

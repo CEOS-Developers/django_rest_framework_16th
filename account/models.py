@@ -21,21 +21,23 @@ from django.utils.timezone import datetime
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, email, password):
+    def create_user(self, user_id, email, password):
 
-        if not email:
-            raise ValueError('must have user email')
+        if not user_id:
+            raise ValueError('must have user_id')
 
         user = self.model(
+            user_id=user_id,
             email=self.normalize_email(email),
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password):
+    def create_superuser(self, user_id, email, password):
 
         user = self.create_user(
+            user_id=user_id,
             email=self.normalize_email(email),
             password=password
         )
@@ -48,6 +50,10 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
+    user_id = models.CharField(
+        max_length=20,
+        unique=True
+    )
     email = models.EmailField(
         max_length=255,
         unique=True,
@@ -58,11 +64,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(null=True, auto_now=True)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'user_id'
+    REQUIRED_FIELDS = ['email']
 
     def __str__(self):
-        return self.email
+        return self.user_id
 
     @property
     def is_staff(self):
