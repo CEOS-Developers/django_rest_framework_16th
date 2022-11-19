@@ -1,5 +1,41 @@
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
+## 5주차 미션 : DRF3 - Simple JWT
+
+### Q. 로그인 인증 방식은 어떤 종류가 있나요?
+
+### Q2. JWT 는 무엇인가요?
+
+### JWT 로그인 구현하기
+
+#### 커스텀 User 모델 만들기
+
+
+#### JWT REST API
+- 회원가입 `account/register/`
+- 로그인 `account/login/`
+- 인가 확인 `account/auth/`
+- Refresh 요청 `account/refresh/`
+- 로그아웃 `account/logout`
+
+
+#### 회원가입
+- 생각해야 할 예외 : 이미 존재하는 계정인지 (장고 ORM에서 알아서 처리)
+  ![image](https://user-images.githubusercontent.com/68186101/202844560-aaf74fb7-19af-449e-91f6-86e615298974.png)
+- 회원가입 성공
+  ![image](https://user-images.githubusercontent.com/68186101/202844328-1654ef49-d879-4bc7-8d18-4c3956e543fd.png)
+
+#### 로그인 
+
+
+#### Refresh Token 발급
+
+#### 로그아웃
+
+### Issue
+
+### 후기
+
 ## 4주차 미션 : DRF2 - API View & Viewset & Filter
 
 ### DRF API View 의 CBV 으로 리팩토링하기
