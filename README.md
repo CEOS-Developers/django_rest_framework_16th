@@ -147,7 +147,17 @@ SIMPLE_JWT = {
 
 #### | 인가
 - 토큰을 복호화해서 검증한 다음, 유저 id 추출해서 권한 확인
-- (구현 미완성)
+- 유저 확인 성공
+  ![image](https://user-images.githubusercontent.com/68186101/202866630-7e3c9a12-a5b3-410c-b0fb-93f5e2a5a885.png)
+
+- 토큰 예외
+  - 토큰 없음
+    ![image](https://user-images.githubusercontent.com/68186101/202866663-49ebf46c-8f4f-4a97-b86b-962181a6c670.png)
+
+  - 토큰 유효하지 않음
+    ![image](https://user-images.githubusercontent.com/68186101/202866653-7778368e-6d86-4916-8f4d-80412f4bf2a0.png)
+
+  - 토큰 기간 만료
 
 
 ### Issue
@@ -167,6 +177,8 @@ SIMPLE_JWT = {
 - 일단 node에서 express로 jwt 인증/인가 구현할 때보다 코드가 훨씬..예쁘다..
 - 그럼에도 중복 코드들이 있어서 리팩토링 하고 싶다
 - 장고는 편리하게 쓸 수 있는 라이브러리들이 많이 있어서 쉬워보이다가도 막상 제대로 쓰려면 커스텀을 해야 하니 호락호락하지 않은 프레임워크라는 것을 또 느꼈다..
+- 로그아웃 할 때도, 토큰 확인이 먼저 필요할 거 같다
+- node에서는 인가 확인을 미들웨어로 만들어서 다른 api에서도 쉽게 사용이 가능했는데, 장고에서도 그런 방법이 있는지 알아보고 싶다
 
 ## 4주차 미션 : DRF2 - API View & Viewset & Filter
 
