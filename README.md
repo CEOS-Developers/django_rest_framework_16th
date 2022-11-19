@@ -20,7 +20,37 @@
 
 - 토큰 로그인 인증 방식
 
-#### 사용자 인가
+#### 인증 과정
+- access 토큰만 사용
+
+1. 사용자가 아이디와 패스워드를 입력하여 로그인
+2. 서버는 시크릿 키(secret key)를 통해 접근 토큰(access token) 발급
+3. 사용자에게 JWT 전달
+4. 로그인이 필요한 API 호출 시 헤더(header)에 JWT를 담아 전송함
+5. 서버에서 JWT 서명을 확인하고 시크릿 키로 JWT를 디코드하여 사용자 정보를 획득
+6. 서버에서 유저를 인식하고 요청 사항에 응답함
+
+- 토큰이 유출될 경우 누구나 정보 확인을 할 수 있어 session 방식보다 보안이 떨어짐
+
+→ 이를 해결하고자 `Refresh Token` ****을 활용
+
+- refresh 토큰 사용
+
+1. 클라이언트가 ID, PW로 서버에게 인증을 요청하고 서버는 이를 확인하여 Access Token과 Refresh Token을 발급합니다.
+2. 클라이언트는 이를 받아 Refresh Token를 본인이 잘 저장하고 Access Token을 가지고 서버에 자유롭게 요청합니다.
+3. 요청을 하던 도중 Access Token이 만료되어 더이상 사용할 수 없다는 오류를 서버로부터 전달 받습니다.
+4. 클라이언트는 본인이 사용한 Access Token이 만료되었다는 사실을 인지하고 본인이 가지고 있던 Refresh Token를 서버로 전달하여 `새로운 Access Token의 발급을 요청`합니다.
+5. 서버는 Refresh Token을 받아 서버의 Refresh Token Storage에 해당 토큰이 있는지 확인하고, 있다면 Access Token을 생성하여 전달합니다.
+6. 이후 2로 돌아가서 동일한 작업을 진행합니다.
+
+#### JWT 구조
+
+- `header`: 암호화 알고리즘, 토큰 타입
+- `payload`: 전송하는 데이터, 키-값으로 구성
+- `signature`: 서명, 이를 통해 토큰의 진위 여부 확인 가능
+
+#### JWT 인증 과정 도식화
+![image](https://user-images.githubusercontent.com/68186101/202857327-37d63827-ffed-4235-a40a-41f9c6391fff.png)
 
 ### JWT 로그인 구현하기
 
