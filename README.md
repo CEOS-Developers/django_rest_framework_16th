@@ -160,3 +160,181 @@ Profile 인스턴스를 만들면 User가 자동으로 생성되는 줄 알았�
 * 코드상 중복되는 부분이 많다. 다음엔 중복을 제거해 봐야겠다
 * 토큰을 사용하지 않아서 요청 헤더에 유저 정보를 넣어보냈다. 토큰을 여기에 적용시킨다면, 토큰을 이용해 유저 인증을 한 후, api가 작동하도록 만들 것이다.
 * 잘 작동하긴 하는데, 잘 만든지 모르겠다.
+
+---
+
+## 4주차 : DRF2 - API View & Viewset & Filter
+## DRF API View 의 CBV 으로 리팩토링
+```python
+class GoalView(APIView):
+    def get(self, request):
+        user = require_auth(request)
+        if user is None:
+            return JsonResponse(custom_response(401), status=401)
+
+        goals = Goal.objects.filter(user_id=user.id)
+        serializer = serializers.GoalSerializer(goals, many=True)
+        return JsonResponse(custom_response(200, serializer.data), status=200)
+```
+이미 DRF API View의 CBV 방식으로 만들었기 때문에, FBV를 CBV로 변경할 필요 없었다. 지난번 리뷰 때 지적받았던 부분을 수정 후 주석 처리했다.
+### 수정 부분
+* url 수정
+* 유저 인증 부분을 require_auth로 통합
+* custom_response, require_auth 함수를 common.py로 이동
+
+## Viewset으로 리팩토링하기
+* viewset으로 리팩토링
+```python
+# view.py
+
+class GoalViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.GoalSerializer
+    queryset = Goal.objects.all()
+    permission_classes = [AuthCheck]
+    filter_backends = [DjangoFilterBackend]
+    # filter_class = GoalFilter
+    filterset_fields = ['is_goal_private', 'name', 'id']
+```
+* router 사용
+```python
+# url.py
+
+router = routers.DefaultRouter()
+router.register(r'goals', GoalViewSet)
+urlpatterns = router.urls
+```
+이전 코드에서도 구현했던, 유저 검증과 response custom을 똑같이 구현했다
+* 유저 검증
+```python
+# permission.py
+
+class AuthCheck(permissions.BasePermission):
+    def has_permission(self, request, view):
+        try:
+            user_id = request.headers["userId"]
+            # 값이 존재하지 않으면, try catch에 걸림
+            Profile.objects.get(user_id=user_id)
+            return True
+        except:
+            return False
+```
+ViewSet의 Permission을 이용함
+* response custom
+```python
+# util.py
+
+class CustomRenderer(JSONRenderer):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        response_data = renderer_context.get('response')
+
+        response = custom_response(response_data.status_code, data)
+
+        return super(CustomRenderer, self).render(response, accepted_media_type, renderer_context)
+```
+```python
+# base.py (setting.py)
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'api.util.CustomRenderer',
+    ]
+}
+```
+## filter 기능 구현하기
+id, name, is_goal_private 필드 filter 구현<br/>
+filter_class로 filterset을 추가했을 때 filter가 작동하지 않는 문제가 있어서, filterset_fields로 대체함.<br/>
+'lookup_expr=exact' 와 동일하게 작동함
+```python
+# view.py
+
+# 이거 작동 안함
+class GoalFilter(FilterSet):
+    id = filters.NumberFilter(field_name='id', lookup_expr='icontains')
+    user = filters.CharFilter(field_name='user')
+    name = filters.CharFilter(field_name='name', lookup_expr='name__icontains')
+    is_goal_private = filters.BooleanFilter(method='private_filter')
+    color = filters.CharFilter(field_name='color')
+
+    def private_filter(self, queryset, name, value):
+        return queryset.filter(type=value)
+
+    class Meta:
+        model = Goal
+        fields = ['id', 'user', 'name', 'is_goal_private', 'color']
+
+  class GoalViewSet(viewsets.ModelViewSet):
+      serializer_class = serializers.GoalSerializer
+      queryset = Goal.objects.all()
+      permission_classes = [AuthCheck]
+      filter_backends = [DjangoFilterBackend]
+      # filter_class = GoalFilter
+      filterset_fields = ['is_goal_private', 'name', 'id']
+```
+### ex) is_goal_private 필터 적용
+* 적용하지 않았을 경우
+  * url : http://127.0.0.1:8000/api/goals
+```json
+{
+    "status": 200,
+    "message": "SUCCESS",
+    "data": [
+        {
+            "id": 14,
+            "user": 5,
+            "name": "public 1",
+            "is_goal_private": false,
+            "color": ""
+        },
+        {
+            "id": 15,
+            "user": 5,
+            "name": "public 2",
+            "is_goal_private": false,
+            "color": ""
+        },
+        {
+            "id": 16,
+            "user": 5,
+            "name": "private 1",
+            "is_goal_private": true,
+            "color": ""
+        },
+        {
+            "id": 17,
+            "user": 5,
+            "name": "private 2",
+            "is_goal_private": true,
+            "color": ""
+        }
+    ]
+}
+```
+* 적용했을 때
+  * url : http://127.0.0.1:8000/api/goals?is_goal_private=true
+```json
+{
+    "status": 200,
+    "message": "SUCCESS",
+    "data": [
+        {
+            "id": 16,
+            "user": 5,
+            "name": "private 1",
+            "is_goal_private": true,
+            "color": ""
+        },
+        {
+            "id": 17,
+            "user": 5,
+            "name": "private 2",
+            "is_goal_private": true,
+            "color": ""
+        }
+    ]
+}
+```
+
+## 회고
+* filterset이 작동하지 않는다. 이유를 못찾겠다.
+  * django-filter를 설치했을 때, 버전이 다르다고 해서, 다른 django 버전을 적용했는데, 그 부분에서 문제가 발생한 것 같다. 정확한 이유는 모르겠고, 해결 방법도 모르겠다.
+* ViewSet을 이용하여 views.py를 리팩토링하니 코드가 매우 간결해져서 좋았다. 장고가 정말 편하다는 걸 느낄 수 있었다!!
