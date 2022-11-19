@@ -18,10 +18,10 @@
 
 ### Q. JWT 는 무엇인가요?
 
-- 토큰 로그인 인증 방식
+- 유저를 인증하고 식별하기 위한 토큰 기반 인증 방식
 
 #### 인증 과정
-- access 토큰만 사용
+- access 토큰만 사용할 경우
 
 1. 사용자가 아이디와 패스워드를 입력하여 로그인
 2. 서버는 시크릿 키(secret key)를 통해 접근 토큰(access token) 발급
@@ -32,16 +32,16 @@
 
 - 토큰이 유출될 경우 누구나 정보 확인을 할 수 있어 session 방식보다 보안이 떨어짐
 
-→ 이를 해결하고자 **`Refresh Token`**을 활용
+→ 이를 해결하고자 **Refresh Token**을 활용
 
-- refresh 토큰 사용
+- refresh 토큰도 사용할 경우
 
-1. 클라이언트가 ID, PW로 서버에게 인증을 요청하고 서버는 이를 확인하여 Access Token과 Refresh Token을 발급합니다.
-2. 클라이언트는 이를 받아 Refresh Token를 본인이 잘 저장하고 Access Token을 가지고 서버에 자유롭게 요청합니다.
-3. 요청을 하던 도중 Access Token이 만료되어 더이상 사용할 수 없다는 오류를 서버로부터 전달 받습니다.
-4. 클라이언트는 본인이 사용한 Access Token이 만료되었다는 사실을 인지하고 본인이 가지고 있던 Refresh Token를 서버로 전달하여 `새로운 Access Token의 발급을 요청`합니다.
-5. 서버는 Refresh Token을 받아 서버의 Refresh Token Storage에 해당 토큰이 있는지 확인하고, 있다면 Access Token을 생성하여 전달합니다.
-6. 이후 2로 돌아가서 동일한 작업을 진행합니다.
+1. 클라이언트가 ID, PW로 서버에게 인증을 요청하고 서버는 이를 확인하여 Access Token과 Refresh Token을 발급
+2. 클라이언트는 이를 받아 Refresh Token를 본인이 잘 저장하고 Access Token을 가지고 서버에 자유롭게 요청
+3. 요청을 하던 도중 Access Token이 만료되어 더이상 사용할 수 없다는 오류를 서버로부터 전달 받음
+4. 클라이언트는 본인이 사용한 Access Token이 만료되었다는 사실을 인지하고 본인이 가지고 있던 Refresh Token를 서버로 전달하여 `새로운 Access Token의 발급을 요청
+5. 서버는 Refresh Token을 받아 서버의 Refresh Token Storage에 해당 토큰이 있는지 확인하고, 있다면 Access Token을 생성하여 전달
+6. 이후 2로 돌아가서 동일한 작업을 진행
 
 #### JWT 구조
 
@@ -113,48 +113,64 @@ SIMPLE_JWT = {
 
 #### | 회원가입
 - 회원가입 성공 `201 OK`
+  - 토큰이 잘 생성돼서 쿠키에 저장된 것을 확인
+  
   ![image](https://user-images.githubusercontent.com/68186101/202844328-1654ef49-d879-4bc7-8d18-4c3956e543fd.png)
+  
+
 - 이미 존재하는 계정 `400`
+
   ![image](https://user-images.githubusercontent.com/68186101/202847722-fc05710b-58b9-4fbf-80b3-85c8e8fa78d9.png)
 
 
 #### | 로그인 
 - 로그인 성공 `200 OK`
+
   ![image](https://user-images.githubusercontent.com/68186101/202847927-42b6cf85-b497-4cd6-a962-00a16e9b6233.png)
+  
 - 존재하지 않는 계정 `400`
+
   ![image](https://user-images.githubusercontent.com/68186101/202847958-e54e39d9-9d00-4af0-8d64-e5113985981d.png)
+  
 - 비밀번호 오류 `400`
+
   ![image](https://user-images.githubusercontent.com/68186101/202847978-1609de91-2306-42be-838b-25348d1ac352.png)
 
 
-예외는 serializer에서 raise를 발생시켜서 처리
+💥 회원가입과 로그인 모두 예외는 serializer에서 raise를 발생시켜서 처리
 
 
 #### | Refresh Token 발급
 - 라이브러리 내장 뷰 활용 `TokenRefreshView.as_view()`
 - body에 refresh 토큰 담아서 보냄
 - refresh 요청 성공
+
   ![image](https://user-images.githubusercontent.com/68186101/202855060-e9e481cb-0470-42c4-8499-81f21b3c2121.png)
 
 - 유효하거나 만료된 토큰일 경우
+
   ![image](https://user-images.githubusercontent.com/68186101/202855548-bf61de7b-54cc-418d-82e8-f3a0461c350e.png)
 
 
 #### | 로그아웃
 - 쿠키에 저장된 access_token, refresh_token을 삭제
 - 로그아웃 완료
+
   ![image](https://user-images.githubusercontent.com/68186101/202856387-66761b27-068c-4224-a515-e0503a97207a.png)
 
 #### | 인가
 - 토큰을 복호화해서 검증한 다음, 유저 id 추출해서 권한 확인
 - 유저 확인 성공
+
   ![image](https://user-images.githubusercontent.com/68186101/202866630-7e3c9a12-a5b3-410c-b0fb-93f5e2a5a885.png)
 
 - 토큰 예외
   - 토큰 없음
+  
     ![image](https://user-images.githubusercontent.com/68186101/202866663-49ebf46c-8f4f-4a97-b86b-962181a6c670.png)
 
   - 토큰 유효하지 않음
+  
     ![image](https://user-images.githubusercontent.com/68186101/202866653-7778368e-6d86-4916-8f4d-80412f4bf2a0.png)
 
   - 토큰 기간 만료
