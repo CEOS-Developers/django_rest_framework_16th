@@ -10,7 +10,7 @@ class BaseModel(models.Model):
 class User(BaseModel):
     name = models.CharField(max_length=10)
     email = models.EmailField()
-    web_id = models.CharField(max_length=15, null=True)
+    web_id = models.CharField(max_length=15)
     web_pw = models.CharField(max_length=25)
     intro_text = models.TextField(null=True, blank=True, max_length=100)
 
