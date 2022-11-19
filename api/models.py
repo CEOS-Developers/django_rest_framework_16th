@@ -12,6 +12,7 @@ def articles_image_path(instance, filename):
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    nickname = models.CharField(max_length=15, blank=True)
     bio = models.TextField(blank=True)
     profile_img = models.ImageField(blank=True, upload_to=articles_image_path)
 

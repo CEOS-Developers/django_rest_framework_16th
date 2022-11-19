@@ -7,6 +7,17 @@ from .models import User, UserManager
 
 class UserCreationForm(forms.ModelForm):
     # 사용자 생성 폼
+    login_id = forms.CharField(
+        label=_('login ID'),
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': _('Login ID'),
+                'required': 'True',
+            }
+        )
+    )
     email = forms.EmailField(
         label=_('Email'),
         required=True,
@@ -14,17 +25,6 @@ class UserCreationForm(forms.ModelForm):
             attrs={
                 'class': 'form-control',
                 'placeholder': _('Email address'),
-                'required': 'True',
-            }
-        )
-    )
-    nickname = forms.CharField(
-        label=_('Nickname'),
-        required=True,
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': _('Nickname'),
                 'required': 'True',
             }
         )
@@ -52,7 +52,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'nickname')
+        fields = ('login_id', 'email')
 
     def clean_password2(self):
         # 두 비밀번호 입력 일치 확인
@@ -65,7 +65,7 @@ class UserCreationForm(forms.ModelForm):
     def save(self, commit=True):
         # Save the provided password in hashed format
         user = super(UserCreationForm, self).save(commit=False)
-        user.email = UserManager.normalize_email(self.cleaned_data['email'])
+        user.login_id = UserManager.normalize_email(self.cleaned_data['login_id'])
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
@@ -80,7 +80,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'nickname', 'is_active', 'is_admin', 'is_superuser')
+        fields = ('login_id', 'password', 'email', 'is_active', 'is_staff', 'is_superuser')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
