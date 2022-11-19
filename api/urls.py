@@ -1,11 +1,10 @@
 from django.urls import path
+from rest_framework import routers
 
 from api.views import *
 
-urlpatterns = [
-    path("todo_classes/", TodoClassesAPI),
-    path("todo_class/<int:id>/", TodoClassAPI),
-    path("todos/", TodosAPI),
-    path("todo/<int:id>/", TodoAPI)
+router = routers.SimpleRouter()
+router.register('todo_classes', TodoClassesViewSet)
+router.register('todos', TodoViewSet)
 
-]
+urlpatterns = router.urls

@@ -2,6 +2,11 @@ from django.db import models
 
 # Create your models here.
 
+class TimeStamp(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_flag = models.BooleanField(default=False)
+
 class User(models.Model):
     id = models.AutoField(primary_key=True)
     nickname = models.CharField(max_length=20)
@@ -14,7 +19,7 @@ class User(models.Model):
     show_search = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(blank=True)
+    deleted_flag = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nickname
@@ -27,7 +32,7 @@ class TodoClass(models.Model):
     is_open = models.IntegerField(default=0) #0:나만보기 1:친구공개 2:전체공개
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(blank=True)
+    deleted_flag = models.BooleanField(default=False)
 
     def __str__(self):
         return self.class_name
@@ -42,7 +47,7 @@ class Todo(models.Model):
     is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(blank=True)
+    deleted_flag = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -55,7 +60,7 @@ class TodoLike(models.Model):
     emoji = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(blank=True)
+    deleted_flag = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user_from}, {self.emoji}"
@@ -71,7 +76,7 @@ class Diary(models.Model):
     is_open = models.IntegerField(default=0) #0:나만보기 1:친구공개 2:전체공개
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(blank=True)
+    deleted_flag = models.BooleanField(default=False)
 
     def __str__(self):
         return self.content[:20]
@@ -84,7 +89,7 @@ class DiaryLike(models.Model):
     emoji = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(blank=True)
+    deleted_flag = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user_from}, {self.emoji}"
