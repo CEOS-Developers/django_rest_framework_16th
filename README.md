@@ -32,7 +32,7 @@
 
 - 토큰이 유출될 경우 누구나 정보 확인을 할 수 있어 session 방식보다 보안이 떨어짐
 
-→ 이를 해결하고자 `Refresh Token` ****을 활용
+→ 이를 해결하고자 **`Refresh Token`**을 활용
 
 - refresh 토큰 사용
 
