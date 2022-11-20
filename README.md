@@ -72,6 +72,16 @@ refreshToken = accessToken 이 만료 되었을 때 accessToken 을 갱신시켜
 Authentication(인증) = user 가 누구인지 확인
 Authorization(인가) = 차등적인 권한(ex. 관리자, 사용자)을 부여할 수 있음
 
+#### - Login 
+<img width="1176" alt="스크린샷 2022-11-21 오전 1 59 03" src="https://user-images.githubusercontent.com/62806067/202915214-7a65a50c-3f01-44b7-a7fd-a9506b58b93c.png">
+
+#### - 총평
+하나 하나 구현했다면 jwt에 대해 더 깊게 이해했겠지만 viewSet을 쓴 와중에 다시 function으로 하기 싫어서 고민하던 와중 사용한 thirdparty에 대해 알게 되었다.
+그래도 대략적인 구조정도는 알 수 있었고 custom 또한 어떻게 이루어지는지 이것 저것 찾다보니까 알 수 있었다.
+또한 accessToken , refreshToken 의 정의와  Authentication, Authorization(Permission)에 대한 차이를 이해할 수 있게 되었다.
+이번 과제가 제일 기대했던 과젠데 생각보다 thirdparty로 쉽게 만들어져서 오잉도잉했다 ㅎㅎ... 
+끄읕!
+
 *****
 ### 4주차 미션 : DRF2 - API View & Viewset & Filter
 저번 주차에 Viewset을 사용하여 설계하였으므로 filter관련해서 정리하겠습니다.
@@ -107,6 +117,7 @@ date 오름차순으로 출력하여 준다.
 > date 내림차순 정렬
 
 #### - 총평
+
 왜 custom filterset이 적용이 안되는지 아직 찾아내지 못했다.
 그래서 아쉽긴하지만 fields로 구현해보았다.
 이번에 확실히 api에 어떻게 날려야 원하는 값이 도출되는지 알게 된 것 같다.
