@@ -3,8 +3,10 @@ from datetime import datetime
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
-
 # primary key 자동 생성
+from api.utils.managers import UserManager
+
+
 class BaseModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -23,6 +25,12 @@ class User(AbstractUser, BaseModel):
     password = models.CharField(max_length=128, null=False, verbose_name='사용자 비밀 번호')
 
     # followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
+
+    # customize model
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
 
     def __str__(self):
         return self.username
