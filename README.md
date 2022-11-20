@@ -1,5 +1,78 @@
 # CEOS 16기 백엔드 스터디 : TODO_MATE
 
+### 5주차 미션 : 5주차 : DRF3 - Simple JWT
+JWT가 궁금해서 구글링하다가 django에서 제공하는 jwt 로직을 찾아내서 해당 부분을 사용해 봤습니다.
+
+#### - url 정의
+
+    urlpatterns = [
+        ~
+        path('auth/', include('dj_rest_auth.urls')),
+        path('auth/registration/', include('dj_rest_auth.registration.urls')),
+    ]    
+
+> 위에 한줄만 추가하면 아래의 url로 실행가능
+
+* http://localhost:8000/api/auth/password/reset/
+* http://localhost:8000/api/auth/password/reset/confirm/
+* http://localhost:8000/api/auth/login/
+* http://localhost:8000/api/auth/logout/
+* http://localhost:8000/api/auth/user/
+* http://localhost:8000/api/auth/password/change/
+* http://localhost:8000/api/auth/token/verify/
+* http://localhost:8000/api/auth/token/refresh/
+
+#### - base 추가 변수
+dj-rest-auth
+
+    REST_USE_JWT # JWT 사용 여부, 요청값에 상세히 나오게끔!
+    JWT_AUTH_COOKIE # 호출할 Cookie Key값
+    JWT_AUTH_REFRESH_COOKIE# Refresh Token Cookie Key 값 (사용하는 경우)
+
+django-allauth
+
+    SITE_ID # 해당 도메인의 id
+    ACCOUNT_EMAIL_REQUIRED # User email 필수 여부
+    ACCOUNT_EMAIL_VERIFICATION# Email 인증 필수 여부
+
+
+#### - jwt user custom
+
+    # customize model
+    USERNAME_FIELD = 'username' #'email'이라고 해주면 로그인 할때 email 써야함
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
+
+> models.py -> user 
+
+    class UserManager(BaseUserManager):
+    def create_user(self, username, email, password, **extra_fields):
+        if not email:
+            raise ValueError('The Email must be set')
+        if not username:
+            raise ValueError('The Name must be set')
+        # email = self.normalize_email(email)
+        user = self.model(
+            username=username,
+            email=self.normalize_email(email),
+            **extra_fields
+        )
+        user.set_password(password)
+        user.save()
+        return user
+
+> managers.py
+
+#### - accessToken , refreshToken 정의
+accessToken = 말 그대로 접근 가능 하게 해주는 Token
+refreshToken = accessToken 이 만료 되었을 때 accessToken 을 갱신시켜주는 Token
+
+#### - Authentication, Authorization(Permission) 정의
+Authentication(인증) = user 가 누구인지 확인
+Authorization(인가) = 차등적인 권한(ex. 관리자, 사용자)을 부여할 수 있음
+
+*****
 ### 4주차 미션 : DRF2 - API View & Viewset & Filter
 저번 주차에 Viewset을 사용하여 설계하였으므로 filter관련해서 정리하겠습니다.
 
