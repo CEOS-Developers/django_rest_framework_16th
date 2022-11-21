@@ -3,6 +3,57 @@
 ### 5주차 미션 : 5주차 : DRF3 - Simple JWT
 JWT가 궁금해서 구글링하다가 django에서 제공하는 jwt 로직을 찾아내서 해당 부분을 사용해 봤습니다.
 
+#### - base.py
+
+    INSTALLED_APPS = [
+        ~
+        # third party
+        'django_filters',
+        'rest_framework',
+        # # auth
+        'rest_framework.authtoken',
+        'dj_rest_auth',
+        # # login
+        'django.contrib.sites',
+
+        'allauth',
+        'allauth.account',
+        'allauth.socialaccount',
+
+        'dj_rest_auth.registration',
+    ]
+    
+> thirdParty 추가
+
+
+    REST_FRAMEWORK = {
+        ~
+        'DEFAULT_PERMISSION_CLASSES': (
+            'rest_framework.permissions.IsAuthenticated',
+            'rest_framework.permissions.AllowAny',
+        ),
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+            'rest_framework.authentication.SessionAuthentication',
+            'rest_framework.authentication.TokenAuthentication',
+        ),
+    }
+
+> permission 및 auth 추가
+
+#### - base 추가 변수
+dj-rest-auth
+
+    REST_USE_JWT # JWT 사용 여부, 요청값에 상세히 나오게끔!
+    JWT_AUTH_COOKIE # 호출할 Cookie Key값
+    JWT_AUTH_REFRESH_COOKIE# Refresh Token Cookie Key 값 (사용하는 경우)
+
+django-allauth
+
+    SITE_ID # 해당 도메인의 id
+    ACCOUNT_EMAIL_REQUIRED # User email 필수 여부
+    ACCOUNT_EMAIL_VERIFICATION# Email 인증 필수 여부
+
 #### - url 정의
 
     urlpatterns = [
@@ -22,18 +73,7 @@ JWT가 궁금해서 구글링하다가 django에서 제공하는 jwt 로직을 �
 * http://localhost:8000/api/auth/token/verify/
 * http://localhost:8000/api/auth/token/refresh/
 
-#### - base 추가 변수
-dj-rest-auth
 
-    REST_USE_JWT # JWT 사용 여부, 요청값에 상세히 나오게끔!
-    JWT_AUTH_COOKIE # 호출할 Cookie Key값
-    JWT_AUTH_REFRESH_COOKIE# Refresh Token Cookie Key 값 (사용하는 경우)
-
-django-allauth
-
-    SITE_ID # 해당 도메인의 id
-    ACCOUNT_EMAIL_REQUIRED # User email 필수 여부
-    ACCOUNT_EMAIL_VERIFICATION# Email 인증 필수 여부
 
 
 #### - jwt user custom
