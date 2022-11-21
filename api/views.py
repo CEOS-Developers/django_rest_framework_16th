@@ -1,17 +1,23 @@
 # views.py
 import mixins as mixins
+from django.contrib.auth import get_user_model
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
 from django.views import generic
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from rest_framework import viewsets, status, filters, generics
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import FilterSet, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from api.models import Profile, TodoList
 from api.serializers import UserSerializer, TodoSerializer
+
+
+User = get_user_model()
 
 # 3주차 과제 코드
 # @csrf_exempt
@@ -116,4 +122,26 @@ class TodoListViewSet(viewsets.ModelViewSet):
     queryset = TodoList.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TodoListFilter
-
+#
+#
+# class RegisterAPIView(APIView):
+#     def post(self, request):
+#         serializer = RegisterSerializer(data=request.data)
+#         if serializer.is_valid():
+#             user = serializer.save()
+#             # jwt token 접근해주기
+#             token = TokenObtainPairSerializer.get_token(user)
+#             refresh_token = str(token)
+#             access_token = str(token.access_token)
+#             res = Response(
+#                 {
+#                     "token": {
+#                         access_token
+#                     },
+#                 },
+#                 status=status.HTTP_200_OK,
+#             )
+#             res.set_cookie("access", access_token, httponly=True)
+#             # res.set_cookie("refresh", refresh_token, httponly=True)
+#             return res
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

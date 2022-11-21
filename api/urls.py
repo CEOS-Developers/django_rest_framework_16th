@@ -27,5 +27,6 @@ from api.views import *
 router = DefaultRouter()
 router.register('users',ProfileViewSet)
 router.register('todolists',TodoListViewSet)
+# router.register('login',RegisterAPIView)
 
 urlpatterns = router.urls
