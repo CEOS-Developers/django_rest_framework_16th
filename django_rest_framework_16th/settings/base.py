@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
+
 import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -41,12 +43,27 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
+    'account',
     'rest_framework',
     'django_filters',
+    'rest_framework_simplejwt',
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
+}
+
+# 추가적인 JWT_AUTH 설정
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'SIGNING_KEY': 'SECRET',
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('JWT',),
+
 }
 
 MIDDLEWARE = [
@@ -79,7 +96,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_rest_framework_16th.wsgi.application'
 
-
+AUTH_USER_MODEL = 'account.User'
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
