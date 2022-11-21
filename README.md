@@ -227,3 +227,95 @@ urlpatterns = router.urls
 이번 과제는 재밌으면서도 ... 다사다난했던 과제였던 것 같다.  
 2번까지는 금방 후루룩 했는데, 3번은 살짝 어려웠어서 생각을 좀 했던 것 같다.  
 그런데 이렇게 url에서 filter를 걸어서 하는 방법을 배우면서, 나중에 프로젝트를 진행할 때 어떻게 정보를 주고 받을 수 있게 하는지 짐작이 가는 것 같은 재밌는 과제였다!
+
+## 5주차 미션: DRF2 - API View & Viewset & Filter
+### 1. JWT 로그인 구현하기
+```python
+class RegisterAPIView(APIView):
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            # jwt token 접근해주기
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "token": {
+                        access_token
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+
+            res.set_cookie("access", access_token, httponly=True)
+            return res
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+```python
+#base.py
+# 추가적인 JWT_AUTH 설정
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'SIGNING_KEY': 'SECRET',
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('JWT',),
+
+}
+```
+
+```python
+class UserManager(BaseUserManager):
+    use_in_migrations = True
+
+    def create_user(self, login_id, email, password, **kwargs):
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        user = self.model(
+            login_id=login_id,
+            email=email,
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, login_id=None, email=None, password=None, **extra_fields):
+        superuser = self.create_user(
+            login_id=login_id,
+            email=email,
+            password=password,
+        )
+        superuser.is_staff = True
+        superuser.is_superuser = True
+        superuser.is_active = True
+        superuser.save(using=self._db)
+        return superuser
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    login_id = models.CharField(max_length=30, unique=True, null=False, blank=False)
+    email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
+    is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'login_id'
+    REQUIRED_FIELDS = ['email']
+
+    class Meta:
+        db_table = 'user'
+```
+
+🐱간단한 회고🐱  
+이번 과제를 열심히 해봤는데... 실패했다...   
+계속 이렇게 저렇게 해봤는데 어디서부터 꼬인건지, 자꾸만 에러가 나고 그래서 이것이 나의 최선이었다..  
+아직 지식이 짧아서 그런 것 같은데.. 다시 공부해봐야 할 것 같다..
+
