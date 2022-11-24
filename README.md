@@ -318,8 +318,8 @@ dot(.)을 구분자로 3파트로 구분되어 있으며 각각의 파트를 Hea
 
 ### Q3. JWT 로그인 구현하기
 
-#### User model refactoring
-User model을 너무 간단하게 만들었던 것 같아서 리팩토링을 진행했다 (지금도 간단하긴 하다,,) 
+#### User model 수정
+User model을 너무 간단하게 만들었던 것 같아서 모델 을 진행했다 (지금도 간단하긴 하다,,) 
 
 기존에는 email과 password 필드만 있었는데, id와 nickname 필드를 추가했다.
 그리고 지난 주에 todo, category, comment 모델이 상속받게 한 BaseModel을 user 모델도 상속받게 하며 
