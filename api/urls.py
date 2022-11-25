@@ -1,4 +1,4 @@
-# from django.urls import path
+from django.urls import path, include
 from rest_framework import routers
 from .views import *
 
@@ -9,6 +9,9 @@ from .views import *
 # ]
 
 router = routers.DefaultRouter()
-router.register(r'todos', TodoListViewSet, basename='todo')
+router.register(r'todos', TodoListViewSet)
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),
+    path('login/', LoginView.as_view()),
+]
