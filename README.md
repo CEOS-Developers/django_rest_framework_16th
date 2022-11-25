@@ -415,3 +415,4 @@ class GoalViewSet(viewsets.ModelViewSet):
 이거 왜 안됨?
 아 ㅋㅋㅋ
 갓뎀
+.
