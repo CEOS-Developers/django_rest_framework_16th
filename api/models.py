@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 class BaseModel(models.Model):
@@ -15,17 +16,73 @@ class BaseModel(models.Model):
         self.save()
 
 
-class User(BaseModel):
-    email = models.CharField(max_length=30, unique=True)
+class UserManager(BaseUserManager):
+    def create_user(self, email, nickname, password):
+
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        if not password:
+            raise ValueError('Users must have an password')
+
+        user = self.model(
+            email=self.normalize_email(email),
+            nickname=nickname,
+        )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, nickname, password):
+
+        user = self.create_user(
+            email,
+            nickname,
+            password=password,
+        )
+        user.is_superuser= True
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser):
+    email = models.EmailField(max_length=30, unique=True)
     nickname = models.CharField(max_length=10)
     password = models.CharField(max_length=30)
     introduce = models.CharField(max_length=200)
-    image = models.TextField(default=None)
+    image = models.TextField(blank=True)
     is_public = models.BooleanField(default=False)
     search = models.BooleanField(default=False)
 
+    is_active = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False)
+
+    objects = UserManager()
+    USERNAME_FIELD = 'email'
+
+    class Meta:
+        db_table = "User"
+
     def __str__(self):
         return self.nickname
+
+    @property
+    def is_staff(self):
+        return self.is_superuser
+
+
+# class User(BaseModel):
+#     email = models.CharField(max_length=30, unique=True)
+#     nickname = models.CharField(max_length=10)
+#     password = models.CharField(max_length=30)
+#     introduce = models.CharField(max_length=200)
+#     image = models.TextField(default=None)
+#     is_public = models.BooleanField(default=False)
+#     search = models.BooleanField(default=False)
+#
+#     def __str__(self):
+#         return self.nickname
 
 
 class Follow(models.Model):

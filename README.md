@@ -220,7 +220,7 @@ BaseModel Class를 만들어 다른 모델에서도 반복적으로 필요한 �
 
 이번 과제에서 모르는 부분들을 많이 발견해서 답답하기도 했지만 공부할 것들을 찾은 것 같아 좋았다!
 
-
+----
 ## 4주차 : DRF2 - API View & Viewset & Filter
 #### 저번 주차와 비교했을 때 달라진 점들:
 - url 형태: todo/ &rarr; todos/
@@ -348,3 +348,266 @@ class TodoViewSet(viewsets.ModelViewSet):
 CBV와 ViewSet 모두 처음 사용해보는데 정말 신세계였다. 특히 ViewSet 어떻게 이렇게 간편할 수가..! 근데 오히려 처음 배울 때 ViewSet으로 했으면 어떻게 작동하는건지 몰라서 헷갈렸을 것 같다.
 filterset도 익숙하지가 않아서 deleted_at이 Null이 아닌 데이터들만 가져오는 필터 기능을 추가하고 싶었는데 만들다가 포기했다 🙃
 어쨌든 너무너무 편한 기능들을 알게 되어서 재밌었다!
+
+----
+## 5주차 : DRF3 - Simple JWT
+### 로그인 인증 방식에는 어떤 것이 있을까?
++) 인증을 해야하는 이유
+  
+  HTTP는 기본적으로 stateless, connectionless하기 때문에 모든 요청(Request)이 이전 요청과 독립적으로 다뤄진다.
+  요청이 끝날 때마다 서버는 유저에 대한 정보를 잊어버리게 되기 때문에 요청 시마다 클라이언트는 서버에 인증을 해야 한다.
+
+#### Header
+HTTP Request Header에 인증 수단인 비밀번호를 직접 넣는 방식이다.
+보통 서버로 HTTP 요청을 할 때 암호화를 하지 않기 때문에 보안적으로 매우 치명적이다.
+만약 해커가 HTTP 요청을 볼 수 있다면 사용자의 계정 정보를 쉽게 알 수 있다.
+
+- 장점
+  - 인증 테스트 때 사용 가능
+- 단점
+  - 보안 매우 취약
+  - 요청 시마다 서버에 ID, PW 대조 필요
+-----
+#### Session, Cookie
+*Session: 서버가 가지고 있는 정보
+*Cookie: 사용자에게 발급된 세션을 열기 위한 열쇠(Session ID)
+
+Session, Cookie 방식은 Session ID를 만드는 세션 저장소를 사용하는 방식이다.
+Session ID는 로그인을 했을 때 사용자의 정보를 저장하는 것으로 HTTP Header에 실려 사용자에게 보내진다.
+사용자는 보관하고 있던 쿠키를 인증이 필요한 요청에 넣어 보내고 서버는 세션 저장소에서 쿠키와 기존 정보를 비교하여 인증한다.
+세션을 사용하여 인증하여 책임을 서버가 지게 한다고 볼 수 있다.(사용자보다는 서버 해킹이 더 어렵기 때문)
+
+- 장점
+  - Header 방식과는 다르게 HTTP 요청이 노출되더라도 안전하다. 사용자의 정보는 세션 저장소에 저장되고 HTTP 요청에 들어있는 쿠키 자체는 유의미한 정보가 없기 때문이다.
+  - 사용자는 각각 고유한 Session ID를 발급 받아 회원 정보 확인이 매번 필요하지 않기 때문에 서버 자원에 접근이 용이하다.
+- 단점
+  - Session Hijacking 공격 가능
+    세션을 가로채서 별도의 인증 작업 없이 세션을 통해 통신을 계속하는 행위를 말한다. HTTPS 프로토콜을 사용하거나 세션에 만료 시간을 설정하는 방식으로 해결 가능하다.
+  - 세션 저장소를 사용하기 때문에 별도의 저장공간이 필요하다.
+-----
+#### Access Token (JWT)
+- 장점
+  - 세션 쿠키 방식과 달리 저장소를 사용하지 않기 때문에 별도의 저장공간이 필요하지 않다.
+  - Google, Facebook과 같은 다양한 토큰 기반 서비스로 관련 기능을 확장하기 용이하다
+  - 서명에는 송신자와 송신한 정보들에 대한 내용이 포함되어 있어 서버에서 데이터 조작 및 변조 여부를 알아낼 수 있다.
+- 단점
+  - Token이 발급되면 만료 시간 전까지 계속 사용할 수 있기 때문에 세션 쿠키 방식과 같이 해커가 토큰을 가로채서 사용할 수 있다.
+    Refresh Token을 발급하여 사용하는 방식으로 해결 가능하다.
+  - Payload는 따로 암호화하지 않기 때문에 담을 수 있는 정보가 제한적이다.
+  - Token의 길이가 길어 요청이 많아질수록 서버의 자원 낭비가 생긴다.
+-----
+#### Access Token, Refresh Token
+*Refresh Token: Access Token과 같은 형태의 JWT이다. Access Token보다 긴 유효기간을 가지며 Access Token 만료 시에 새로 발급을 도와준다.
+
+Refresh Token을 사용하여 사용자가 자주 로그인을 해야 하는 상황이나 장기간 로그인했을 때 발생하는 보안적 문제점들을 해결하였다.
+
+- 장점
+  - 유효 기간이 더 짧기 때문에 Access Token만 단독으로 사용하는 경우보다 보안적으로 더욱 안전하다.
+- 단점
+  - 구현이 복잡하다.
+  - 서버의 자원 낭비가 생긴다.
+-----
+#### OAuth 2.0
+*OAuth 2.0(Open Authorization): 인증을 위한 개방형 표준 프로토콜
+- 장점
+  - 직접 타사 사용자의 정보를 입력하는 것보다 안정적이다.
+  - 회원 정보뿐만 아니라 기타 API에 대한 정보에도 접근이 가능하다.
+- 단점
+  - 구현이 매우 복잡하다.
+
+
+[참고링크1](https://velog.io/@gusdnr814/%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%9D%B8%EC%A6%9D-4%EA%B0%80%EC%A7%80-%EB%B0%A9%EB%B2%95)
+
+[참고링크2](https://tansfil.tistory.com/58?category=475681)
+
+[참고링크3](https://baked-corn.tistory.com/29)
+
+
+### JWT(JSON Web Token)란 무엇인가?
+통신 양자간의 정보를 JSON 형식을 사용하여 안전하게 전송하기 위한 방법이다.
+JWT는 일반적으로 인증(Authentication)과 권한부여(Authorization)에 사용되는데 이때 필요한 정보들을 암호화시킨 JSON 토큰이다.
+인증 절차를 거쳐서 서버에서 JWT를 발급해주면 이를 잘 보관하고 있던 클라이언트가 API 사용과 같을 때에 서버에 JWT를 제출하여 인가를 받을 수 있다.
+
+JSON 데이터를 Base64 URL-safe Encode 를 통해 인코딩하여 직렬화한 것이며, 토큰 내부에는 위변조 방지를 위해 개인키를 통한 전자서명도 들어있다.
+따라서 사용자가 JWT 를 서버로 전송하면 서버는 서명을 검증하는 과정을 거치게 되며 검증이 완료되면 요청한 응답을 돌려준다.
+
+- JWT 구조
+  ![image](https://user-images.githubusercontent.com/68368633/202860264-f46ad6a6-db7d-4526-b904-906f06cf1130.png)
+  
+  - Header
+    - alg: 서명 암호화 알고리즘(ex: HMAC SHA256, RSA)
+    - typ: 토큰 유형
+  - Payload
+    토큰에서 사용할 정보의 조각들인 Claim이 담겨있음
+    *Claim: key-value 형식으로 이루어진 한 쌍의 정보
+  - Signature
+    시그니처에서 사용하는 알고리즘은 헤더에서 정의한 알고리즘 방식(alg)을 활용
+    시그니처의 구조는 (헤더 + 페이로드)와 서버가 갖고 있는 유일한 key 값을 합친 것을 헤더에서 정의한 알고리즘으로 암호화
+
+[참고링크1](https://inpa.tistory.com/entry/WEB-%F0%9F%93%9A-JWTjson-web-token-%EB%9E%80-%F0%9F%92%AF-%EC%A0%95%EB%A6%AC#JWT_(JSON_Web_Token))
+
+[참고링크2](https://hudi.blog/self-made-jwt/)
+
+### JWT 로그인 구현하기
+1. Custom User Model 사용
+  ```python
+    # models.py
+    class User(AbstractBaseUser):
+        email = models.EmailField(max_length=30, unique=True)
+        nickname = models.CharField(max_length=10)
+        password = models.CharField(max_length=30)
+        introduce = models.CharField(max_length=200)
+        image = models.TextField(blank=True)
+        is_public = models.BooleanField(default=False)
+        search = models.BooleanField(default=False)
+    
+        is_active = models.BooleanField(default=True)
+        is_superuser = models.BooleanField(default=False)
+    
+        objects = UserManager()
+        USERNAME_FIELD = 'email'
+    
+        class Meta:
+            db_table = "User"
+    
+        def __str__(self):
+            return self.nickname
+    
+        @property
+        def is_staff(self):
+            return self.is_superuser
+   ```
+  Django의 기본 유저 모델에서 AbstractBaseUser를 상속받아 커스텀 모델로 변화시켰다. is_superuser로 관리자 여부를 확인하며 user, superuser를 생성하는 메소드는 UserManager에 추가하였다.
+
+2. 회원가입 구현
+   ```python
+   # serializers.py
+   class JoinSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    password2 = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = User
+        fields = ('email', 'nickname', 'password', 'password2')
+
+    def validate(self, request):
+        if request['password'] != request['password2']:
+            raise serializers.ValidationError({"Password doesn't match."})
+        return request
+
+    def save(self, request):
+        user = User.objects.create_user(
+            email=self.validated_data['email'],
+            nickname=self.validated_data['nickname'],
+            password=self.validated_data['password']
+        )
+
+        return user
+    ```
+   ```python
+   # views.py
+   class JoinView(APIView):
+    serializer_class = JoinSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save(request)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "email": user.email,
+                    "nickname": user.nickname,
+                    "message": "가입이 성공적으로 이뤄졌습니다.",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
+            return res
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   ```
+   ![image](https://user-images.githubusercontent.com/68368633/202860281-ca0a1161-5c55-4535-b769-cd849fcc7ccc.png)
+   ![image](https://user-images.githubusercontent.com/68368633/202860300-64191607-c20f-4c29-8c1f-a99cf0cec66f.png)
+
+3. 로그인 구현
+   ```python
+   # serializers.py
+   class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, request):
+        email = request.get('email', None)
+        password = request.get('password', None)
+
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            if not user.check_password(password):
+                raise serializers.ValidationError({"Wrong Password"})
+        else:
+            raise serializers.ValidationError({"User doesn't exist."})
+
+        token = RefreshToken.for_user(user)
+        refresh = str(token)
+        access = str(token.access_token)
+
+        data = {
+            'email': user.email,
+            'refresh': refresh,
+            'access': access
+        }
+
+        return data
+   ```
+   ```python
+   # views.py
+   class LoginView(APIView):
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid(raise_exception=False):
+            email = serializer.validated_data['email']
+            access = serializer.validated_data['access']
+            refresh = serializer.validated_data['refresh']
+            # data = serializer.validated_data
+            res = Response(
+                {
+                    "message": "로그인되었습니다.",
+                    "email": email,
+                    "access": access,
+                    "refresh": refresh
+                },
+                status=status.HTTP_200_OK,
+            )
+            return res
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   ```
+   ![image](https://user-images.githubusercontent.com/68368633/202860313-d52e1d7f-848c-49ac-a059-ca61351253db.png)
+   ![image](https://user-images.githubusercontent.com/68368633/202860319-68543091-09d9-4fd7-b108-8483482f79f2.png)
+   ![image](https://user-images.githubusercontent.com/68368633/202860338-1cc96607-e09b-4999-a222-8ad88da323f5.png)
+
+
+### 에러 해결
+- Password Column 길이 에러
+
+  ![image](https://user-images.githubusercontent.com/68368633/202860350-4083f5d9-5946-42da-92e2-2b9a1e000802.png)
+  
+  ALTER TABLE [TABLE명] modify [COLUMN명] VARCHAR(1000);
+  
+  mysql 명령어로 해당 필드 길이 늘려서 해결
+
+### 회고
+너무 어려웠다..😩 어느정도 하고 나서 뒤에 어렵지 않겠지하고 여유롭게 했는데 이리해도 저리해도 안돼서 몇번이나 다시하고 그랬다. 하하. 내가 혼자 느끼기에도 지금 내 코드가 상당히 비효율적이고 더러운 것 같아서 다음에 꼭 리펙토링을 하고 싶다.
+그리고 저번에 viewset이나 url에서 router를 쓰는 작업을 하면서 코드가 간결해졌는데 이번 과제에서는 다시 APIView와 as_view()를 사용해서 두 가지 코드 형식이 같이 있는게 맞는지 모르겠다. 우선 보기에 깔끔하지는 않은 것 같다. 얼렁뚱땅 과제 끝 😎
