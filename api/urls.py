@@ -7,4 +7,7 @@ router = routers.SimpleRouter()
 router.register('todo_classes', TodoClassesViewSet)
 router.register('todos', TodoViewSet)
 
-urlpatterns = router.urls
+urlpatterns = router.urls + [
+    path('signup', SignupView.as_view()),
+    path('login', LoginView.as_view())
+]
