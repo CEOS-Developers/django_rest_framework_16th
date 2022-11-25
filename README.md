@@ -1,5 +1,201 @@
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
+## 5주차 미션 : DRF3 - Simple JWT
+
+### Q. 로그인 인증 방식은 어떤 종류가 있나요?
+#### | 세션 
+- 비밀번호 등 클라이언트의 민감한 정보는 서버에, 브라우저(쿠키)엔 이에 해당하는 키값을 저장해서 인증하는 방식
+- 다수 요청 시 서버의 부하가 심해질 수 있다는 단점 존재
+
+#### | 쿠키
+- 클라이언트의 쿠키에 유저 정보를 담아 주고 받는 방식
+- 서버는 응답 작성 시, 쿠키에 정보 담고, 클라이언트도 요청 시 쿠키에 정보를 담아 보냄
+- 쿠키의 값은 그대로 노출되어 있기 때문에 보안에 가장 취약
+
+#### | 토큰
+- 클라이언트가 서버에 접속하면 서버에서 해당 클라이언트를 인증했다는 의미로 토큰을 발급해 보내줌
+- 클라이언트는 해당 토큰을 저장해 두었다가 (쿠키 등에) 서버에 요청 시, 이를 담아서 보냄
+
+### Q. JWT 는 무엇인가요?
+
+- 유저를 인증하고 식별하기 위한 토큰 기반 인증 방식
+
+#### 인증 과정
+- access 토큰만 사용할 경우
+
+1. 사용자가 아이디와 패스워드를 입력하여 로그인
+2. 서버는 시크릿 키(secret key)를 통해 접근 토큰(access token) 발급
+3. 사용자에게 JWT 전달
+4. 로그인이 필요한 API 호출 시 헤더(header)에 JWT를 담아 전송함
+5. 서버에서 JWT 서명을 확인하고 시크릿 키로 JWT를 디코드하여 사용자 정보를 획득
+6. 서버에서 유저를 인식하고 요청 사항에 응답함
+
+- 토큰이 유출될 경우 누구나 정보 확인을 할 수 있어 session 방식보다 보안이 떨어짐
+
+→ 이를 해결하고자 **Refresh Token**을 활용
+
+- refresh 토큰도 사용할 경우
+
+1. 클라이언트가 ID, PW로 서버에게 인증을 요청하고 서버는 이를 확인하여 Access Token과 Refresh Token을 발급
+2. 클라이언트는 이를 받아 Refresh Token를 본인이 잘 저장하고 Access Token을 가지고 서버에 자유롭게 요청
+3. 요청을 하던 도중 Access Token이 만료되어 더이상 사용할 수 없다는 오류를 서버로부터 전달 받음
+4. 클라이언트는 본인이 사용한 Access Token이 만료되었다는 사실을 인지하고 본인이 가지고 있던 Refresh Token를 서버로 전달하여 `새로운 Access Token의 발급을 요청
+5. 서버는 Refresh Token을 받아 서버의 Refresh Token Storage에 해당 토큰이 있는지 확인하고, 있다면 Access Token을 생성하여 전달
+6. 이후 2로 돌아가서 동일한 작업을 진행
+
+#### JWT 구조
+
+- `header`: 암호화 알고리즘, 토큰 타입
+- `payload`: 전송하는 데이터, 키-값으로 구성
+- `signature`: 서명, 이를 통해 토큰의 진위 여부 확인 가능
+
+#### JWT 인증 과정 도식화
+![image](https://user-images.githubusercontent.com/68186101/202857327-37d63827-ffed-4235-a40a-41f9c6391fff.png)
+
+### JWT 로그인 구현하기
+
+#### | 커스텀 User 모델 만들기
+
+- User를 관리하는 account 앱 생성
+- User 모델 생성 (id & password로 로그인 할 수 있는)
+- `settings/base.py` 에 `AUTH_USER_MODEL = 'account.User'` 추가
+
+##### Reference
+[초기 구조 잡기](https://wikidocs.net/10294)
+
+[전반적 코드 참고](https://velog.io/@iedcon/AbstractBaseUser%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-Django-%EC%BB%A4%EC%8A%A4%ED%85%80-%EC%9C%A0%EC%A0%80-%EB%AA%A8%EB%8D%B8-%EB%A7%8C%EB%93%A4%EA%B8%B0)
+
+#### | JWT settings
+- simple jwt 설치
+```shell
+pip install djangorestframework-simplejwt
+```
+- settings.py 수정
+```shell
+ INSTALLED_APPS = [
+    ...
+    'rest_framework_simplejwt',
+    ...
+]
+
+REST_FRAMEWORK = {
+    ...
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+    ...
+}
+
+# JWT setting
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'TOKEN_USER_CLASS': 'account.User',  # custom user model
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+}
+```
+- `ACCESS_TOKEN_LIFETIME` : access token 유효 기간
+- `REFRESH_TOKEN_LIFETIME` : refresh token 유효 기간
+- `ROTATE_REFRESH_TOKENS` : True이면, refresh 요청 시 새로운 access token과 refresh token 반환
+- `BLACKLIST_AFTER_ROTATION` : True이면, 더 이상 필요없는 토큰(로그아웃)이나 악의적으로 탈취된 token을 서버에서 사용할 수 없도록 관리해줌
+
+#### | JWT REST API
+- 회원가입 `account/register/`
+- 로그인 `account/login/`
+- 인가 확인 `account/auth/`
+- Refresh 요청 `account/auth/refresh/`
+- 로그아웃 `account/logout`
+
+
+#### | 회원가입
+- 회원가입 성공 `201 OK`
+  - 토큰이 잘 생성돼서 쿠키에 저장된 것을 확인
+  
+  ![image](https://user-images.githubusercontent.com/68186101/202844328-1654ef49-d879-4bc7-8d18-4c3956e543fd.png)
+  
+
+- 이미 존재하는 계정 `400`
+
+  ![image](https://user-images.githubusercontent.com/68186101/202847722-fc05710b-58b9-4fbf-80b3-85c8e8fa78d9.png)
+
+
+#### | 로그인 
+- 로그인 성공 `200 OK`
+
+  ![image](https://user-images.githubusercontent.com/68186101/202847927-42b6cf85-b497-4cd6-a962-00a16e9b6233.png)
+  
+- 존재하지 않는 계정 `400`
+
+  ![image](https://user-images.githubusercontent.com/68186101/202847958-e54e39d9-9d00-4af0-8d64-e5113985981d.png)
+  
+- 비밀번호 오류 `400`
+
+  ![image](https://user-images.githubusercontent.com/68186101/202847978-1609de91-2306-42be-838b-25348d1ac352.png)
+
+
+💥 회원가입과 로그인 모두 예외는 serializer에서 raise를 발생시켜서 처리
+
+
+#### | Refresh Token 발급
+- 라이브러리 내장 뷰 활용 `TokenRefreshView.as_view()`
+- body에 refresh 토큰 담아서 보냄
+- refresh 요청 성공
+
+  ![image](https://user-images.githubusercontent.com/68186101/202855060-e9e481cb-0470-42c4-8499-81f21b3c2121.png)
+
+- 유효하거나 만료된 토큰일 경우
+
+  ![image](https://user-images.githubusercontent.com/68186101/202855548-bf61de7b-54cc-418d-82e8-f3a0461c350e.png)
+
+
+#### | 로그아웃
+- 쿠키에 저장된 access_token, refresh_token을 삭제
+- 로그아웃 완료
+
+  ![image](https://user-images.githubusercontent.com/68186101/202856387-66761b27-068c-4224-a515-e0503a97207a.png)
+
+#### | 인가
+- 토큰을 복호화해서 검증한 다음, 유저 id 추출해서 권한 확인
+- 유저 확인 성공
+
+  ![image](https://user-images.githubusercontent.com/68186101/202866630-7e3c9a12-a5b3-410c-b0fb-93f5e2a5a885.png)
+
+- 토큰 예외
+  - 토큰 없음
+  
+    ![image](https://user-images.githubusercontent.com/68186101/202866663-49ebf46c-8f4f-4a97-b86b-962181a6c670.png)
+
+  - 토큰 유효하지 않음
+  
+    ![image](https://user-images.githubusercontent.com/68186101/202866653-7778368e-6d86-4916-8f4d-80412f4bf2a0.png)
+
+  - 토큰 기간 만료
+
+
+### Issue
+#### Custom User Model Migration 할 때
+- 새로운 사용자 모델로 마이그레이션 하려 할 때 아래 오류 발생
+  `(fields.E301) Field defines a relation with the model 'auth.User', which has been swapped out.
+        HINT: Update the relation to point at 'settings.AUTH_USER_MODEL'.`
+- 새로 바뀐 유저 모델을 얻어와야 했던 거였음 [[해결 링크]](https://stackoverflow.com/questions/55780537/how-to-fix-field-defines-a-relation-with-the-model-auth-user-which-has-been-s)
+  ```python
+  from django.contrib.auth import get_user_model
+  User = get_user_model()
+  ```
+### 새롭게 안 사실
+- simple JWT에서는 token 생성 시 필요한 secret key에 Django 프로젝트마다 사용하는 secret_key를 기본으로 이용함
+
+### 후기
+- 일단 node에서 express로 jwt 인증/인가 구현할 때보다 코드가 훨씬..예쁘다..
+- 그럼에도 중복 코드들이 있어서 리팩토링 하고 싶다
+- 장고는 편리하게 쓸 수 있는 라이브러리들이 많이 있어서 쉬워보이다가도 막상 제대로 쓰려면 커스텀을 해야 하니 호락호락하지 않은 프레임워크라는 것을 또 느꼈다..
+- 로그아웃 할 때도, 토큰 확인이 먼저 필요할 거 같다
+- node에서는 인가 확인을 미들웨어로 만들어서 다른 api에서도 쉽게 사용이 가능했는데, 장고에서도 그런 방법이 있는지 알아보고 싶다
+
 ## 4주차 미션 : DRF2 - API View & Viewset & Filter
 
 ### DRF API View 의 CBV 으로 리팩토링하기
