@@ -338,3 +338,75 @@ class GoalFilter(FilterSet):
 * filterset이 작동하지 않는다. 이유를 못찾겠다.
   * django-filter를 설치했을 때, 버전이 다르다고 해서, 다른 django 버전을 적용했는데, 그 부분에서 문제가 발생한 것 같다. 정확한 이유는 모르겠고, 해결 방법도 모르겠다.
 * ViewSet을 이용하여 views.py를 리팩토링하니 코드가 매우 간결해져서 좋았다. 장고가 정말 편하다는 걸 느낄 수 있었다!!
+
+## 5주차 : DRF3 - Simple JWT
+## 커스텀 User Model 사용
+```python
+class User(AbstractUser, BaseModel):
+    email = models.EmailField(max_length=254, unique=True)
+    password = models.CharField(max_length=128, null=False)
+
+    def __str__(self):
+        return self.username
+```
+## Login 구현
+```python
+# api/view.py
+class LoginView(APIView):
+    def post(self, request):
+        try:
+            username = request.data.get("id")
+            password = request.data.get("pwd")
+
+            user = User.objects.get(username=username)
+            if user.password != password:
+                raise
+            token = TokenObtainPairSerializer.get_token(user)
+            access_token = str(token.access_token)
+            res = JsonResponse(custom_response(200, {"token": access_token}), status=200)
+            res.set_cookie("access", access_token, httponly=True)
+            return res
+        except:
+            return JsonResponse(custom_response(400), status=400)
+```
+```python
+# api/url.py
+urlpatterns = [
+    path("", include(router.urls)),
+    path("login/", LoginView.as_view())
+]
+```
+```json
+{
+    "status": 200,
+    "message": "SUCCESS",
+    "data": {
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjY4ODM3MzYzLCJpYXQiOjE2Njg4MzU1NjMsImp0aSI6IjEzN2ViZjlmYjljMzRjM2VhMTA5ZGFhOGU0ZTA1MWI1IiwidXNlcl9pZCI6M30.09nZfqRlWMbJjwyo3GXGE2sdryWiek_mnPmFbQwstHM"
+    }
+}
+```
+viewset을 이용하는 것보다 CBV가 개인적으로 편하게 느껴져서, login은 CBV을 이용했다.
+username과 password에 해당하는 유저를 찾은 후, 그 유저가 존재한다면 토큰을 전달하는 방식으로 구현했다.
+## jwt 이용에 따른 유저 검증 로직 변경
+```python
+class GoalViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.GoalSerializer
+    queryset = Goal.objects.all()
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = GoalFilter
+
+    # 응답에 필요한 쿼리셋을 가져오기 위해 사용되는 메서드
+    def get_queryset(self):
+        access_token = self.request.COOKIES['access']
+        payload = jwt.decode(access_token, env('SECRET_KEY'), algorithms=['HS256'])
+        user_id = payload.get("user_id")
+        queryset = super().get_queryset()
+        return queryset.filter(user_id=user_id)
+```
+1. IsAuthenticated : 유저의 존재 유무를 검사
+2. get_queryset : 토큰에 담긴 정보를 이용해 해당 유저의 데이터 필터링할 수 있다.
+## 회고
+* 지난번 filterset이 적용 안되던 문제는 filter_class -> filterset_class 로 수정하는 것으로 해결할 수 있었다.
+  * filterset_class라고 적으면 파이참이 rename하라고 한다. 옆 동네 인텔리제이는 똑똑하던데, 얜 왜 이러는지 모르겠다.
+* 다음에는 로그인도 viewset으로 변경해 봐야겠다.
