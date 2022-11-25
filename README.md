@@ -417,5 +417,5 @@ class GoalViewSet(viewsets.ModelViewSet):
 갓뎀
 .
 .
-..
+...
 .
