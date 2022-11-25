@@ -410,3 +410,5 @@ class GoalViewSet(viewsets.ModelViewSet):
 * 지난번 filterset이 적용 안되던 문제는 filter_class -> filterset_class 로 수정하는 것으로 해결할 수 있었다.
   * filterset_class라고 적으면 파이참이 rename하라고 한다. 옆 동네 인텔리제이는 똑똑하던데, 얜 왜 이러는지 모르겠다.
 * 다음에는 로그인도 viewset으로 변경해 봐야겠다.
+
+## 6주차 : 배포환경 구축 스터디
