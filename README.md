@@ -414,3 +414,4 @@ class GoalViewSet(viewsets.ModelViewSet):
 ## 6주차 : 배포환경 구축 스터디
 이거 왜 안됨?
 아 ㅋㅋㅋ
+갓뎀
