@@ -1,6 +1,9 @@
 FROM python:3.8.3-alpine
 ENV PYTHONUNBUFFERED 1
 
+RUN echo "change"
+
+
 RUN mkdir /app
 WORKDIR /app
 
