@@ -3,7 +3,7 @@ services:
 
   db:
     container_name: db
-    image: mysql:5.7
+    image: mariadb:latest
     restart: always
     environment:
       MYSQL_ROOT_HOST: '%'
@@ -13,7 +13,7 @@ services:
     ports:
       - "3307:3306"
     env_file:
-      - .env.example
+      - .env
     volumes:
       - dbdata:/var/lib/mysql
 
