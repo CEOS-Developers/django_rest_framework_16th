@@ -32,6 +32,14 @@
 - time zone seoul 설정
 - character set utf8mb4로 변경
 
+- 접속 확인
+  - 명령어
+    ```bash
+    mysql -h <host 주소> -u <유저네임> -p
+    ```
+  ![image](https://user-images.githubusercontent.com/68186101/204071302-ca0e2abe-3ec7-486a-b37e-2629d2461885.png)
+
+
 3. production env 파일 설정
   ```shell
   DATABASE_HOST={RDS db 주소}
@@ -46,6 +54,7 @@
   ```
   
 4. Gihub Action 설정
+![image](https://user-images.githubusercontent.com/68186101/204071158-023bf48c-ca12-47a9-89e5-2abbe4acc240.png)
 
 
 
