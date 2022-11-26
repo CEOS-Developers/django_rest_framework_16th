@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - dev
+      - Jeong-Hyeon-Lee
 
 jobs:
 
