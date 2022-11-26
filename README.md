@@ -523,10 +523,10 @@ EC2 DNS 주소로 접속했을 때
 (EC2 DNS 주소)/api
 ![image](https://user-images.githubusercontent.com/86969518/204092682-46c4b19d-bd0a-4545-9ae6-48d4e7a6338e.png)
 
-(EC2 DNS 주소)/api/register - 회원가입 api
+(EC2 DNS 주소)/api/register - 회원가입 api  
 ![image](https://user-images.githubusercontent.com/86969518/204094146-6aeb74d7-6363-4406-b1a7-c31d41eb0487.png)
 
-실패...
+실패... (api 요청 보내면 나오는 화면이다)  
 ![image](https://user-images.githubusercontent.com/86969518/204094201-15f550fc-385f-450a-b468-1f75954c2772.png)
 
 
