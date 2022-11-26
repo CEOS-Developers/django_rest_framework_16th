@@ -1,5 +1,4 @@
 asgiref==3.2.10
-cffi==1.15.1
 cryptography==38.0.1
 Django==3.0.8
 django-environ==0.4.5
