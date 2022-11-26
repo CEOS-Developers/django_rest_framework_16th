@@ -420,14 +420,14 @@ class GoalViewSet(viewsets.ModelViewSet):
 3. RDS 생성, 인바운드 셋팅
 <img width="1222" alt="스크린샷 2022-11-26 오후 11 23 12" src="https://user-images.githubusercontent.com/67852689/204093969-3eaabcb3-d4b0-4996-86b8-2169fa3b8a0b.png">
 4. github action branch 설정
-```yml
+```text
 on:
   push:
     branches:
       - main
 ```
 5. .env.prod 생성, github action 설정
-```
+```text
 DATABASE_HOST=drfdrf.-----------------.rds.amazonaws.com
 DATABASE_DB=mysql
 DATABASE_NAME=drfdrf
