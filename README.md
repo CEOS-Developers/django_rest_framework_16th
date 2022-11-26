@@ -1,5 +1,146 @@
 # CEOS 16기 백엔드 스터디 : TODO_MATE
+### 6주차 미션 : 6주차 : AWS : EC2, RDS & Docker & Github Action
 
+#### - docker
+
+#### - deploy
+
+#### - deploy success 
+<img width="500" alt="스크린샷 2022-11-27 오전 12 05 56" src="https://user-images.githubusercontent.com/62806067/204095562-4825016f-2649-4e0e-a888-e3b9d5877f62.png">
+
+> login api 접속 성공
+
+#### - 총평
+여태껏 햇던 과제는 그래도 좀 해봤던거라 금방 했는데 
+여윽시... 배포할라니까 어리둥둥절 했다... 그동안 학교 과제하면서 조금씩햇던건데 무작정하다보니 제대로 어떻게 하는지 잘몰랐던것 같다.
+이것 저것 실수한거 투성이라 한번 제대로 정리해야겠다~ 라는 생각을 하게 되었다.
+그래도 나름 이제 배포 반은 해볼 줄 아는 사람이 된거....^^ 같아서^^... 다행이다.......
+시험기간에 깃헙 액션이나 그런 부분들이 어케 돌아가는지 한번 봐야할거같다... 끝!
+
+*****
+### 5주차 미션 : 5주차 : DRF3 - Simple JWT
+JWT가 궁금해서 구글링하다가 django에서 제공하는 jwt 로직을 찾아내서 해당 부분을 사용해 봤습니다.
+
+#### - base.py
+
+    INSTALLED_APPS = [
+        ~
+        # third party
+        'django_filters',
+        'rest_framework',
+        # # auth
+        'rest_framework.authtoken',
+        'dj_rest_auth',
+        # # login
+        'django.contrib.sites',
+
+        'allauth',
+        'allauth.account',
+        'allauth.socialaccount',
+
+        'dj_rest_auth.registration',
+    ]
+    
+> thirdParty 추가
+
+
+    REST_FRAMEWORK = {
+        ~
+        'DEFAULT_PERMISSION_CLASSES': (
+            'rest_framework.permissions.IsAuthenticated',
+            'rest_framework.permissions.AllowAny',
+        ),
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+            'rest_framework.authentication.SessionAuthentication',
+            'rest_framework.authentication.TokenAuthentication',
+        ),
+    }
+
+> permission 및 auth 추가
+
+#### - base 추가 변수
+dj-rest-auth
+
+    REST_USE_JWT # JWT 사용 여부, 요청값에 상세히 나오게끔!
+    JWT_AUTH_COOKIE # 호출할 Cookie Key값
+    JWT_AUTH_REFRESH_COOKIE# Refresh Token Cookie Key 값 (사용하는 경우)
+
+django-allauth
+
+    SITE_ID # 해당 도메인의 id
+    ACCOUNT_EMAIL_REQUIRED # User email 필수 여부
+    ACCOUNT_EMAIL_VERIFICATION# Email 인증 필수 여부
+
+#### - url 정의
+
+    urlpatterns = [
+        ~
+        path('auth/', include('dj_rest_auth.urls')),
+        path('auth/registration/', include('dj_rest_auth.registration.urls')),
+    ]    
+
+> 위에 한줄만 추가하면 아래의 url로 실행가능
+
+* http://localhost:8000/api/auth/password/reset/
+* http://localhost:8000/api/auth/password/reset/confirm/
+* http://localhost:8000/api/auth/login/
+* http://localhost:8000/api/auth/logout/
+* http://localhost:8000/api/auth/user/
+* http://localhost:8000/api/auth/password/change/
+* http://localhost:8000/api/auth/token/verify/
+* http://localhost:8000/api/auth/token/refresh/
+
+
+
+
+#### - jwt user custom
+
+    # customize model
+    USERNAME_FIELD = 'username' #'email'이라고 해주면 로그인 할때 email 써야함
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
+
+> models.py -> user 
+
+    class UserManager(BaseUserManager):
+    def create_user(self, username, email, password, **extra_fields):
+        if not email:
+            raise ValueError('The Email must be set')
+        if not username:
+            raise ValueError('The Name must be set')
+        # email = self.normalize_email(email)
+        user = self.model(
+            username=username,
+            email=self.normalize_email(email),
+            **extra_fields
+        )
+        user.set_password(password)
+        user.save()
+        return user
+
+> managers.py
+
+#### - accessToken , refreshToken 정의
+accessToken = 말 그대로 접근 가능 하게 해주는 Token
+refreshToken = accessToken 이 만료 되었을 때 accessToken 을 갱신시켜주는 Token
+
+#### - Authentication, Authorization(Permission) 정의
+Authentication(인증) = user 가 누구인지 확인
+Authorization(인가) = 차등적인 권한(ex. 관리자, 사용자)을 부여할 수 있음
+
+#### - Login 
+<img width="1176" alt="스크린샷 2022-11-21 오전 1 59 03" src="https://user-images.githubusercontent.com/62806067/202915214-7a65a50c-3f01-44b7-a7fd-a9506b58b93c.png">
+
+#### - 총평
+하나 하나 구현했다면 jwt에 대해 더 깊게 이해했겠지만 viewSet을 쓴 와중에 다시 function으로 하기 싫어서 고민하던 와중 사용한 thirdparty에 대해 알게 되었다.
+그래도 대략적인 구조정도는 알 수 있었고 custom 또한 어떻게 이루어지는지 이것 저것 찾다보니까 알 수 있었다.
+또한 accessToken , refreshToken 의 정의와  Authentication, Authorization(Permission)에 대한 차이를 이해할 수 있게 되었다.
+이번 과제가 제일 기대했던 과젠데 생각보다 thirdparty로 쉽게 만들어져서 오잉도잉했다 ㅎㅎ... 
+끄읕!
+
+*****
 ### 4주차 미션 : DRF2 - API View & Viewset & Filter
 저번 주차에 Viewset을 사용하여 설계하였으므로 filter관련해서 정리하겠습니다.
 
@@ -34,6 +175,7 @@ date 오름차순으로 출력하여 준다.
 > date 내림차순 정렬
 
 #### - 총평
+
 왜 custom filterset이 적용이 안되는지 아직 찾아내지 못했다.
 그래서 아쉽긴하지만 fields로 구현해보았다.
 이번에 확실히 api에 어떻게 날려야 원하는 값이 도출되는지 알게 된 것 같다.

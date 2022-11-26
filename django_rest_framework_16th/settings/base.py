@@ -31,6 +31,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 DEBUG = env('DEBUG')
 
+# ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split()
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'api.User'
@@ -44,15 +45,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # my-app
     'api',
 
     # third party
     'django_filters',
     'rest_framework',
     # # auth
-    'rest_framework_simplejwt',
     'rest_framework.authtoken',
-    'rest_auth',
+    'dj_rest_auth',
     # # login
     'django.contrib.sites',
 
@@ -60,9 +61,13 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
-    'rest_auth.registration',
+    'dj_rest_auth.registration',
 ]
 SITE_ID = 1
+
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = 'api-auth'
+JWT_AUTH_REFRESH_COOKIE = 'api-refresh-token'
 
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_EMAIL_REQUIRED = True
@@ -86,8 +91,8 @@ JWT_AUTH = {
     'JWT_SECRET_KEY': SECRET_KEY,
     'JWT_ALGORITHM': 'HS256',
     'JWT_ALLOW_REFRESH': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=28),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=3),
 }
 
 MIDDLEWARE = [

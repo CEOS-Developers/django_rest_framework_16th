@@ -1,13 +1,11 @@
 from django.urls import path, include
 from rest_framework import routers
-from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 
 from .views import *
 
 router = routers.DefaultRouter()
 
-# 서로 다른 path 함수를 하나로 묶어 주는 과정
-# url prefix, ViewSet
+# router
 router.register('user', UserViewSet)
 router.register('goal', GoalViewSet)
 router.register('todo', TodoViewSet)
@@ -16,4 +14,7 @@ router.register('follow', FollowViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('auth/', include('dj_rest_auth.urls')),
+    path('auth/registration/', include('dj_rest_auth.registration.urls')),
 ]
+
