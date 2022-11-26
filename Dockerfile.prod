@@ -43,6 +43,7 @@ WORKDIR $APP_HOME
 
 # install dependencies
 RUN apk update && apk add libpq
+RUN pip3 install --upgrade
 RUN apk update \
     && apk add --virtual build-deps gcc python3-dev musl-dev \
     && apk add --no-cache mariadb-dev \
