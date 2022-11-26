@@ -23,6 +23,33 @@
   docker-compose down
   ```
 
+### 실 환경 배포
+1. EC2 생성 & 탄력적 IP 할당
+![image](https://user-images.githubusercontent.com/68186101/204069595-2041fa56-a29a-40d8-b67c-b7d55ce530fc.png)
+
+2. RDS 생성
+![image](https://user-images.githubusercontent.com/68186101/204069715-764e5de1-193f-4fb3-8b6a-474dc42dfd70.png)
+- time zone seoul 설정
+- character set utf8mb4로 변경
+
+3. production env 파일 설정
+  ```shell
+  DATABASE_HOST={RDS db 주소}
+  DATABASE_DB=mysql
+  DATABASE_NAME={RDS 기본 database 이름}
+  DATABASE_USER={RDS User 이름}
+  DATABASE_PASSWORD={RDS master 비밀번호}
+  DATABASE_PORT=3306
+  DEBUG=False
+  DJANGO_ALLOWED_HOSTS={EC2 서버 ip 주소}
+  DJANGO_SECRET_KEY={django secret key}
+  ```
+  
+4. Gihub Action 설정
+
+
+
+
 ### Issue
 - 도커 빌드하는 중에 아래 오류 있었음
 ![image](https://user-images.githubusercontent.com/68186101/204038309-35f353eb-7f50-498e-b42a-3d8cb7f5cc92.png)
