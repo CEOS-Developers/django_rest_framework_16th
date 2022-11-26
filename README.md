@@ -412,4 +412,4 @@ class GoalViewSet(viewsets.ModelViewSet):
 * 다음에는 로그인도 viewset으로 변경해 봐야겠다.
 
 ## 6주차 : 배포환경 구축 스터디
-???
+????
