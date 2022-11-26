@@ -28,7 +28,7 @@ services:
       DATABASE_PASSWORD: mysql
       DATABASE_PORT: 3306
       DATABASE_HOST: db
-      DJANGO_SETTINGS_MODULE: django_rest_framework_16th.settings.dev
+      DJANGO_SETTINGS_MODULE: django_rest_framework_16th.settings.prod
     restart: always
     ports:
       - "8000:8000"
