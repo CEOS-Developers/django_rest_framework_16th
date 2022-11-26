@@ -83,7 +83,7 @@
 
   <img width="1009" alt="실패시" src="https://user-images.githubusercontent.com/74910760/202854761-aebe73fb-be9c-489e-8eea-46b4cf2665ca.png">
 
-  유저 이름이나 비밀번호가 틀렸을 때는 "login fail"이 뜨며 검증이 잘 된다.
+  유저 이름이나 비밀번호가 틀렸을 때는 "login fail"이 뜨며 잘 작동되는 것을 알 수 있다.
 
   
 
