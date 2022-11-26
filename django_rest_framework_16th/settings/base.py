@@ -28,7 +28,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['http://52.78.88.90/']
+ALLOWED_HOSTS = []
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
