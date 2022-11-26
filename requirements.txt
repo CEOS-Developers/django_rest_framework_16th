@@ -1,4 +1,5 @@
 asgiref==3.2.10
+libffi
 cryptography==38.0.1
 Django==3.0.8
 django-environ==0.4.5
@@ -13,4 +14,5 @@ PyMySQL==1.0.2
 pytz==2020.1
 sqlparse==0.3.1
 typing_extensions==4.3.0
+
 
