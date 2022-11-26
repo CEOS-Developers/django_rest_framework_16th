@@ -1,6 +1,6 @@
 # CEOS 16기 백엔드 스터디
 
-## 5주차 미션 : Simple JWT
+## 5주차 미션 : DRF3 : Simple JWT
 
 ### Abstract User
 
@@ -98,7 +98,7 @@ createsuperuser를 통해 admin 사용자를 추가하여 사용하였다. 이�
 
 
 
-## 4주차 미션 : API View & Viewset & Filter
+## 4주차 미션 : DRF2 : API View & Viewset & Filter
 
 ### API View를 이용한 CBV 구현
 
@@ -217,7 +217,7 @@ ViewSet을 사용했을 때 내가 생각한 것보다 더 대부분의 것을 �
 
 ***
 
-## 3주차 미션 : Serializer, API 구현
+## 3주차 미션 : DRF1 : Serializer, API 구현
 
 - Todo 모델
     <pre><code>
