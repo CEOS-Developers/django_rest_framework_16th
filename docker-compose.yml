@@ -3,11 +3,11 @@ services:
 
   db:
     container_name: db
-    image: mysql:latest
+    image: mysql:5.7
     restart: always
     environment:
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_ROOT_HOST: root
+      MYSQL_ROOT_PASSWORD: suhhyun
     expose:
       - 3306
     ports:
