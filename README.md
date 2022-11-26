@@ -1,5 +1,49 @@
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
+## 6주차 미션 : Docker 배포 환경 구축
+
+### 로컬에서 Docker로 서버와 DB 실행
+
+- 도커 빌드
+  ```shell
+  docker-compose -f docker-compose.yml up --build
+  ```
+
+- 브라우저로 접속되는지 테스트 -> 잘 된다!
+![image](https://user-images.githubusercontent.com/68186101/204068004-2b3f6215-e71c-440d-b9ff-4da311547602.png)
+
+- 도커 다운
+  ```shell
+  docker-compose -f docker-compose.prod.yml down -v
+  ```
+  or
+  ```shell
+  Ctrl+c
+  
+  docker-compose down
+  ```
+
+### Issue
+- 도커 빌드하는 중에 아래 오류 있었음
+![image](https://user-images.githubusercontent.com/68186101/204038309-35f353eb-7f50-498e-b42a-3d8cb7f5cc92.png)
+  ```shell
+  api.Profile.profile_img: (fields.E210) Cannot use ImageField because Pi
+  llow is not installed.
+  web    |        HINT: Get Pillow at https://pypi.org/project/Pillow/ or run comm
+  and "python -m pip install Pillow".
+  ```
+    - Pillow 라이브러리 requirement.txt에 없어서 도커 빌드 시 다운이 안됨
+    - requirement.txt에 Pillow 추가해서 다시 빌드 ! 
+
+- 도커에서 Pillow 라이브러리 설치 오류
+![image](https://user-images.githubusercontent.com/68186101/204067928-2c506872-0bdc-4f7e-9dc1-c70de780d955.png)
+[동일한 오류](https://newbiecs.tistory.com/246)
+  - pip version을 업그레이드하지 않아서 생기는 오류였음
+  - Dokerfile에 requirements.txt 설치 전 아래 코드(pip upgrade)를 추가하여 해결
+    ```bash
+    RUN python -m pip install --upgrade pip
+    ```
+
 ## 5주차 미션 : DRF3 - Simple JWT
 
 ### Q. 로그인 인증 방식은 어떤 종류가 있나요?
