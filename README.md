@@ -420,13 +420,16 @@ class GoalViewSet(viewsets.ModelViewSet):
 3. RDS 생성, 인바운드 셋팅
 <img width="1222" alt="스크린샷 2022-11-26 오후 11 23 12" src="https://user-images.githubusercontent.com/67852689/204093969-3eaabcb3-d4b0-4996-86b8-2169fa3b8a0b.png">
 4. github action branch 설정
+
 ```text
 on:
   push:
     branches:
       - main
 ```
+
 5. .env.prod 생성, github action 설정
+
 ```text
 DATABASE_HOST=drfdrf.-----------------.rds.amazonaws.com
 DATABASE_DB=mysql
@@ -440,6 +443,7 @@ DJANGO_SECRET_KEY=---------------------
 
 SECRET_KEY=-----------------------
 ```
+
 6. 배포 확인
 <img width="986" alt="스크린샷 2022-11-26 오후 11 19 56" src="https://user-images.githubusercontent.com/67852689/204093953-f42cdebf-36c0-4e38-bd14-d7ca94a6b0e5.png">
 ec2에서 실행중인 docker container 확인
