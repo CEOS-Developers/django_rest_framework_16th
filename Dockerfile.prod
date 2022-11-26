@@ -3,6 +3,7 @@
 
 # pull official base image
 FROM python:3.9.7-alpine as builder
+RUN pip install --upgrade pip
 
 # set work directory
 WORKDIR /usr/src/app
