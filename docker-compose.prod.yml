@@ -1,6 +1,22 @@
 version: '3'
 services:
 
+  db:
+    container_name: db
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: mysql
+    expose:
+      - 3306
+    ports:
+      - "3307:3306"
+    env_file:
+      - .env
+    volumes:
+      - dbdata:/var/lib/mysql
+
   web:
     container_name: web
     build:
