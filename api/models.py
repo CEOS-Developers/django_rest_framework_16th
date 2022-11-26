@@ -55,9 +55,6 @@ class User(AbstractBaseUser, BaseModel):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.fullname
-
     def has_perm(self, perm, obj=None):
         return True
 
