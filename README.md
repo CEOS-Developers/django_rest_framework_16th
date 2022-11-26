@@ -1,4 +1,102 @@
 # CEOS 16기 백엔드 스터디
+***
+
+## 6주차 미션 : AWS : EC2, RDS & Docker & Github Action
+
+### 인바운드 규칙 편집
+
+- EC2
+  
+  ![ec2 인바운드 규칙](https://user-images.githubusercontent.com/74910760/204094832-27c41e5b-8260-465b-b25a-2c21d1cbd20c.png)
+  기본 인바운드 규칙에 추가로 80번 포트와 443포트를 설정해준다.
+
+
+- RDS
+  ![rds 인바운드 규칙](https://user-images.githubusercontent.com/74910760/204094898-d65d5c2c-f75f-426f-8093-246066399c3e.png)
+  mysql의 기본 포트번호 3306을 추가해준다.
+
+
+### 컨테이너 가동
+- <code>sudo docker ps</code> : 현재 가동중인 컨테이너 리스트를 반환
+- <code>sudo docker ps -a</code> : 가동중, 멈춘 컨테이너 모두 보여줌
+  
+위의 명령어를 통해 nginx와 web이 잘 가동중인지 확인해주었다. 
+![명령어 확인](https://user-images.githubusercontent.com/74910760/204095681-cd2426e7-bc1d-4d32-be12-079f86cad57a.png)
+확인해보니 nginx는 정상적으로 가동되고 있었지만 web이 가동중이지 않아서
+<code>sudo docker-compose -f {docker compose yml파일 경로} up --build</code> 명령어를 통해 web을 빌드하여 가동해주었다. 
+![web 정상 가동](https://user-images.githubusercontent.com/74910760/204095638-f2f1ba6c-bd21-4e92-98b5-ff838351a434.png)
+그 후 web도 정상적으로 가동되는 것을 확인하였다.
+
+EC2 DNS 주소로 접속해보면 아래와 같이 Not Found가 뜨면서 정상적으로 서버가 작동하는 것을 알 수 있다.
+![서버 정상 연결](https://user-images.githubusercontent.com/74910760/204095935-b9cd9623-17db-4a67-b47d-8c84c6f246bf.png)
+
+### Github Action 
+
+Github Action을 사용해주기 위해 <code>deploy.yml</code> 파일을 세팅해주어야한다. 
+
+- 이름 설정
+  : <code>name</code> : 워크플로우의 이름
+
+  : <pre><code>
+     name: Deploy to EC2
+    </code></pre>
+
+- 트리거 설정
+  : <code>on</code> : 감지할 이벤트 (여러 개 사용 가능)
+  : <pre><code>
+     on:
+       push:
+         branches:
+           - master
+  </code></pre>
+  : <code>master</code> branch에 push 했을 때 자동 작업 실행
+
+- 작업 설정
+  : <code>jobs</code> : 원하는 작업 입력 (여러 개 사용 가능)
+  : <pre><code>
+      jobs:
+        build:
+          ...
+    </code></pre>
+  : 빌드 작업을 처리한다. 이외에도 다양한 작업을 기술할 수 있다. 이때 <code>runs-on</code>을 사용하여 호스트 운영체제를 
+    명세할 수 있다. 도커 이미지가 명세되어 있지 않다면 액션들은 호스트 운영체제에서 실행된다. 도커 이미지가 명세되어 있다면 도커 이미지에서 
+    액션들이 실행되므로 아무 운영체제나 적어도 상관없다. 
+
+  : 이외에도 다양한 옵션들이 있으니 더 공부해보도록 할 예정이다. 
+
+### RDS 사용
+- 데이터베이스, 스키마 추가
+
+  : 
+  ![db 추가](https://user-images.githubusercontent.com/74910760/204096225-f3b462d0-5e90-4d99-8204-7bbe752c7a8b.png)
+  RDS에서 지정한 정보를 Host, User, Password에 각각 넣고 Test Connection을 확인해본다. 이후 성공적으로 돌아간다는 메시지가 나오면 적용하고 
+  생성해준다. 
+    
+  : 데이터베이스가 잘 생성되면 마이그레이션을 하기 전에 RDS 이름의 스키마를 생성해준다. 이렇게 되면 마이그레이션을 하기 위한 준비는 끝이다.
+  
+- 마이그레이션
+
+: <code>.env</code>파일에서 기존 로컬 정보 대신 설정한 RDS 정보를 넣어준다. 그 후에는 로컬에서 사용한 마이그레이션 방법과 같은 명령어 <code>python manage.py migrate</code>로 마이그레이션을 
+  진행해준다. 성공적으로 마이그레이션을 진행했다면 기존의 table들이 스키마에 잘 들어가 있는 것을 확인할 수 있다. 
+
+- db 확인
+: <pre><code> mysql -h <host 주소> -u <유저 이름> -p</code></pre>
+: 위의 명령어를 통해 RDS를 확인할 수 있다. 
+
+
+### Postman을 사용해 배포 확인
+![postman 결과](https://user-images.githubusercontent.com/74910760/204095975-9ce3342b-0665-4071-9690-01ccf3f8e0c9.png)
+EC2 DNS 주소로 기존 로그인 API 요청을 보내면 이전에 로그인 API 반환 값이 잘 나오는 것을 확인할 수 있다.
+테이블이 비어있어 로그인에 성공하지는 않는다. 
+
+
+### 회고
+역대급으로 어려웠던 과제였다... 정말 무수히 많은 에러를 겪어서 리드미를 어떻게 정리해야할 지 감도 안왔다.. 그래도 어찌어찌 해결해서 배포에 대해 약간의 
+감을 잡은 것 같기도하다. github action을 사용하니 pull 또는 pull request만 해도 자동으로 배포되는 것이 매우 편리하다고 느꼈다. 이후의 과제도 
+약간 걱정이 되지만 배포 흐름을 알 수 있어 좋은 과제였다. 
+
+
+***
 
 ## 5주차 미션 : DRF3 : Simple JWT
 
@@ -96,7 +194,7 @@ createsuperuser를 통해 admin 사용자를 추가하여 사용하였다. 이�
 까보니 리턴 값에 <code>for_user()</code>라는 함수가 사용되었다. <code>TokenObtainPairSerializer</code>를 사용하니 그냥 data만을 리턴해주고 해당 에러가 뜨지 않았다. 
 에러가 나오지 않아서 사용하긴 했는데 아직 왜 에러가 생긴건지는 잘 모르겠다. 그 부분에 대해서는 앞으로 더 공부를 해볼 예정이다.
 
-
+***
 
 ## 4주차 미션 : DRF2 : API View & Viewset & Filter
 
