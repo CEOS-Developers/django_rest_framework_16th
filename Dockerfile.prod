@@ -49,7 +49,6 @@ RUN apk update \
     && apk add --no-cache mariadb-dev
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
-RUN sudo pip3 install --upgrade pip
 RUN pip install mysqlclient
 RUN pip install --no-cache /wheels/*
 RUN apk del build-deps
