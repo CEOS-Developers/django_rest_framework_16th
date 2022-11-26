@@ -409,11 +409,28 @@ class TodoFilter(FilterSet):
 jwt를 새로 배우게되면서 이전까지 얼마나 용감하게 코딩했는지를 알게되었다. 나는 지금까지 항상 payload에 사용자 정보를 함께 보내줬었는데ㅎㅎ.....
 이번 과제는 Custom model, Form 등 새로운 걸 너무 많이 나와서 어려웠다.
 
-<img src="img.jpg"> 
-
 어떻게 잘 얼기설기 코드를 작성하기는 했는데 위와 같은 상태이다. 이전에 배운 ViewSet도 활용하고 뭔가 더 깔끔하고 효율적으로 고치고 싶었는데 지금은 너무 낡고 지쳐서 다음에 다시 조금 고쳐볼 예정이다.
 refreshtoken 관련해서 코드를 추가하기는 했는데 작동 확인을 하지 못했다. 마찬가지로 다음에 다시 확인해볼 예정이다.
 
 # 2022.11.19
 ## 과제
-1.
+1. Postman 요청
+<img src="docker-join.png">
+<img src="docker-login.png">
+
+# 회고...
+1. Pillow error 
+<pre><code>ERROR: Pillow-9.3.0-cp38-cp38-musllinux_1_1_x86_64.whl is not a supported wheel on this platform.</code></pre>
+git action에서 계속 오류가 발생했다. 
+<pre><code># Dockerfile.prod
+
+FROM python:3.9.7-alpine as builder
+RUN pip install --upgrade pip</code></pre>
+
+이 두 줄을 추가하면서 해결했다. 사실 검색으로는 python 3.9와 Pillow 9.3.0이 호환된다고 하고 pip도 warning만 뜨는데 왜 저거때문에 에러가 났는지 모르겠다
+2. Internel Sever Error 500
+Debug=True를 Git Secret에 추가한 후에야 정확한 이유를 알 수 있었다. 심지어 처음에는 Debug=True를 적용하고 싶어서 base.py 파일만 계속 수정했다.... 
+<br> 아무튼 rds에 연결한 데이터베이스에 스키마와 테이블이 존재하지 않아서 발생하는 에러였다ㅜ.ㅜ
+처음에는 entrypoint.prod.sh에 migration 관련 코드를 추가했으나 적용되지 않아서 결국 data export/import 작업을 통해 테이블을 통째로 옮겼고 에러를 해결할 수 있었다. 제대로 해결한 건 아니라서 너무 찝찝하긴 한데 어쩔 수 없다. 다음에 시간 나면 고칠 것.
+
+ec2, rds를 사용해 본 적이 있어서 쉬울 것이라고 예상했는데 생각보다 에러가 너무너무 많이 났고 어려웠다. 처음에는 dockerfile과 dockerfile.prod의 차이도 몰라서 계속 이상한 파일을 수정하기도 했다. 그래도 지금은 postman이 정상적으로 작동한 것만으로도 감동스럽다
