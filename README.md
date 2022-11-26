@@ -3,4 +3,4 @@
 
 ## 2주차 미션: DB 모델링 및 Django ORM
 
-deploy test
+deploy test -> change yml
