@@ -428,9 +428,27 @@ FROM python:3.9.7-alpine as builder
 RUN pip install --upgrade pip</code></pre>
 
 이 두 줄을 추가하면서 해결했다. 사실 검색으로는 python 3.9와 Pillow 9.3.0이 호환된다고 하고 pip도 warning만 뜨는데 왜 저거때문에 에러가 났는지 모르겠다
-2. Internel Sever Error 500
+2. Internal Sever Error 500<br>
 Debug=True를 Git Secret에 추가한 후에야 정확한 이유를 알 수 있었다. 심지어 처음에는 Debug=True를 적용하고 싶어서 base.py 파일만 계속 수정했다.... 
 <br> 아무튼 rds에 연결한 데이터베이스에 스키마와 테이블이 존재하지 않아서 발생하는 에러였다ㅜ.ㅜ
 처음에는 entrypoint.prod.sh에 migration 관련 코드를 추가했으나 적용되지 않아서 결국 data export/import 작업을 통해 테이블을 통째로 옮겼고 에러를 해결할 수 있었다. 제대로 해결한 건 아니라서 너무 찝찝하긴 한데 어쩔 수 없다. 다음에 시간 나면 고칠 것.
+3. EC2<br>
+어느 순간부터 git action을 실행하면 서버가 멈춰버렸다. 뭔가 불안해서 htop 명령어로 리소스 사용량을 보니 CPU 사용량이 너무 많아서 서버가 다운된 것이었다.. 이것 때문에 계속 ec2 서버를 재시작하다가 결국 push 전에 <pre><code>sudo docker rm -f $(sudo docker ps -qa)</pre></code>를 실행해서 docker를 종료시키고 git action을 실행했다. 프리티어 문제라서 내가 고칠 수 있는 부분이 아닌 것 같다.
 
+
+++ 생각해보니까 docker-compose.prod.yml 파일에 <pre><code>  db:
+    container_name: db
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: mysql
+    expose:
+      - 3306
+    ports:
+      - "3307:3306"
+    env_file:
+      - .env
+    volumes:
+      - dbdata:/var/lib/mysql</code></pre> 를 추가했는데 이것때문에 CPU 사용량이 많아진 것 같다. 근데 Internal Server Error를 해결할 수 있었던게 이 코드를 추가해서인지 아니면 rds와 연결된 db에 테이블들을 추가해서인지를 모르겠다. 시험이 끝나고 다시 시도할 예정이다.🥹🥹🥹<br><br><br>
 ec2, rds를 사용해 본 적이 있어서 쉬울 것이라고 예상했는데 생각보다 에러가 너무너무 많이 났고 어려웠다. 처음에는 dockerfile과 dockerfile.prod의 차이도 몰라서 계속 이상한 파일을 수정하기도 했다. 그래도 지금은 postman이 정상적으로 작동한 것만으로도 감동스럽다
