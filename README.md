@@ -560,11 +560,3 @@ Debug=TRUE인 로컬에서 도커를 실행했을 때 이 에러가 떴으니 �
 
 이번 과제를 하며 github secret이나 github action같은 새로운 것들도 많이 배워서 우여곡절은 많았지만 재밌었다.
 
-그리고 오류를 고치려고 여기저기 바꿔보다가 docker-composer.yml이랑 docker-compose.prod.yml에서 다음 줄도 고쳤는데 결정적인 에러 해결은 다른 곳에서 되었기 때문에
-이건 상관이 없었던 건지 궁금해서 리드미에 추가해본다..  
-(원래 .env.example이었는데 .env로 바꿨다)
-```python
-    env_file:
-      - .env
-```
-
