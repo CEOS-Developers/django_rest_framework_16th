@@ -57,6 +57,10 @@
 ![image](https://user-images.githubusercontent.com/68186101/204071158-023bf48c-ca12-47a9-89e5-2abbe4acc240.png)
 
 
+5. Action을 통한 자동 배포 확인
+
+
+### 배포된 EC2 DNS 주소로 요청해보기
 
 
 ### Issue
