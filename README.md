@@ -449,6 +449,7 @@ SECRET_KEY=-----------------------
 ec2에서 실행중인 docker container 확인
 <img width="750" alt="스크린샷 2022-11-26 오후 11 20 42" src="https://user-images.githubusercontent.com/67852689/204093963-db363c16-f9e4-44f5-8c8c-5d34a3b0a3c7.png">
 로그인 성공
+
 ### 에러 정리
 1. i/o timeout
 
