@@ -15,7 +15,7 @@ services:
     env_file:
       - .env
     volumes:
-      - dbdata:/var/lib/mysql
+      - db_data:/var/lib/mysql
 
   web:
     container_name: web
