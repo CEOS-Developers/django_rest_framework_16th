@@ -203,3 +203,33 @@ django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.00
 
 로그인을 구현할 때 대충 상황에 맞는 거 쓰면서 구현했던 것 같은데, 인증 방식 4가지에 대해 정확하게 이해할 수 있는 기회가 되었다. 
 
+
+ModuleNotFoundError: No module named 'rest_framework_simplejwt'  
+-> requirements.txt 수정
+
+error: command 'gcc' failed: No such file or directory  
+->`sudo apt-get update`  
+`sudo apt-get install gcc`
+안됨
+
+
+RUN apk update && apk add python3 python3-dev mariadb-dev build-base && pip3 install mysqlclient && apk del python3-dev mariadb-dev build-base \
+               && apk add gcc libc-dev libffi-dev \  
+               && apk add zlib-dev jpeg-dev gcc musl-dev 
+
+
+pillow를 설치할 때 필요한 build dependency들이 있다고 해서 Dockerfile에 추가해야했다.
+virtual로 설치하고 다시 삭제해서 image크기를 작게하는 것이 좋다고 하지만 일단 돌아가는 것을 확인하는게 급했다. 
+
+닫으려는데 또 에러ㅜㅜ
+failed to remove network django_rest_framework_16th_default: Error response from daemon: error while removing network
+
+`docker network ls`
+![image](https://user-images.githubusercontent.com/69039161/204083135-e20f4cd5-89f3-4b25-8844-acfff250868b.png)
+host가 있어서 그런가?  
+bridge, host, none은 Docker 데몬(daemon)이 실행되면서 디폴트로 생성되는 네트워크입니다. 대부분의 경우에는 이러한 디폴트 네트워크를 이용하는 것 보다는 사용자가 직접 네트워크를 생성해서 사용하는 것이 권장됩니다.  
+라고 함. 
+
+네트워크에 연결되어 있는 도커가 없어야 삭제할 수 있다고 하는데, 삭제 명령어가 다 안먹혀서 docker desktop으로 stop하니까 종료가 됐다. ㅠ
+![image](https://user-images.githubusercontent.com/69039161/204083612-c07c32b1-64c5-4dba-960b-4b1160939f20.png)
+
