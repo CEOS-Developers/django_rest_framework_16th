@@ -1,5 +1,5 @@
 FROM python:3.9.7-alpine
-RUN sudo pip install --upgrade pip
+RUN pip install --upgrade pip
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir /app
