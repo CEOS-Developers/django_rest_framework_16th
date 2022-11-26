@@ -2,8 +2,6 @@
 ### 6주차 미션 : 6주차 : AWS : EC2, RDS & Docker & Github Action
 
 
-
-
 *****
 ### 5주차 미션 : 5주차 : DRF3 - Simple JWT
 JWT가 궁금해서 구글링하다가 django에서 제공하는 jwt 로직을 찾아내서 해당 부분을 사용해 봤습니다.
