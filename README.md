@@ -611,3 +611,63 @@ JSON 데이터를 Base64 URL-safe Encode 를 통해 인코딩하여 직렬화한
 ### 회고
 너무 어려웠다..😩 어느정도 하고 나서 뒤에 어렵지 않겠지하고 여유롭게 했는데 이리해도 저리해도 안돼서 몇번이나 다시하고 그랬다. 하하. 내가 혼자 느끼기에도 지금 내 코드가 상당히 비효율적이고 더러운 것 같아서 다음에 꼭 리펙토링을 하고 싶다.
 그리고 저번에 viewset이나 url에서 router를 쓰는 작업을 하면서 코드가 간결해졌는데 이번 과제에서는 다시 APIView와 as_view()를 사용해서 두 가지 코드 형식이 같이 있는게 맞는지 모르겠다. 우선 보기에 깔끔하지는 않은 것 같다. 얼렁뚱땅 과제 끝 😎
+
+----
+## 6주차 미션 : Docker 배포 환경 구축
+### 로컬 환경에서 도커 실행
+
+<code>docker-compose -f docker-compose.yml up --build</code>
+
+터미널에서 실행하여 브라우저에서 127.0.0.1:8000 접속 테스트
+
+<사진>
+
+접속 성공!
+
+실행했을 때 모듈 임포트 에러가 많이 발생했는데 pip list로 requirements.txt에 추가가 필요한 내용들 찾아서 수정하여 해결하였다.
+
+<code>docker-compose -f docker-compose.prod.yml down -v</code> 입력하여 종료
+
+### 실 환경 배포
+- AWS EC2 서버 구축: [참고링크](https://velog.io/@sanbonai06/AWS%EC%84%9C%EB%B2%84-%EA%B5%AC%EC%B6%95)
+- AWS RDS 구축: [참고링크](https://velog.io/@sanbonai06/AWS-RDS-%EA%B5%AC%EC%B6%95)
+
+#### .env.prod 생성
+```
+DATABASE_HOST={RDS db 주소}
+DATABASE_DB=mysql
+DATABASE_NAME={RDS 기본 database 이름}
+DATABASE_USER={RDS User 이름}
+DATABASE_PASSWORD={RDS master 비밀번호}
+DATABASE_PORT=3306
+DEBUG=False
+DJANGO_ALLOWED_HOSTS={EC2 서버 ip 주소}
+DJANGO_SECRET_KEY={django secret key}
+```
+프로젝트 상단에 파일 생성 후 내가 구축한 서버 내용 넣기! &rarr; 기존 .env 파일명을 바꾸고 해당 .env.prod를 .env로 바꿔서 위 내용이 연결되게 함
+
+#### github secrets 설정
+<사진>
+- ENV_VARS: .env.prod 전체 복사 붙여넣기
+- HOST: 배포할 EC2 서버 퍼블릭 DNS(IPv4) 주소
+- KEY: 배포할 EC2 서버로 접근 가능한 ssh key 전문 (.pem)
+
+#### push 후 Actions 확인
+<사진>
+
+<사진>
+
+<code>deploy.yml</code>에 branch를 master로 설정했기 때문에 master branch에서 push했을 때 자동으로 배포된다.
+
+### 테스트 API 확인
+<사진>
+
+postman에서 배포된 EC2 DNS 주소로 접속하여 api 확인
+
+<사진>
+
+데이터베이스에서 보면 잘 저장된 것을 확인할 수 있다.
+
+### 회고
+첫 배포를 끝냈다!! 내가 틀려도 뭘 틀렸는지 확인하기가 어려워서 지금까지 했던 과제 중에 안됐을 때 가장 막막하고 힘들었다.. 제가 모자라서.. 모자라서 그럽니다. 🧢
+이런 나를 끝까지 도와주신 민준님께 감사의 말씀 올립니다 그저 빛!
