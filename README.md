@@ -504,3 +504,20 @@ urlpatterns = [
 단순한 기능 구현을 넘어서 보안까지 생각해볼 수 있어서 좋았던 과제였다. 나중에 Logout 기능도 구현해야겠다.  
 
 ## 6주차 미션: AWS : EC2, RDS & Docker & Github Action (배포환경 구축 스터디)
+
+### 로컬 환경에서 도커 실행해보기
+![image](https://user-images.githubusercontent.com/86969518/204093519-6962fad0-d245-4c36-a84d-f10471c74db0.png)
+![image](https://user-images.githubusercontent.com/86969518/204093886-69448532-bffd-44e7-9631-0c796592e987.png)
+![image](https://user-images.githubusercontent.com/86969518/204093921-e96cebed-a12e-48dd-b523-7711f5453145.png)
+
+### 실 환경 배포
+EC2
+![image](https://user-images.githubusercontent.com/86969518/204092341-a1d15f49-5492-41ae-9ab5-bb7e1061e33a.png)
+RDS
+![image](https://user-images.githubusercontent.com/86969518/204092547-7a296f47-21c4-4ad4-a86e-240836d89318.png)
+
+EC2 DNS 주소로 접속했을 때
+![image](https://user-images.githubusercontent.com/86969518/204092638-51ac427b-0fbf-463d-b0d0-4db00dc22566.png)
+
+(EC2 DNS 주소)/api
+![image](https://user-images.githubusercontent.com/86969518/204092682-46c4b19d-bd0a-4545-9ae6-48d4e7a6338e.png)
