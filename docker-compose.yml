@@ -1,9 +1,9 @@
 version: '3'
 services:
 
-  dbase:
-    container_name: db_data
-    image: mysql:5.7
+  db:
+    container_name: db
+    image: mysql:latest
     restart: always
     environment:
       MYSQL_ROOT_HOST: '%'
@@ -15,7 +15,7 @@ services:
     env_file:
       - .env
     volumes:
-      - db_data:/var/lib/mysql
+      - dbdata:/var/lib/mysql
 
   web:
     container_name: web
