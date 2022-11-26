@@ -503,6 +503,7 @@ urlpatterns = [
 ### 이번 과제를 하며..
 단순한 기능 구현을 넘어서 보안까지 생각해볼 수 있어서 좋았던 과제였다. 나중에 Logout 기능도 구현해야겠다.  
 
+
 ## 6주차 미션: AWS : EC2, RDS & Docker & Github Action (배포환경 구축 스터디)
 
 ### 로컬 환경에서 도커 실행해보기
@@ -521,3 +522,45 @@ EC2 DNS 주소로 접속했을 때
 
 (EC2 DNS 주소)/api
 ![image](https://user-images.githubusercontent.com/86969518/204092682-46c4b19d-bd0a-4545-9ae6-48d4e7a6338e.png)
+
+(EC2 DNS 주소)/api/register - 회원가입 api
+![image](https://user-images.githubusercontent.com/86969518/204094146-6aeb74d7-6363-4406-b1a7-c31d41eb0487.png)
+
+실패...
+![image](https://user-images.githubusercontent.com/86969518/204094201-15f550fc-385f-450a-b468-1f75954c2772.png)
+
+### 이번 과제를 하며...
+#### issues
+![image](https://user-images.githubusercontent.com/86969518/204094401-02088632-c035-4218-a73d-f6d3a12d0cd9.png)
+배포를 하고 서버 주소에 들어갔는데 502 에러가 떴다.  
+알고 보니 requirements.txt에 설치한 모듈들이 빠져있어서 web container가 제대로 실행이 안된 것이었다.  
+requirements.txt를 수정한 후에는 libffi 모듈이 없어서 설치가 안된다는 에러가 났는데 
+dockerfile, dockerfile.prod에 다음 명령어를 추가해서 해결했다.
+```python
+RUN apk --no-cache --update add libffi-dev
+```
+
+그러고 나니 web container도 서버에 잘 올라가서 위에 올린 화면들을 볼 수 있었다.  
+- EC2 DNS 주소로 접속했을 때, (EC2 DNS 주소)/api, (EC2 DNS 주소)/api/register - 회원가입 api 등의 화면  
+
+근데 api 요청을 보내면 server error (500) 이 뜬다.  
+Debug=TRUE인 로컬에서 도커를 실행했을 때 이 에러가 떴으니 아마 데이터베이스 쪽에서 문제가 생긴 것 같다고 추측 중이다
+![image](https://user-images.githubusercontent.com/86969518/204095038-5ee80b0e-c400-4999-a014-1bb5cd966674.png)
+아직 이유를 찾지 못했는데 일단 과제 제출부터 하고 다음 스터디까지 더 알아보려고 한다..
+근데 로컬에서는 저 에러가 뜨면서도 서버는 잘 돌아가고 api 요청을 보냈을 때도 결과가 잘 나와서 정말 미스테리다.  
+
+#### 회고
+새로운 커밋이 있을 때마다 배포가 새로 되다보니 되는지 안되는지 확인하려고 커밋을 짧게 많이 했다..  
+그러고 보니 커밋 내역도 지저분해져서 좀 아쉽다.  
+어떤 것들은 로컬에서 도커를 돌리고 해결할 수도 있었는데 이걸 좀 나중에 깨달았다.  
+
+이번 과제를 하며 github secret이나 github action같은 새로운 것들도 많이 배워서 우여곡절은 많았지만 재밌었다.
+
+그리고 오류를 고치려고 여기저기 바꿔보다가 docker-composer.yml이랑 docker-compose.prod.yml에서 다음 줄도 고쳤는데 결정적인 에러 해결은 다른 곳에서 되었기 때문에
+이건 상관이 없었던 건지 궁금해서 리드미에 추가해본다..  
+(원래 .env.example이었는데 .env로 바꿨다)
+```python
+    env_file:
+      - .env
+```
+
