@@ -85,7 +85,8 @@
     ```
 
 - 페이지 아예 안 뜨는 오류
-![image](https://user-images.githubusercontent.com/68186101/204140247-5f943898-ee8b-4612-95de-1ff995b0a67b.png)
+![image](https://user-images.githubusercontent.com/68186101/204143997-6a12cb21-086e-4397-9e9c-c07d3eafc98f.png)
+
   - 80 포트 열어주니 페이지 뜸!
     ![image](https://user-images.githubusercontent.com/68186101/204140992-631ffc70-de9c-4337-bb53-0c42bb870637.png)
 
