@@ -244,14 +244,22 @@ EC2, RDS를 만들고 master에 push를 했는데 또 pillow 에러가 났다.
 ubuntu 버전이 달라서 그런건지? 저 alpine 이미지가 정확히 뭔지도 모르겠다.  
 
 이제 400 에러가 났다. ec2 rds 문제인건가 ec2도 rds도 잘 접속되고 도커도 잘 돌아가고 있었는데
-뭐지 이러면서 ec2랑 rds 다섯번은 다시 만들 것 같다. vpc, az, security group 공부를 했다. 
+뭐지 이러면서 ec2랑 rds 다섯번은 다시 만든 것 같다. vpc, az, security group 공부를 했다. 
 무지성에서 지성되기도 다섯 번은 읽은 것 같은데 아직도 나는 지성이 없다.  
 정말 기억에 남을 만한 삽질이었다. 
 
 docker-compose.prod.yml에 env_file이 example로 되어있었다. 세상에. 우리 아이한테 secret key도 알려주지 않고
- django 프로젝트를 띄우라고 강요하고 있었다.
+ django 프로젝트를 띄우라고 강요하고 있었다. 여기서 .env는 deploy.sh에서 만든 .env인 것 같음.
 
 ![image](https://user-images.githubusercontent.com/69039161/204132282-27de2264-2b6a-4b46-a1fe-cbc2dd49beca.png)
 
 이제 500이 뜬다. 
+
+![image](https://user-images.githubusercontent.com/69039161/204136903-fb5bdf07-2d1c-4775-8105-0af304c60cb5.png)
+아악 드디어
+![image](https://user-images.githubusercontent.com/69039161/204136953-e603f2f3-82f3-4661-bfb4-8d0d11348ea6.png)
+다른 분들 레포 보고 migrate 코드 추가했는데 왜 migrate가 안되지 이러고 있었는데
+ec2 cli에서 todomate database를 생성하고 .env.prod 에서 이름도 수정하니까 바꾸니까 됐다. 
+DB식별자를 database 이름이라고 생각하고 database-1이라고 했었는데 mysql에서 하이픈을 db이름에 넣을 수 없어서
+생긴 문제인 것 같다.
 
