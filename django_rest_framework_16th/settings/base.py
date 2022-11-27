@@ -30,6 +30,7 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 # Application definition
 
