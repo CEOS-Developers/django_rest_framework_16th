@@ -84,6 +84,17 @@
     RUN python -m pip install --upgrade pip
     ```
 
+- 페이지 아예 안 뜨는 오류
+![image](https://user-images.githubusercontent.com/68186101/204140247-5f943898-ee8b-4612-95de-1ff995b0a67b.png)
+  - 80 포트 열어주니 페이지 뜸!
+    ![image](https://user-images.githubusercontent.com/68186101/204140992-631ffc70-de9c-4337-bb53-0c42bb870637.png)
+
+
+- 페이지는 떴는데 400 에러 ...
+
+![image](https://user-images.githubusercontent.com/68186101/204141029-6b5197c9-e0b1-4597-a308-3c7c252d0877.png)
+
+
 ## 5주차 미션 : DRF3 - Simple JWT
 
 ### Q. 로그인 인증 방식은 어떤 종류가 있나요?
