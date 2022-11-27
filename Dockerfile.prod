@@ -53,7 +53,6 @@ RUN pip install --upgrade pip
 RUN pip install mysqlclient
 RUN pip install --no-cache /wheels/*
 RUN apk del build-deps
-RUN
 
 # copy entrypoint-prod.sh
 COPY ./config/docker/entrypoint.prod.sh $APP_HOME
