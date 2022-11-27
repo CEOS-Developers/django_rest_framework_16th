@@ -203,6 +203,8 @@ django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.00
 
 로그인을 구현할 때 대충 상황에 맞는 거 쓰면서 구현했던 것 같은데, 인증 방식 4가지에 대해 정확하게 이해할 수 있는 기회가 되었다. 
 
+# 6주차 AWS : EC2, RDS & Docker & Github Action
+
 
 ModuleNotFoundError: No module named 'rest_framework_simplejwt'  
 -> requirements.txt 수정
@@ -232,4 +234,24 @@ bridge, host, none은 Docker 데몬(daemon)이 실행되면서 디폴트로 생�
 
 네트워크에 연결되어 있는 도커가 없어야 삭제할 수 있다고 하는데, 삭제 명령어가 다 안먹혀서 docker desktop으로 stop하니까 종료가 됐다. ㅠ
 ![image](https://user-images.githubusercontent.com/69039161/204083612-c07c32b1-64c5-4dba-960b-4b1160939f20.png)
+ 
+--> 여기까지는 로컬에서 검사만 한 거였다. 이때까지는 정말 행복했다.
+
+EC2, RDS를 만들고 master에 push를 했는데 또 pillow 에러가 났다.  
+`RUN python -m pip install --upgrade pip`
+얘도 더해줘야 했다. 위에 더한 애를 빼고 얘만 있으면 또 안된다.   
+이유가 뭔지 모르겠다. alpine image? 파이썬 버젼이 달라서 그런건지.. 
+ubuntu 버전이 달라서 그런건지? 저 alpine 이미지가 정확히 뭔지도 모르겠다.  
+
+이제 400 에러가 났다. ec2 rds 문제인건가 ec2도 rds도 잘 접속되고 도커도 잘 돌아가고 있었는데
+뭐지 이러면서 ec2랑 rds 다섯번은 다시 만들 것 같다. vpc, az, security group 공부를 했다. 
+무지성에서 지성되기도 다섯 번은 읽은 것 같은데 아직도 나는 지성이 없다.  
+정말 기억에 남을 만한 삽질이었다. 
+
+docker-compose.prod.yml에 env_file이 example로 되어있었다. 세상에. 우리 아이한테 secret key도 알려주지 않고
+ django 프로젝트를 띄우라고 강요하고 있었다.
+
+![image](https://user-images.githubusercontent.com/69039161/204132282-27de2264-2b6a-4b46-a1fe-cbc2dd49beca.png)
+
+이제 500이 뜬다. 
 
