@@ -1,3 +1,4 @@
+import django
 from .base import *  # noqa
 
 DEBUG = False
@@ -13,3 +14,5 @@ DATABASES = {
         'PORT': env('DATABASE_PORT'),
     }
 }
+
+django.setup()
