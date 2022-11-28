@@ -530,7 +530,7 @@ EC2 DNS 주소로 접속했을 때
 ![image](https://user-images.githubusercontent.com/86969518/204094201-15f550fc-385f-450a-b468-1f75954c2772.png)
 
 
-<B>11월 28일: 드디어 해결!</B>(진짜 너무너무 기쁘다..)
+<B>11월 28일: 드디어 해결!</B>(진짜 너무너무 기쁘다..)  
 (EC2 DNS 주소)/api/register - 회원가입 성공 (Post 요청 성공)
 ![image](https://user-images.githubusercontent.com/86969518/204206235-66722087-022b-41ed-9a2b-1da4fcb55b66.png)
 (EC2 DNS 주소)/api/todos (Get 요청 성공)
