@@ -58,9 +58,18 @@
 
 
 5. Action을 통한 자동 배포 확인
+![image](https://user-images.githubusercontent.com/68186101/204175733-6ac99390-c1db-4070-b29b-4f18844f52c2.png)
 
 
 ### 배포된 EC2 DNS 주소로 요청해보기
+- `GET http://ec2-3-37-33-162.ap-northeast-2.compute.amazonaws.com/api/todos/`
+![image](https://user-images.githubusercontent.com/68186101/204175771-9d99aa2f-51d8-4291-b76b-3eb2f035aa74.png)
+
+- `POST http://ec2-3-37-33-162.ap-northeast-2.compute.amazonaws.com/account/register/`
+![image](https://user-images.githubusercontent.com/68186101/204175951-e6732a68-f8ea-4ac8-848f-d0599c9d0c11.png)
+
+- `POST http://ec2-3-37-33-162.ap-northeast-2.compute.amazonaws.com/account/login/`
+![image](https://user-images.githubusercontent.com/68186101/204176087-582181cc-a364-40c5-bbf3-6ed8032eb186.png)
 
 
 ### Issue
@@ -93,7 +102,19 @@
 
 - 페이지는 떴는데 400 에러 ...
 
-![image](https://user-images.githubusercontent.com/68186101/204141029-6b5197c9-e0b1-4597-a308-3c7c252d0877.png)
+![image](https://user-images.githubusercontent.com/68186101/204176230-1816ce4d-3b44-42b6-9119-3c4675031489.png)
+
+
+  - 구글링 엄청 해봤는데.............문득, DNS 주소로 들어갔더니... 너무 잘된다..!!!!!!!!!!! 😭😭😭😭😭😭😭 (계속 IP주소로 들어가고 있었다..)
+  
+  ![image](https://user-images.githubusercontent.com/68186101/204176256-2c143c41-d78d-4303-aafd-83d60e44a6a3.png)
+  
+  - 호스트 주소 설정을 DNS 주소로 했으니,, 그런 거 같다...난 바보다.. 으ㅇ악
+
+### 후기
+- 도커 설정이랑 CI/CD 코드를 이미 다 짜주셨는데도... 어려웠다..
+- 너무 바보같은 실수를 해서 눈물나지만 그래도 해결해서 기쁘다..
+- 더 공부해서, 직접 도커 설정 파일이랑 github action 코드 작성해보고 싶다
 
 
 ## 5주차 미션 : DRF3 - Simple JWT
