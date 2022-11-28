@@ -526,8 +526,15 @@ EC2 DNS 주소로 접속했을 때
 (EC2 DNS 주소)/api/register - 회원가입 api
 ![image](https://user-images.githubusercontent.com/86969518/204094146-6aeb74d7-6363-4406-b1a7-c31d41eb0487.png)
 
-실패...
+11/26: 실패...(api 요청 보냈을 때)
 ![image](https://user-images.githubusercontent.com/86969518/204094201-15f550fc-385f-450a-b468-1f75954c2772.png)
+
+
+<B>11월 28일: 드디어 해결!</B>(진짜 너무너무 기쁘다..)
+(EC2 DNS 주소)/api/register - 회원가입 성공 (Post 요청 성공)
+![image](https://user-images.githubusercontent.com/86969518/204206235-66722087-022b-41ed-9a2b-1da4fcb55b66.png)
+(EC2 DNS 주소)/api/todos (Get 요청 성공)
+![image](https://user-images.githubusercontent.com/86969518/204205610-763a1a3a-975b-44fb-83f6-9e8c127a3fc7.png)
 
 ### 이번 과제를 하며...
 #### issues
@@ -543,15 +550,25 @@ RUN apk --no-cache --update add libffi-dev
 그러고 나니 web container도 서버에 잘 올라가서 위에 올린 화면들을 볼 수 있었다.  
 - EC2 DNS 주소로 접속했을 때, (EC2 DNS 주소)/api, (EC2 DNS 주소)/api/register - 회원가입 api 등의 화면  
 
-근데 api 요청을 보내면 server error (500) 이 뜬다.  
-Debug=TRUE인 로컬에서 도커를 실행했을 때 이 에러가 떴으니 아마 데이터베이스 쪽에서 문제가 생긴 것 같다고 추측 중이다
+근데 api 요청을 보내면 server error (500) 이 뜬다. 아마 데이터베이스 쪽에서 문제가 생긴 것 같다고 추측 중이다.  
+아직 이유를 찾지 못했는데 일단 과제 제출부터 하고 다음 스터디까지 더 알아보려고 한다..  
+
+그리고 Debug=TRUE인 로컬에서 도커를 실행했을 때 이 에러가 떴었는데 로컬에서는 저 에러가 뜨면서도 서버는 잘 돌아가고 api 요청을 보냈을 때도 결과가 잘 나와서 정말 미스테리다.  
 ![image](https://user-images.githubusercontent.com/86969518/204095038-5ee80b0e-c400-4999-a014-1bb5cd966674.png)
-아직 이유를 찾지 못했는데 일단 과제 제출부터 하고 다음 스터디까지 더 알아보려고 한다..
-근데 로컬에서는 저 에러가 뜨면서도 서버는 잘 돌아가고 api 요청을 보냈을 때도 결과가 잘 나와서 정말 미스테리다.  
+
 
 - 로컬 실행 화면
 ![image](https://user-images.githubusercontent.com/86969518/204097932-9024c196-3ca0-4417-afbe-88c59092da49.png)
 ![image](https://user-images.githubusercontent.com/86969518/204097941-d9ee7dbe-4d95-46f7-8456-4a30f807d19d.png)
+
+<B>11월 28일 수정:</B>
+드디어 500에러를 해결했다!  
+다른 분들의 코드를 읽고 깨달은건데 migration을 안한 것이 문제였다. 그런데 migration 코드를 추가해서 다시 실행했는데도 안돼서
+왜 안되지 생각했는데.. 알고보니 이유는 간단했다.  
+난 RDS의 db identifier가 db name인줄 알았다..ㅎㅎ  
+db name은 additional configurations를 통해 설정할 수 있었고 설정을 해야 그 이름의 db가 생성되는 것이라고 한다.
+rds를 다시 만들면서 db name을 설정하고 env 파일의 내용도 맞추어 수정했더니 잘 돌아갔다.
+생각보다 간단한 이유여서 살짝 허무했지만 어쨌든 해결해서 기쁘다!!
 
 #### 회고
 새로운 커밋이 있을 때마다 배포가 새로 되다보니 되는지 안되는지 확인하려고 커밋을 짧게 많이 했다..  
