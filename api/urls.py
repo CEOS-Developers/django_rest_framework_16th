@@ -10,6 +10,7 @@ urlpatterns = router.urls
 urlpatterns += [
     path('join/', JoinView.as_view()),
     path('login/', LoginView.as_view()),
+    path('test/', Test.as_view())
 
     # path('token/', TokenObtainPairView.as_view()),
     # path('token/verify', TokenVerifyView.as_view()),

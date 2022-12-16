@@ -101,6 +101,18 @@ class LoginView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class Test(APIView):
+    def get(self, request):
+        res = Response(
+            {
+                "hello world"
+            },
+            status=status.HTTP_200_OK,
+        )
+        return res
+
+
 # class TodoList(APIView):
 #     def get(self, request):
 #         todos = Todo.objects.filter(deleted_at=None)
