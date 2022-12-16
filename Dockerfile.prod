@@ -2,7 +2,9 @@
 ###########
 
 # pull official base image
-FROM python:3.8.3-alpine as builder
+FROM python:3.9.7-alpine as builder
+RUN pip install --upgrade pip
+ENV PIP_ROOT_USER_ACTION=ignore
 
 # set work directory
 WORKDIR /usr/src/app
@@ -25,7 +27,8 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 #########
 
 # pull official base image
-FROM python:3.8.3-alpine
+FROM python:3.9.7-alpine
+RUN pip install --upgrade pip
 
 # create directory for the app user
 RUN mkdir -p /home/app
