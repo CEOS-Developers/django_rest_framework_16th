@@ -473,4 +473,4 @@ dockerfile에서 빌드하고 docker compose 파일에서 만들어진 이미지
 
 <img width="387" alt="스크린샷 2022-11-27 오전 12 45 44" src="https://user-images.githubusercontent.com/67852689/204097163-347fa1b6-8f60-49b5-8734-3424fac8fda7.png">
 
-커밋이 난리났다. ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ
+커밋이 난리났다. ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋz
