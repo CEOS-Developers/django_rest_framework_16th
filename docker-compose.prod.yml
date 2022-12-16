@@ -15,7 +15,7 @@ services:
       - static:/home/app/web/static
       - media:/home/app/web/media
     expose:
-      - 8000
+      - "8000"
     entrypoint:
       - sh
       - config/docker/entrypoint.prod.sh
