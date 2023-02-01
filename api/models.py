@@ -28,8 +28,11 @@ class Friend(models.Model):
 class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField(blank=True)
+    # privacy, order_num default 설정 제대로 안됨
     privacy = models.PositiveIntegerField(default=0)  # 0: 숨기기, 1: 나만 보기, 2: 일부 공개, 3: 전체 공개
+    # unique한 값이어야 할 듯. 설정 추가하기
     color = models.CharField(max_length=10)  # 16진수 코드로 저장. ex) #ffffff
+    # 생각해보니 order_num의 값을 지정해주는 게 불편. auto_increment 사용하든지 아님 id = order로 이용
     order_num = models.PositiveIntegerField(default=0)  # 목표 순서
 
 

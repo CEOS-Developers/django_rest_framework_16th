@@ -66,7 +66,7 @@ class TodoFilter(FilterSet):
         fields = ['content', 'is_done']
 
     def done_filter(self, queryset, name, value):
-        return queryset.filter(is_done=True)
+        return queryset.filter(is_done=False)
 
 
 class TodoViewSet(ModelViewSet):
@@ -75,3 +75,8 @@ class TodoViewSet(ModelViewSet):
 
     filter_backends = [DjangoFilterBackend]
     filterset_class = TodoFilter
+
+    # def list(self, request, *args, **kwargs):
+    #     query_params = request.query_params
+    #     self.queryset = self.get_queryset().filter(goal__id__icontains=query_params.get('goal'))
+    #     return super().list(request, *args, **kwargs)

@@ -1,5 +1,122 @@
 # CEOS 16기 백엔드 스터디 모델링 및 drf 연습을 위한 레포
 
+## 6주차 미션 : Docker 배포 환경 구축
+
+### 로컬에서 Docker로 서버와 DB 실행
+
+- 도커 빌드
+  ```shell
+  docker-compose -f docker-compose.yml up --build
+  ```
+
+- 브라우저로 접속되는지 테스트 -> 잘 된다!
+![image](https://user-images.githubusercontent.com/68186101/204068004-2b3f6215-e71c-440d-b9ff-4da311547602.png)
+
+- 도커 다운
+  ```shell
+  docker-compose -f docker-compose.prod.yml down -v
+  ```
+  or
+  ```shell
+  Ctrl+c
+  
+  docker-compose down
+  ```
+
+### 실 환경 배포
+1. EC2 생성 & 탄력적 IP 할당
+![image](https://user-images.githubusercontent.com/68186101/204069595-2041fa56-a29a-40d8-b67c-b7d55ce530fc.png)
+
+2. RDS 생성
+![image](https://user-images.githubusercontent.com/68186101/204069715-764e5de1-193f-4fb3-8b6a-474dc42dfd70.png)
+- time zone seoul 설정
+- character set utf8mb4로 변경
+
+- 접속 확인
+  - 명령어
+    ```bash
+    mysql -h <host 주소> -u <유저네임> -p
+    ```
+  ![image](https://user-images.githubusercontent.com/68186101/204071302-ca0e2abe-3ec7-486a-b37e-2629d2461885.png)
+
+
+3. production env 파일 설정
+  ```shell
+  DATABASE_HOST={RDS db 주소}
+  DATABASE_DB=mysql
+  DATABASE_NAME={RDS 기본 database 이름}
+  DATABASE_USER={RDS User 이름}
+  DATABASE_PASSWORD={RDS master 비밀번호}
+  DATABASE_PORT=3306
+  DEBUG=False
+  DJANGO_ALLOWED_HOSTS={EC2 서버 ip 주소}
+  DJANGO_SECRET_KEY={django secret key}
+  ```
+  
+4. Gihub Action 설정
+![image](https://user-images.githubusercontent.com/68186101/204071158-023bf48c-ca12-47a9-89e5-2abbe4acc240.png)
+
+
+5. Action을 통한 자동 배포 확인
+![image](https://user-images.githubusercontent.com/68186101/204175733-6ac99390-c1db-4070-b29b-4f18844f52c2.png)
+
+
+### 배포된 EC2 DNS 주소로 요청해보기
+- `GET http://ec2-3-37-33-162.ap-northeast-2.compute.amazonaws.com/api/todos/`
+![image](https://user-images.githubusercontent.com/68186101/204175771-9d99aa2f-51d8-4291-b76b-3eb2f035aa74.png)
+
+- `POST http://ec2-3-37-33-162.ap-northeast-2.compute.amazonaws.com/account/register/`
+![image](https://user-images.githubusercontent.com/68186101/204175951-e6732a68-f8ea-4ac8-848f-d0599c9d0c11.png)
+
+- `POST http://ec2-3-37-33-162.ap-northeast-2.compute.amazonaws.com/account/login/`
+![image](https://user-images.githubusercontent.com/68186101/204176087-582181cc-a364-40c5-bbf3-6ed8032eb186.png)
+
+
+### Issue
+- 도커 빌드하는 중에 아래 오류 있었음
+![image](https://user-images.githubusercontent.com/68186101/204038309-35f353eb-7f50-498e-b42a-3d8cb7f5cc92.png)
+  ```shell
+  api.Profile.profile_img: (fields.E210) Cannot use ImageField because Pi
+  llow is not installed.
+  web    |        HINT: Get Pillow at https://pypi.org/project/Pillow/ or run comm
+  and "python -m pip install Pillow".
+  ```
+    - Pillow 라이브러리 requirement.txt에 없어서 도커 빌드 시 다운이 안됨
+    - requirement.txt에 Pillow 추가해서 다시 빌드 ! 
+
+- 도커에서 Pillow 라이브러리 설치 오류
+![image](https://user-images.githubusercontent.com/68186101/204067928-2c506872-0bdc-4f7e-9dc1-c70de780d955.png)
+[동일한 오류](https://newbiecs.tistory.com/246)
+  - pip version을 업그레이드하지 않아서 생기는 오류였음
+  - Dokerfile에 requirements.txt 설치 전 아래 코드(pip upgrade)를 추가하여 해결
+    ```bash
+    RUN python -m pip install --upgrade pip
+    ```
+
+- 페이지 아예 안 뜨는 오류
+![image](https://user-images.githubusercontent.com/68186101/204143997-6a12cb21-086e-4397-9e9c-c07d3eafc98f.png)
+
+  - 80 포트 열어주니 페이지 뜸!
+    ![image](https://user-images.githubusercontent.com/68186101/204140992-631ffc70-de9c-4337-bb53-0c42bb870637.png)
+
+
+- 페이지는 떴는데 400 에러 ...
+
+![image](https://user-images.githubusercontent.com/68186101/204176230-1816ce4d-3b44-42b6-9119-3c4675031489.png)
+
+
+  - 구글링 엄청 해봤는데.............문득, DNS 주소로 들어갔더니... 너무 잘된다..!!!!!!!!!!! 😭😭😭😭😭😭😭 (계속 IP주소로 들어가고 있었다..)
+  
+  ![image](https://user-images.githubusercontent.com/68186101/204176256-2c143c41-d78d-4303-aafd-83d60e44a6a3.png)
+  
+  - 호스트 주소 설정을 DNS 주소로 했으니,, 그런 거 같다...난 바보다.. 으ㅇ악
+
+### 후기
+- 도커 설정이랑 CI/CD 코드를 이미 다 짜주셨는데도... 어려웠다..
+- 너무 바보같은 실수를 해서 눈물나지만 그래도 해결해서 기쁘다..
+- 더 공부해서, 직접 도커 설정 파일이랑 github action 코드 작성해보고 싶다
+
+
 ## 5주차 미션 : DRF3 - Simple JWT
 
 ### Q. 로그인 인증 방식은 어떤 종류가 있나요?
