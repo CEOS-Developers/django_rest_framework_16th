@@ -10,7 +10,7 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: django_rest_framework_16th.settings.prod
     env_file:
-      - .env.example
+      - .env
     volumes:
       - static:/home/app/web/static
       - media:/home/app/web/media
@@ -27,7 +27,7 @@ services:
       - static:/home/app/web/static
       - media:/home/app/web/media
     ports:
-      - "80:80"
+      - 80:80
     depends_on:
       - web
 
