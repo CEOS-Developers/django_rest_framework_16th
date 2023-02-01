@@ -203,3 +203,63 @@ django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.00
 
 로그인을 구현할 때 대충 상황에 맞는 거 쓰면서 구현했던 것 같은데, 인증 방식 4가지에 대해 정확하게 이해할 수 있는 기회가 되었다. 
 
+# 6주차 AWS : EC2, RDS & Docker & Github Action
+
+
+ModuleNotFoundError: No module named 'rest_framework_simplejwt'  
+-> requirements.txt 수정
+
+error: command 'gcc' failed: No such file or directory  
+->`sudo apt-get update`  
+`sudo apt-get install gcc`
+안됨
+
+
+RUN apk update && apk add python3 python3-dev mariadb-dev build-base && pip3 install mysqlclient && apk del python3-dev mariadb-dev build-base \
+               && apk add gcc libc-dev libffi-dev \  
+               && apk add zlib-dev jpeg-dev gcc musl-dev 
+
+
+pillow를 설치할 때 필요한 build dependency들이 있다고 해서 Dockerfile에 추가해야했다.
+virtual로 설치하고 다시 삭제해서 image크기를 작게하는 것이 좋다고 하지만 일단 돌아가는 것을 확인하는게 급했다. 
+
+닫으려는데 또 에러ㅜㅜ
+failed to remove network django_rest_framework_16th_default: Error response from daemon: error while removing network
+
+`docker network ls`
+![image](https://user-images.githubusercontent.com/69039161/204083135-e20f4cd5-89f3-4b25-8844-acfff250868b.png)
+host가 있어서 그런가?  
+bridge, host, none은 Docker 데몬(daemon)이 실행되면서 디폴트로 생성되는 네트워크입니다. 대부분의 경우에는 이러한 디폴트 네트워크를 이용하는 것 보다는 사용자가 직접 네트워크를 생성해서 사용하는 것이 권장됩니다.  
+라고 함. 
+
+네트워크에 연결되어 있는 도커가 없어야 삭제할 수 있다고 하는데, 삭제 명령어가 다 안먹혀서 docker desktop으로 stop하니까 종료가 됐다. ㅠ
+![image](https://user-images.githubusercontent.com/69039161/204083612-c07c32b1-64c5-4dba-960b-4b1160939f20.png)
+ 
+--> 여기까지는 로컬에서 검사만 한 거였다. 이때까지는 정말 행복했다.
+
+EC2, RDS를 만들고 master에 push를 했는데 또 pillow 에러가 났다.  
+`RUN python -m pip install --upgrade pip`
+얘도 더해줘야 했다. 위에 더한 애를 빼고 얘만 있으면 또 안된다.   
+이유가 뭔지 모르겠다. alpine image? 파이썬 버젼이 달라서 그런건지.. 
+ubuntu 버전이 달라서 그런건지? 저 alpine 이미지가 정확히 뭔지도 모르겠다.  
+
+이제 400 에러가 났다. ec2 rds 문제인건가 ec2도 rds도 잘 접속되고 도커도 잘 돌아가고 있었는데
+뭐지 이러면서 ec2랑 rds 다섯번은 다시 만든 것 같다. vpc, az, security group 공부를 했다. 
+무지성에서 지성되기도 다섯 번은 읽은 것 같은데 아직도 나는 지성이 없다.  
+정말 기억에 남을 만한 삽질이었다. 
+
+docker-compose.prod.yml에 env_file이 example로 되어있었다. 세상에. 우리 아이한테 secret key도 알려주지 않고
+ django 프로젝트를 띄우라고 강요하고 있었다. 여기서 .env는 deploy.sh에서 만든 .env인 것 같음.
+
+![image](https://user-images.githubusercontent.com/69039161/204132282-27de2264-2b6a-4b46-a1fe-cbc2dd49beca.png)
+
+이제 500이 뜬다. 
+
+![image](https://user-images.githubusercontent.com/69039161/204136903-fb5bdf07-2d1c-4775-8105-0af304c60cb5.png)
+아악 드디어
+![image](https://user-images.githubusercontent.com/69039161/204136953-e603f2f3-82f3-4661-bfb4-8d0d11348ea6.png)
+다른 분들 레포 보고 migrate 코드 추가했는데 왜 migrate가 안되지 이러고 있었는데
+ec2 cli에서 todomate database를 생성하고 .env.prod 에서 이름도 수정하니까 바꾸니까 됐다. 
+DB식별자를 database 이름이라고 생각하고 database-1이라고 했었는데 mysql에서 하이픈을 db이름에 넣을 수 없어서
+생긴 문제인 것 같다.
+

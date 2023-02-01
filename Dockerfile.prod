@@ -2,7 +2,7 @@
 ###########
 
 # pull official base image
-FROM python:3.8.3-alpine as builder
+FROM python:3.10.2-alpine as builder
 
 # set work directory
 WORKDIR /usr/src/app
@@ -16,6 +16,7 @@ ENV PYTHONUNBUFFERED 1
 RUN apk update && apk add python3 python3-dev mariadb-dev build-base && pip3 install mysqlclient
 
 # install dependencies
+RUN python -m pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
@@ -25,7 +26,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 #########
 
 # pull official base image
-FROM python:3.8.3-alpine
+FROM python:3.10.2-alpine
 
 # create directory for the app user
 RUN mkdir -p /home/app
@@ -45,7 +46,9 @@ WORKDIR $APP_HOME
 RUN apk update && apk add libpq
 RUN apk update \
     && apk add --virtual build-deps gcc python3-dev musl-dev \
-    && apk add --no-cache mariadb-dev
+    && apk add --no-cache mariadb-dev \
+    && apk add libc-dev libffi-dev \
+    && apk add zlib-dev jpeg-dev
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install mysqlclient
