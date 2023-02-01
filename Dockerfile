@@ -1,4 +1,5 @@
-FROM python:3.8.3-alpine
+FROM python:3.9.7-alpine
+RUN pip install --upgrade pip
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir /app
@@ -11,6 +12,7 @@ RUN apk update && apk add python3 python3-dev mariadb-dev build-base && pip3 ins
 
 # By copying over requirements first, we make sure that Docker will cache
 # our installed requirements rather than reinstall them on every build
+RUN apk add -u zlib-dev jpeg-dev gcc musl-dev
 COPY requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt
 
