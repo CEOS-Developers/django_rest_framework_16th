@@ -410,3 +410,67 @@ class GoalViewSet(viewsets.ModelViewSet):
 * 지난번 filterset이 적용 안되던 문제는 filter_class -> filterset_class 로 수정하는 것으로 해결할 수 있었다.
   * filterset_class라고 적으면 파이참이 rename하라고 한다. 옆 동네 인텔리제이는 똑똑하던데, 얜 왜 이러는지 모르겠다.
 * 다음에는 로그인도 viewset으로 변경해 봐야겠다.
+
+## 6주차 : 배포환경 구축 스터디
+### 배포
+1. EC2 생성, 탄력적 ip 할당
+<img width="1197" alt="스크린샷 2022-11-26 오후 11 21 37" src="https://user-images.githubusercontent.com/67852689/204093967-7b369fc7-4b0e-4f02-bea5-60ad658798ea.png">
+2. EC2 인바운드 셋팅
+<img width="1199" alt="스크린샷 2022-11-26 오후 11 22 48" src="https://user-images.githubusercontent.com/67852689/204093968-afc616e9-d491-478d-9ede-0277ed7ce065.png">
+3. RDS 생성, 인바운드 셋팅
+<img width="1222" alt="스크린샷 2022-11-26 오후 11 23 12" src="https://user-images.githubusercontent.com/67852689/204093969-3eaabcb3-d4b0-4996-86b8-2169fa3b8a0b.png">
+4. github action branch 설정
+
+```text
+on:
+  push:
+    branches:
+      - main
+```
+
+5. .env.prod 생성, github action 설정
+
+```text
+DATABASE_HOST=drfdrf.-----------------.rds.amazonaws.com
+DATABASE_DB=mysql
+DATABASE_NAME=drfdrf
+DATABASE_USER=drf
+DATABASE_PASSWORD=drfdrfdrf
+DATABASE_PORT=3306
+DEBUG=False
+DJANGO_ALLOWED_HOSTS=-----------.ap-northeast-2.compute.amazonaws.com
+DJANGO_SECRET_KEY=---------------------
+
+SECRET_KEY=-----------------------
+```
+
+6. 배포 확인
+<img width="986" alt="스크린샷 2022-11-26 오후 11 19 56" src="https://user-images.githubusercontent.com/67852689/204093953-f42cdebf-36c0-4e38-bd14-d7ca94a6b0e5.png">
+ec2에서 실행중인 docker container 확인
+<img width="750" alt="스크린샷 2022-11-26 오후 11 20 42" src="https://user-images.githubusercontent.com/67852689/204093963-db363c16-f9e4-44f5-8c8c-5d34a3b0a3c7.png">
+로그인 성공
+
+### 에러 정리
+1. i/o timeout
+
+<img width="370" alt="KakaoTalk_Photo_2022-11-26-23-27-01-1" src="https://user-images.githubusercontent.com/67852689/204093970-3c8f437d-b9b8-4adc-b0d8-4ab054f3c814.png">
+<br>깃헙 액션 실행 중 발생한 에러, 권한 때문에 특정 파일 삭제가 실행되지않아 에러가 발생함. ec2 내부에서 sudo를 이용해 해당 파일을 삭제하여 해결할 수 있었음.
+
+2. 502
+
+<img width="1001" alt="KakaoTalk_Photo_2022-11-26-23-27-01-2" src="https://user-images.githubusercontent.com/67852689/204093971-c15fd865-5773-4956-a26b-0a56506d058a.png">
+<img width="717" alt="스크린샷 2022-11-26 오후 11 24 34" src="https://user-images.githubusercontent.com/67852689/204093972-6a2cb7c0-811b-421c-8fce-ec93e4ff91b4.png">
+<br>깃헙 액션은 실행되었으나, 주소를 접속해보니 502 bad gateway가 뜸. 
+ec2 내부에서 docker ps -a를 입력해보니 첫 번째 사진과 같이 나옴. 
+web 컨테이너가 실행되지않음. 
+nginx 컨테이너 종료 후, 수동으로 도커 컨테이너 재실행해보니 두 번째 사진과 같은 에러 발생함.
+ENV_VARS에 SECRET_KEY 변수를 추가함으로써 해결 가능했음.
+
+## 회고
+dockerfile에서 빌드하고 docker compose 파일에서 만들어진 이미지를 사용하는 것으로 알고 있었는데,
+이번 파일에서는 docker compose 파일에서 빌드를 진행하는 것이 신기했다.
+오류 잡으려고 이것 저것 고쳐보기도 하고, 구글링도 하면서 많이 배운 것 같다. 
+
+<img width="387" alt="스크린샷 2022-11-27 오전 12 45 44" src="https://user-images.githubusercontent.com/67852689/204097163-347fa1b6-8f60-49b5-8734-3424fac8fda7.png">
+
+커밋이 난리났다. ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋz
